@@ -1,12 +1,19 @@
+import ListHeader from "@/components/ListHeader";
+import Pagination from "@/components/Pagination";
+import Table from "@/components/Table";
 import { resultsColumn } from "@/components/tables/resultsColumn";
-import { DataTable } from "@/components/ui/data-table";
 import prisma from "@/lib/prisma";
-import { SearchParams } from "@/types";
+import { ITEMS_PER_PAGE } from "@/lib/settings";
+import { SearchParams, UserRole } from "@/types";
+import { auth } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
 
 const ResultsListPage = async ({ searchParams }: SearchParams) => {
-  const { ...queryParams } = await searchParams
+  const { page, ...queryParams } = await searchParams
+  const p = page ? parseInt(page) : 1;
 
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: UserRole })?.role;
   const query: Prisma.ResultWhereInput = {}
 
   // URL PARAMS CONDITION
@@ -35,33 +42,39 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
     }
   }
 
-  const results = await prisma.result.findMany({
-    where: query,
-    include: {
-      student: { select: { name: true, surname: true } },
-      exam: {
-        include: {
-          lesson: {
-            select: {
-              class: { select: { name: true } },
-              teacher: { select: { name: true, surname: true } }
+  const [results, count] = await prisma.$transaction([
+    prisma.result.findMany({
+      where: query,
+      include: {
+        student: { select: { name: true, surname: true } },
+        exam: {
+          include: {
+            lesson: {
+              select: {
+                class: { select: { name: true } },
+                teacher: { select: { name: true, surname: true } }
+              }
+            }
+          }
+        },
+
+        assignment: {
+          include: {
+            lesson: {
+              select: {
+                class: { select: { name: true } },
+                teacher: { select: { name: true, surname: true } }
+              }
             }
           }
         }
       },
+      take: ITEMS_PER_PAGE,
+      skip: ITEMS_PER_PAGE * (p - 1),
+    }),
 
-      assignment: {
-        include: {
-          lesson: {
-            select: {
-              class: { select: { name: true } },
-              teacher: { select: { name: true, surname: true } }
-            }
-          }
-        }
-      }
-    }
-  })
+    prisma.result.count({ where: query }),
+  ]);
 
   const data = results.map((item) => {
     const assessment = item.exam || item.assignment;
@@ -87,7 +100,9 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <DataTable tableFor="result" columns={resultsColumn} data={data} filterBy="studentSurname" />
+      <ListHeader title="All Results" role={role!} />
+      <Table columns={resultsColumn} data={data} role={role!} />
+      <Pagination count={count} page={p} />
     </div>
   );
 };

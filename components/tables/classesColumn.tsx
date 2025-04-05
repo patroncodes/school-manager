@@ -1,59 +1,45 @@
-"use client"
-
-import { ColumnDef } from "@tanstack/react-table"
 import FormModal from "../FormModal"
-
-import { role } from "@/lib/data"
 import { Class, Teacher } from "@prisma/client"
-import { ArrowUpDown } from "lucide-react"
-import { Button } from "../ui/button"
 
 type ClassesList = Class & { supervisor: Teacher | null }
 
-export const classesColumn: ColumnDef<ClassesList>[] = [
+export const classesColumn = (role: string) => [
     {
-        accessorKey: "name",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                className="hover:bg-transparent"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-                Class
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-        ),
+        accessor: "name",
+        header: "Class",
+        cell: (item: ClassesList) => <div className="py-4 px-2">{item.name}</div>
     },
     {
-        accessorKey: "capacity",
+        accessor: "capacity",
         header: "Capacity",
+        cell: (item: ClassesList) => <div className="py-4 px-2">{item.capacity}</div>
     },
     {
-        accessorKey: "gradeId",
+        accessor: "grade",
         header: "Grade",
-        cell: ({ row: { original: { name } } }) => (
-            <div>{name[0]}</div>
-        )
+        className: "hidden md:table-cell",
+        cell: (item: ClassesList) => <div className="hidden md:table-cell py-4 px-2">{item.name[0]}</div>
     },
     {
-        accessorKey: "supervisor",
+        accessor: "supervisor",
         header: "Supervisor",
-        cell: ({ row: { original: data } }) => (
-            <div>{data?.supervisor?.name} {data?.supervisor?.surname}</div>
-        ),
+        className: "hidden md:table-cell",
+        cell: (item: ClassesList) => <div className="py-4 px-2">{item?.supervisor?.name} {item?.supervisor?.surname}</div>
     },
-    {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row: { original: data } }) => {
-            return (
-                <div className="flex items-center gap-2">
-                    <FormModal table="class" type="update" data={data} />
-                    {role === "admin" && (
-                        <FormModal table="class" type="delete" id={data.id} />
-                    )}
-                </div>
-            )
-        }
-    },
+    ...(role === "admin"
+        ? [
+            {
+                header: "Actions",
+                accessor: "action",
+                cell: (item: ClassesList) => (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <FormModal table="class" type="update" data={item} />
+                            <FormModal table="class" type="delete" id={item.id} />
+                        </div>
+                    </div>
+                )
+            },
+        ]
+        : []),
 ]

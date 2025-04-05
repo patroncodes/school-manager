@@ -1,9 +1,8 @@
-import { role } from "@/lib/data";
+import { menuItems } from "@/constants";
 import Image from "next/image";
 import Link from "next/link";
-import { menuItems } from "@/constants";
 
-const Menu = () => {
+const Menu = async ({ role }: { role: string }) => {
   return (
     <div className="mt-4 text-sm px-2">
       {menuItems.map(({ title, items }) => (

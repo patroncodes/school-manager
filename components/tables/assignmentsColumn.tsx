@@ -1,65 +1,49 @@
-"use client"
+import FormModal from "../FormModal";
+import { Assignment, Class, Subject, Teacher } from "@prisma/client";
 
-import { ColumnDef } from "@tanstack/react-table"
-import FormModal from "../FormModal"
-
-import { role } from "@/lib/data"
-
-type AssignmentsList = {
+type AssignmentsList = Assignment & {
     lesson: {
-        subject: {
-            name: string;
-        };
-        class: {
-            name: string;
-        };
-        teacher: {
-            name: string;
-            surname: string;
-        };
+        subject: Subject;
+        class: Class;
+        teacher: Teacher;
     };
-} & {
-    id: number;
-    title: string;
-    startDate: Date;
-    dueDate: Date;
-    lessonId: number;
-}
+};
 
-export const assignmentsColumn: ColumnDef<AssignmentsList>[] = [
+export const assignmentsColumn = (role: string) => [
     {
-        accessorKey: "subject",
+        accessor: "subject",
         header: "Subject",
-        cell: ({ row: { original: { lesson } } }) => lesson.subject.name
+        cell: (item: AssignmentsList) => <span>{item.lesson.subject.name}</span>
     },
     {
-        accessorKey: "class",
+        accessor: "class",
         header: "Class",
-        cell: ({ row: { original: { lesson } } }) => lesson.class.name
+        cell: (item: AssignmentsList) => <span>{item.lesson.class.name}</span>
     },
     {
-        accessorKey: "teacher",
+        accessor: "teacher",
         header: "Teacher",
-        cell: ({ row: { original: { lesson } } }) =>
-            `${lesson.teacher.name + " " + lesson.teacher.surname}`
+        cell: (item: AssignmentsList) => <span>{item.lesson.teacher.name + " " + item.lesson.teacher.surname}</span>
     },
     {
-        accessorKey: "startDate",
+        accessor: "startDate",
         header: "Start Date",
-        cell: ({ row: { original: { startDate } } }) => new Intl.DateTimeFormat("en-NG").format(startDate)
+        cell: (item: AssignmentsList) => <span>{new Intl.DateTimeFormat("en-NG").format(item.startDate)}</span>
     },
-    {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row: { original: data } }) => {
-            return (
-                <div className="flex items-center gap-2">
-                    <FormModal table="assignment" type="update" data={data} />
-                    {role === "admin" && (
-                        <FormModal table="assignment" type="delete" id={data.id} />
-                    )}
-                </div>
-            )
-        }
-    },
+    ...(role === "admin"
+        ? [
+            {
+                header: "Actions",
+                accessor: "action",
+                cell: (item: AssignmentsList) => (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <FormModal table="assignment" type="update" data={item} />
+                            <FormModal table="assignment" type="delete" id={item.id} />
+                        </div>
+                    </div>
+                )
+            },
+        ]
+        : []),
 ]

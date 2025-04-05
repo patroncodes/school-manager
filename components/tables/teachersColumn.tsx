@@ -1,83 +1,78 @@
-"use client"
-
-import { role } from "@/lib/data"
 import { Class, Subject, Teacher } from "@prisma/client"
-import { ColumnDef } from "@tanstack/react-table"
-import { ArrowUpDown } from "lucide-react"
-import Image from "next/image"
-import Link from "next/link"
-import { Button } from "../ui/button"
-import FormModal from "../FormModal"
+import Image from "next/image";
+import Link from "next/link";
+import FormModal from "../FormModal";
 
 type TeacherList = Teacher & { subjects: Subject[] } & { classes: Class[] }
 
-export const teachersColumn: ColumnDef<TeacherList>[] = [
+export const teachersColumn = (role: string) => [
     {
-        accessorKey: "name",
-        header: ({ column }) => (
-            <Button
-                variant="ghost"
-                className="hover:bg-transparent"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            >
-                Info
-                <ArrowUpDown className="ml-2 h-4 w-4" />
-            </Button>
-        ),
-        cell: ({ row: { original: data } }) => (
+        header: "Info",
+        accessor: "info",
+        cell: (item: TeacherList) => (
             <div className="flex items-center gap-4 p-2 min-w-[14rem]">
                 <Image
-                    src={data.img || '/noAvatar.png'}
-                    alt={data.username}
+                    src={item.img || '/noAvatar.png'}
+                    alt={item.username}
                     width={40}
                     height={40}
                     className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
                 />
                 <div className="flex flex-col">
-                    <h3 className="font-semibold">{data.name} {data.surname}</h3>
-                    <p className="text-xs text-gray-500">{data.email}</p>
+                    <h3 className="font-semibold">{item.name} {item.surname}</h3>
+                    <p className="text-xs text-gray-500">{item.email}</p>
                 </div>
             </div>
         )
     },
     {
-        accessorKey: "subjects",
+        header: "Teacher ID",
+        accessor: "teacherId",
+        className: "hidden md:table-cell",
+        cell: (item: TeacherList) => <span>{item.username}</span>
+    },
+    {
         header: "Subjects",
-        cell: ({ row: { original: { subjects } } }) => (
-            <div>{subjects.map(subject => subject.name).join(',')}</div>
-        )
+        accessor: "subjects",
+        className: "hidden md:table-cell",
+        cell: (item: TeacherList) => <span>{item.subjects.map(subject => subject.name).join(',')}</span>
     },
     {
-        accessorKey: "classes",
         header: "Classes",
-        cell: ({ row: { original: { classes } } }) => (
-            <div>{classes.map(class_ => class_.name).join(',')}</div>
-        )
+        accessor: "classes",
+        className: "hidden md:table-cell",
+        cell: (item: TeacherList) => <span>{item.classes.map(className => className.name).join(',')}</span>
     },
     {
-        accessorKey: "phone",
         header: "Phone",
+        accessor: "phone",
+        className: "hidden lg:table-cell",
+        cell: (item: TeacherList) => <span>{item.phone}</span>
     },
     {
-        accessorKey: "address",
         header: "Address",
+        accessor: "address",
+        className: "hidden lg:table-cell",
+        cell: (item: TeacherList) => <span>{item.address}</span>
     },
-    {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row: { original: data } }) => {
-            return (
-                <div className="flex items-center gap-2">
-                    <Link href={`/list/teachers/${data.id}`}>
-                        <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-                            <Image src="/view.svg" alt="" width={16} height={16} />
-                        </button>
-                    </Link>
-                    {role === "admin" && (
-                        <FormModal table="student" type="delete" id={data.id} />
-                    )}
-                </div>
-            )
-        }
-    },
-]
+    ...(role === "admin"
+        ? [
+            {
+                header: "Actions",
+                accessor: "action",
+                cell: (item: TeacherList) => (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <Link href={`/list/teachers/${item.id}`}>
+                                <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
+                                    <Image src="/view.png" alt="" width={16} height={16} />
+                                </button>
+                            </Link>
+                            <FormModal table="teacher" type="delete" id={item.id} />
+                        </div>
+                    </div>
+                )
+            },
+        ]
+        : []),
+];

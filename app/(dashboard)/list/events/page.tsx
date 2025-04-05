@@ -1,12 +1,20 @@
+import ListHeader from '@/components/ListHeader';
+import Pagination from '@/components/Pagination';
+import Table from '@/components/Table';
 import { eventsColumn } from '@/components/tables/eventsColumn';
-import { DataTable } from "@/components/ui/data-table";
 import prisma from '@/lib/prisma';
-import { SearchParams } from '@/types';
+import { ITEMS_PER_PAGE } from '@/lib/settings';
+import { SearchParams, UserRole } from '@/types';
+import { auth } from '@clerk/nextjs/server';
 import { Prisma } from '@prisma/client';
 
 
 const EventsListPage = async ({ searchParams }: SearchParams) => {
-  const { ...queryParams } = await searchParams
+  const { page, ...queryParams } = await searchParams
+  const p = page ? parseInt(page) : 1;
+
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: UserRole })?.role;
 
   const query: Prisma.EventWhereInput = {}
 
@@ -25,16 +33,24 @@ const EventsListPage = async ({ searchParams }: SearchParams) => {
     }
   }
 
-  const events = await prisma.event.findMany({
-    where: query,
-    include: {
-      class: { select: { name: true } }
-    }
-  })
+  const [data, count] = await prisma.$transaction([
+    prisma.event.findMany({
+      where: query,
+      include: {
+        class: { select: { name: true } }
+      },
+      take: ITEMS_PER_PAGE,
+      skip: ITEMS_PER_PAGE * (p - 1),
+    }),
+
+    prisma.event.count({ where: query }),
+  ]);
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <DataTable tableFor="event" columns={eventsColumn} data={events} filterBy="title" />
+      <ListHeader title="All Assignments" role={role!} />
+      <Table columns={eventsColumn} data={data} role={role!} />
+      <Pagination page={p} count={count} />
     </div>
   );
 };

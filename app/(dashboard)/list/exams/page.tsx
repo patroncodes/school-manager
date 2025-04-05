@@ -1,11 +1,19 @@
+import ListHeader from "@/components/ListHeader";
+import Pagination from "@/components/Pagination";
+import Table from "@/components/Table";
 import { examsColumn } from "@/components/tables/examsColumn";
-import { DataTable } from "@/components/ui/data-table";
 import prisma from "@/lib/prisma";
-import { SearchParams } from "@/types";
+import { ITEMS_PER_PAGE } from "@/lib/settings";
+import { SearchParams, UserRole } from "@/types";
+import { auth } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
 
 const ExamsListPage = async ({ searchParams }: SearchParams) => {
-  const { ...queryParams } = await searchParams
+  const { page, ...queryParams } = await searchParams
+  const p = page ? parseInt(page) : 1;
+
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: UserRole })?.role;
 
   const query: Prisma.ExamWhereInput = {}
 
@@ -31,21 +39,31 @@ const ExamsListPage = async ({ searchParams }: SearchParams) => {
       }
     }
   }
-  const exams = await prisma.exam.findMany({
-    where: query,
-    include: {
-      lesson: {
-        select: {
-          subject: { select: { name: true } },
-          teacher: { select: { name: true, surname: true } },
-          class: { select: { name: true } }
+
+  const [data, count] = await prisma.$transaction([
+    prisma.exam.findMany({
+      where: query,
+      include: {
+        lesson: {
+          select: {
+            subject: { select: { name: true } },
+            teacher: { select: { name: true, surname: true } },
+            class: { select: { name: true } }
+          }
         }
-      }
-    }
-  })
+      },
+      take: ITEMS_PER_PAGE,
+      skip: ITEMS_PER_PAGE * (p - 1),
+    }),
+
+    prisma.exam.count({ where: query })
+  ])
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <DataTable tableFor="exam" columns={examsColumn} data={exams} filterBy="subject" />
+      <ListHeader title="All Exams" role={role!} />
+      <Table columns={examsColumn} data={data} role={role!} />
+      <Pagination count={count} page={p} />
     </div>
   );
 };

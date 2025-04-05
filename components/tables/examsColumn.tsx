@@ -1,67 +1,50 @@
-"use client"
-
-import { ColumnDef } from "@tanstack/react-table"
 import FormModal from "../FormModal"
+import { Class, Exam, Subject, Teacher } from "@prisma/client"
 
-import { role } from "@/lib/data"
-import { formatTimeRange } from "@/lib/utils"
-
-type ExamsList = {
+type ExamsList = Exam & {
     lesson: {
-        subject: {
-            name: string;
-        };
-        class: {
-            name: string;
-        };
-        teacher: {
-            name: string;
-            surname: string;
-        };
+        subject: Subject;
+        class: Class;
+        teacher: Teacher;
     };
-} & {
-    id: number;
-    title: string;
-    lessonId: number;
-    startTime: Date;
-    endTime: Date;
-}
+};
 
 
-export const examsColumn: ColumnDef<ExamsList>[] = [
+export const examsColumn = (role: string) => [
     {
-        accessorKey: "subject",
+        accessor: "subject",
         header: "Subject",
-        cell: ({ row: { original: { lesson } } }) => lesson.subject.name
+        cell: (item: ExamsList) => <span>{item.lesson.subject.name}</span>
     },
     {
-        accessorKey: "class",
+        accessor: "class",
         header: "Class",
-        cell: ({ row: { original: { lesson } } }) => lesson.class.name
+        cell: (item: ExamsList) => <span>{item.lesson.class.name}</span>
     },
     {
-        accessorKey: "teacher",
+        accessor: "teacher",
         header: "Teacher",
-        cell: ({ row: { original: { lesson } } }) =>
-            `${lesson.teacher.name + " " + lesson.teacher.surname}`
+        cell: (item: ExamsList) => <span>{item.lesson.teacher.name + " " + item.lesson.teacher.surname}</span>
     },
     {
-        accessorKey: "date",
+        accessor: "date",
         header: "Date",
-        cell: ({ row: { original: { startTime, endTime } } }) => formatTimeRange(startTime, endTime)
+        cell: (item: ExamsList) => <span>{new Intl.DateTimeFormat("en-NG").format(item.startTime)}</span>
     },
-    {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row: { original: data } }) => {
-            return (
-                <div className="flex items-center gap-2">
-                    <FormModal table="exam" type="update" data={data} />
-                    {role === "admin" && (
-                        <FormModal table="exam" type="delete" id={data.id} />
-                    )}
-                </div>
-            )
-        }
-    },
+    ...(role === "admin"
+        ? [
+            {
+                header: "Actions",
+                accessor: "action",
+                cell: (item: ExamsList) => (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <FormModal table="exam" type="update" data={item} />
+                            <FormModal table="exam" type="delete" id={item.id} />
+                        </div>
+                    </div>
+                )
+            },
+        ]
+        : []),
 ]

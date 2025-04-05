@@ -1,11 +1,19 @@
+import ListHeader from "@/components/ListHeader";
+import Pagination from "@/components/Pagination";
+import Table from "@/components/Table";
 import { parentsColumn } from "@/components/tables/parentsColumn";
-import { DataTable } from "@/components/ui/data-table";
 import prisma from "@/lib/prisma";
-import { SearchParams } from "@/types";
+import { ITEMS_PER_PAGE } from "@/lib/settings";
+import { SearchParams, UserRole } from "@/types";
+import { auth } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
 
 const ParentsListPage = async ({ searchParams }: SearchParams) => {
-  const { ...queryParams } = await searchParams
+  const { page, ...queryParams } = await searchParams
+  const p = page ? parseInt(page) : 1;
+
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: UserRole })?.role;
 
   const query: Prisma.ParentWhereInput = {}
 
@@ -23,21 +31,25 @@ const ParentsListPage = async ({ searchParams }: SearchParams) => {
       }
     }
   }
-  const parents = await prisma.parent.findMany({
-    where: query,
-    include: {
-      students: true,
-    },
-    orderBy: { createdAt: 'desc' },
-  })
+
+  const [data, count] = await prisma.$transaction([
+    prisma.parent.findMany({
+      where: query,
+      include: {
+        students: true,
+      },
+      take: ITEMS_PER_PAGE,
+      skip: ITEMS_PER_PAGE * (p - 1),
+      orderBy: { createdAt: 'desc' },
+    }),
+    prisma.parent.count({ where: query }),
+  ])
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <DataTable
-        tableFor="parent"
-        columns={parentsColumn}
-        data={parents}
-        filterBy="surname"
-      />
+      <ListHeader role={role!} title="All Parents" />
+      <Table columns={parentsColumn} data={data} role={role!} />
+      <Pagination count={count} page={p} />
     </div>
   );
 };

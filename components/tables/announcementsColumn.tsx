@@ -1,43 +1,43 @@
-"use client"
-
-import { ColumnDef } from "@tanstack/react-table"
-import FormModal from "../FormModal"
 import { Announcement } from "@prisma/client"
-import { role } from "@/lib/data"
+import FormModal from "../FormModal"
 
 type AnnouncementsList = Announcement & { class: { name: string } | null }
 
-
-export const announcementsColumn: ColumnDef<AnnouncementsList>[] = [
+export const announcementsColumn = (role: string) => [
     {
-        accessorKey: "title",
-        header: "Title"
+        accessor: "title",
+        header: "Title",
+        cell: (item: AnnouncementsList) => <span>{item.title}</span>
     },
     {
-        accessorKey: "description",
-        header: "Description"
+        accessor: "description",
+        header: "Description",
+        cell: (item: AnnouncementsList) => <span>{item.description}</span>
     },
     {
-        accessorFn: ({ class: className }) => className?.name || "-",
+        accessor: 'class',
         header: "Class",
+        cell: (item: AnnouncementsList) => <span>{item.class?.name || "General"}</span>
     },
     {
-        accessorKey: "date",
+        accessor: "date",
         header: "Date",
-        cell: ({ row: { original: { date } } }) => new Intl.DateTimeFormat("en-NG").format(date)
+        cell: (item: AnnouncementsList) => <span>{new Intl.DateTimeFormat("en-NG").format(item.date)}</span>
     },
-    {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row: { original: data } }) => {
-            return (
-                <div className="flex items-center gap-2">
-                    <FormModal table="assignment" type="update" data={data} />
-                    {role === "admin" && (
-                        <FormModal table="assignment" type="delete" id={data.id} />
-                    )}
-                </div>
-            )
-        }
-    },
+    ...(role === "admin"
+        ? [
+            {
+                header: "Actions",
+                accessor: "action",
+                cell: (item: AnnouncementsList) => (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <FormModal table="announcement" type="update" data={item} />
+                            <FormModal table="announcement" type="delete" id={item.id} />
+                        </div>
+                    </div>
+                )
+            },
+        ]
+        : []),
 ]

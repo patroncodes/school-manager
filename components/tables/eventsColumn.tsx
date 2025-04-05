@@ -1,57 +1,56 @@
-"use client"
-
-import { ColumnDef } from "@tanstack/react-table"
 import FormModal from "../FormModal"
-
-import { role } from "@/lib/data"
 import { Event } from "@prisma/client"
 
 type EventsList = Event & { class: { name: string } | null }
 
-export const eventsColumn: ColumnDef<EventsList>[] = [
+export const eventsColumn = (role: string) => [
     {
-        accessorKey: "title",
-        header: "Title"
+        accessor: "title",
+        header: "Title",
+        cell: (item: EventsList) => <span>{item.title}</span>
     },
     {
-        accessorFn: ({ class: className }) => className?.name || "-",
+        accessor: "class",
         header: "Class",
+        cell: (item: EventsList) => <span>{item.class?.name || "General"}</span>
     },
     {
-        accessorKey: "date",
+        accessor: "date",
         header: "Date",
-        cell: ({ row: { original: { startTime } } }) => new Intl.DateTimeFormat("en-NG").format(startTime)
+        cell: (item: EventsList) => <span>{new Intl.DateTimeFormat("en-NG").format(item.startTime)}</span>
     },
     {
-        accessorKey: "startTime",
+        accessor: "startTime",
         header: "Start Time",
-        cell: ({ row: { original: { startTime } } }) => startTime.toLocaleTimeString('en-NG', {
+        cell: (item: EventsList) => <span>{item.startTime.toLocaleTimeString('en-NG', {
             hour: '2-digit',
             minute: '2-digit',
             hour12: false,
-        })
+        })}</span>
     },
     {
-        accessorKey: "endTime",
+        accessor: "endTime",
         header: "End Time",
-        cell: ({ row: { original: { endTime } } }) => endTime.toLocaleTimeString('en-NG', {
+        cell: (item: EventsList) => <span>{item.endTime.toLocaleTimeString('en-NG', {
             hour: '2-digit',
             minute: '2-digit',
             hour12: false,
-        })
+        })}</span>
     },
-    {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row: { original: data } }) => {
-            return (
-                <div className="flex items-center gap-2">
-                    <FormModal table="assignment" type="update" data={data} />
-                    {role === "admin" && (
-                        <FormModal table="assignment" type="delete" id={data.id} />
-                    )}
-                </div>
-            )
-        }
-    },
+    ...(role === "admin"
+        ? [
+            {
+                header: "Actions",
+                accessor: "action",
+                cell: (item: EventsList) => (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <FormModal table="event" type="update" data={item} />
+                            <FormModal table="event" type="delete" id={item.id} />
+                        </div>
+                    </div>
+                )
+            },
+        ]
+        : []),
 ]

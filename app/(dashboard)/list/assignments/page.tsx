@@ -1,11 +1,19 @@
+import ListHeader from "@/components/ListHeader";
+import Pagination from "@/components/Pagination";
+import Table from "@/components/Table";
 import { assignmentsColumn } from "@/components/tables/assignmentsColumn";
-import { DataTable } from "@/components/ui/data-table";
 import prisma from "@/lib/prisma";
-import { SearchParams } from "@/types";
+import { ITEMS_PER_PAGE } from "@/lib/settings";
+import { SearchParams, UserRole } from "@/types";
+import { auth } from "@clerk/nextjs/server";
 import { Prisma } from "@prisma/client";
 
 const AssignmentsListPage = async ({ searchParams }: SearchParams) => {
-  const { ...queryParams } = await searchParams
+  const { page, ...queryParams } = await searchParams
+  const p = page ? parseInt(page) : 1;
+
+  const { sessionClaims } = await auth();
+  const role = (sessionClaims?.metadata as { role?: UserRole })?.role;
 
   const query: Prisma.AssignmentWhereInput = {}
 
@@ -32,22 +40,30 @@ const AssignmentsListPage = async ({ searchParams }: SearchParams) => {
     }
   }
 
-  const assignments = await prisma.assignment.findMany({
-    where: query,
-    include: {
-      lesson: {
-        select: {
-          subject: { select: { name: true } },
-          teacher: { select: { name: true, surname: true } },
-          class: { select: { name: true } }
+  const [data, count] = await prisma.$transaction([
+    prisma.assignment.findMany({
+      where: query,
+      include: {
+        lesson: {
+          select: {
+            subject: { select: { name: true } },
+            teacher: { select: { name: true, surname: true } },
+            class: { select: { name: true } }
+          }
         }
-      }
-    }
-  })
+      },
+      take: ITEMS_PER_PAGE,
+      skip: ITEMS_PER_PAGE * (p - 1),
+    }),
+
+    prisma.assignment.count({ where: query }),
+  ])
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <DataTable tableFor="assignment" columns={assignmentsColumn} data={assignments} filterBy="subject" />
+      <ListHeader title="All Assignments" role={role!} />
+      <Table columns={assignmentsColumn} data={data} role={role!} />
+      <Pagination page={p} count={count} />
     </div>
   );
 };

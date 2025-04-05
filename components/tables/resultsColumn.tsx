@@ -1,9 +1,4 @@
-"use client"
-
-import { ColumnDef } from "@tanstack/react-table"
 import FormModal from "../FormModal"
-
-import { role } from "@/lib/data"
 
 type ResultsList = {
     id: number;
@@ -20,53 +15,51 @@ type ResultsList = {
 } | null
 
 
-export const resultsColumn: ColumnDef<ResultsList>[] = [
+export const resultsColumn = (role: string) => [
     {
-        accessorKey: "title",
+        accessor: "title",
         header: 'Subject',
+        cell: (item: ResultsList) => <div>{item?.title}</div>
     },
     {
-        accessorKey: "studentSurname",
+        accessor: "studentSurname",
         header: "Student",
-        cell: ({ row: { original: data } }) => (
-            <div>{data?.studentName} {data?.studentSurname}</div>
-        )
+        cell: (item: ResultsList) => <div>{item?.title} {item?.studentSurname}</div>
     },
     {
-        accessorKey: "teacher",
+        accessor: "teacher",
         header: "Teacher",
-        cell: ({ row: { original: data } }) => (
-            <div>{data?.teacherName} {data?.teacherSurname}</div>
-        )
+        cell: (item: ResultsList) => <div>{item?.teacherName} {item?.teacherSurname}</div>
     },
     {
-        accessorKey: "score",
+        accessor: "score",
         header: "Score",
+        cell: (item: ResultsList) => <div>{item?.score}</div>
     },
     {
-        accessorKey: "type",
+        accessor: "type",
         header: "Type",
-        cell: ({ row: { original: data } }) => (
-            <div className="capitalize">{data?.type}</div>
-        )
+        cell: (item: ResultsList) => <div className="capitalize">{item?.type}</div>
     },
     {
-        accessorKey: "date",
+        accessor: "date",
         header: "Date",
-        cell: ({ row: { original: data } }) => new Intl.DateTimeFormat("en-NG").format(data?.startTime)
+        cell: (item: ResultsList) => <div>{new Intl.DateTimeFormat("en-NG").format(item?.startTime)}</div>
     },
-    {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row: { original: data } }) => {
-            return (
-                <div className="flex items-center gap-2">
-                    <FormModal table="parent" type="update" data={data} />
-                    {role === "admin" && (
-                        <FormModal table="parent" type="delete" id={data?.id} />
-                    )}
-                </div>
-            )
-        }
-    },
+    ...(role === "admin"
+        ? [
+            {
+                header: "Actions",
+                accessor: "action",
+                cell: (item: ResultsList) => (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <FormModal table="result" type="update" data={item} />
+                            <FormModal table="result" type="delete" id={item?.id} />
+                        </div>
+                    </div>
+                )
+            },
+        ]
+        : []),
 ]
