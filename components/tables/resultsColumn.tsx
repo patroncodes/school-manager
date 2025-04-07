@@ -1,3 +1,4 @@
+import { UserRole } from "@/types";
 import FormModal from "../FormModal"
 
 type ResultsList = {
@@ -15,16 +16,16 @@ type ResultsList = {
 } | null
 
 
-export const resultsColumn = (role: string) => [
+export const resultsColumn = (role: UserRole) => [
     {
         accessor: "title",
         header: 'Subject',
         cell: (item: ResultsList) => <div>{item?.title}</div>
     },
     {
-        accessor: "studentSurname",
+        accessor: "student",
         header: "Student",
-        cell: (item: ResultsList) => <div>{item?.title} {item?.studentSurname}</div>
+        cell: (item: ResultsList) => <div>{item?.studentName} {item?.studentSurname}</div>
     },
     {
         accessor: "teacher",
@@ -46,7 +47,7 @@ export const resultsColumn = (role: string) => [
         header: "Date",
         cell: (item: ResultsList) => <div>{new Intl.DateTimeFormat("en-NG").format(item?.startTime)}</div>
     },
-    ...(role === "admin"
+    ...(role === "admin" || role === "teacher"
         ? [
             {
                 header: "Actions",

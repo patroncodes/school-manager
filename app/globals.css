@@ -150,11 +150,28 @@
 }
 
 .table-actions {
-  @apply flex-center h-6 w-6 rounded-full bg-primary p-1.5;
+  @apply flex-center bg-primary h-6 w-6 rounded-full p-1.5;
 }
 
 .form-submit_btn {
-  @apply cursor-pointer rounded-md bg-blue-400 text-white capitalize;
+  @apply cursor-pointer rounded-md bg-blue-400 capitalize text-white;
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+    border-radius: 5px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #edf9fd;
+    border-radius: 50px;
+  }
 }
 
 .react-calendar {

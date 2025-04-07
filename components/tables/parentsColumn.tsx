@@ -1,17 +1,15 @@
+import { UserRole } from "@/types"
 import FormModal from "../FormModal"
 import { Parent, Student } from "@prisma/client"
 
 type ParentsList = Parent & { students: Student[] }
 
-export const parentsColumn = (role: string) => [
+export const parentsColumn = (role: UserRole) => [
     {
         accessor: "surname",
         header: "Info",
         cell: (item: ParentsList) => (
-            <div className="flex flex-col ">
-                <h3 className="font-semibold">{item.name} {item.surname}</h3>
-                <p className="text-xs text-gray-500">{item.email}</p>
-            </div>
+            <div className="font-semibold">{item.name} {item.surname}</div>
         )
     },
     {
@@ -25,6 +23,11 @@ export const parentsColumn = (role: string) => [
         accessor: "phone",
         header: "Phone",
         cell: (item: ParentsList) => <span>{item.phone}</span>
+    },
+    {
+        accessor: "email",
+        header: "Email",
+        cell: (item: ParentsList) => <span>{item.email}</span>
     },
     {
         accessor: "address",

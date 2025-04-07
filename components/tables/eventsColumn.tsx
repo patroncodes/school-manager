@@ -1,9 +1,10 @@
+import { UserRole } from "@/types"
 import FormModal from "../FormModal"
 import { Event } from "@prisma/client"
 
 type EventsList = Event & { class: { name: string } | null }
 
-export const eventsColumn = (role: string) => [
+export const eventsColumn = (role: UserRole) => [
     {
         accessor: "title",
         header: "Title",
@@ -12,7 +13,7 @@ export const eventsColumn = (role: string) => [
     {
         accessor: "class",
         header: "Class",
-        cell: (item: EventsList) => <span>{item.class?.name || "General"}</span>
+        cell: (item: EventsList) => <span>{item.class?.name || "-"}</span>
     },
     {
         accessor: "date",

@@ -1,7 +1,8 @@
+import { UserRole } from "@/types";
 import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 
-const Navbar = ({ role }: { role: string }) => {
+const Navbar = ({ role }: { role: UserRole }) => {
 
   return (
     <div className="flex items-center justify-between p-4">

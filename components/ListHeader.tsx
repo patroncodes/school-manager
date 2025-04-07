@@ -1,8 +1,10 @@
 import TableSearch from './TableSearch'
 import Image from 'next/image'
 import FormModal from './FormModal'
+import { Table, UserRole } from '@/types';
+import { listCreationAccess } from '@/lib/settings';
 
-const ListHeader = ({ role, title }: { role: string; title: string }) => {
+const ListHeader = ({ role, table, title }: { role: UserRole; table: Table; title: string }) => {
     return (
         <div className="flex items-center justify-between">
             <h1 className="hidden md:block text-lg font-semibold">{title}</h1>
@@ -15,8 +17,8 @@ const ListHeader = ({ role, title }: { role: string; title: string }) => {
                     <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
                         <Image src="/sort.svg" alt="" width={14} height={14} />
                     </button>
-                    {role === "admin" && (
-                        <FormModal table="teacher" type="create" />
+                    {listCreationAccess[role].includes(table) && (
+                        <FormModal table={table} type="create" />
                     )}
                 </div>
             </div>

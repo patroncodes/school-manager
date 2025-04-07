@@ -1,3 +1,4 @@
+import { UserRole } from "@/types";
 import FormModal from "../FormModal"
 import { Class, Exam, Subject, Teacher } from "@prisma/client"
 
@@ -10,7 +11,7 @@ type ExamsList = Exam & {
 };
 
 
-export const examsColumn = (role: string) => [
+export const examsColumn = (role: UserRole) => [
     {
         accessor: "subject",
         header: "Subject",
@@ -31,7 +32,7 @@ export const examsColumn = (role: string) => [
         header: "Date",
         cell: (item: ExamsList) => <span>{new Intl.DateTimeFormat("en-NG").format(item.startTime)}</span>
     },
-    ...(role === "admin"
+    ...(role === "admin" || role === 'teacher'
         ? [
             {
                 header: "Actions",

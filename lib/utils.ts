@@ -6,15 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// export const splitName = (name: string) => {
-//   const [firstName, ...lastName] = name.trim().split(" ");
-
-//   return {
-//     firstName: firstName || "",
-//     lastName: lastName.join(" ") || "",
-//   };
-// };
-
 export const formatTimeRange = (start: Date, end: Date): string => {
-  return `${moment(start).format("DD-MM-YYYY, h:mmA")} - ${moment(end).format("h:mmA")}`;
+  return `${moment(start).format("h:mmA")} - ${moment(end).format("h:mmA")}`;
+  // return `${moment(start).format("DD-MM-YYYY, h:mmA")} - ${moment(end).format("h:mmA")}`;
 };

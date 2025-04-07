@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import React from "react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
-import { useUser } from "@clerk/nextjs";
 
 // This approach is used if you want to make your client components dynamic || lazing loading. This will help with optimization
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
@@ -53,8 +52,6 @@ const forms: {
 
 const FormModal = ({ table, type, data, id }: FormModalProps) => {
   const { modalToOpen, setModalToOpen } = useModalContext()
-  const { user } = useUser()
-  const isAdmin = (user?.publicMetadata.role as string) === "admin"
 
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
@@ -90,19 +87,17 @@ const FormModal = ({ table, type, data, id }: FormModalProps) => {
 
   return (
     <>
-      {isAdmin && (
-        <button
-          className="cursor-pointer"
-          onClick={() => setModalToOpen({
-            type: type as typeof type,
-            id: id?.toString()
-          })}
-        >
-          <div className={`${size} flex-center rounded-full ${bgColor}`}>
-            <Image src={`/${type}.svg`} alt={type} width={16} height={16} />
-          </div>
-        </button>
-      )}
+      <button
+        className="cursor-pointer"
+        onClick={() => setModalToOpen({
+          type: type as typeof type,
+          id: id?.toString()
+        })}
+      >
+        <div className={`${size} flex-center rounded-full ${bgColor}`}>
+          <Image src={`/${type}.svg`} alt={type} width={16} height={16} />
+        </div>
+      </button>
 
       {!!modalToOpen && (modalToOpen.id === id) && (
         <AlertDialog

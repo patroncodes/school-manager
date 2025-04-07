@@ -1,9 +1,10 @@
 import { Announcement } from "@prisma/client"
 import FormModal from "../FormModal"
+import { UserRole } from "@/types"
 
 type AnnouncementsList = Announcement & { class: { name: string } | null }
 
-export const announcementsColumn = (role: string) => [
+export const announcementsColumn = (role: UserRole) => [
     {
         accessor: "title",
         header: "Title",
@@ -17,7 +18,7 @@ export const announcementsColumn = (role: string) => [
     {
         accessor: 'class',
         header: "Class",
-        cell: (item: AnnouncementsList) => <span>{item.class?.name || "General"}</span>
+        cell: (item: AnnouncementsList) => <span>{item.class?.name || "-"}</span>
     },
     {
         accessor: "date",

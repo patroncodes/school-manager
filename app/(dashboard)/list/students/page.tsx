@@ -3,17 +3,16 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import { studentsColumn } from "@/components/tables/studentsColumn";
 import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/serverUtils";
 import { ITEMS_PER_PAGE } from "@/lib/settings";
-import { SearchParams, UserRole } from "@/types";
-import { auth } from "@clerk/nextjs/server";
+import { SearchParams } from "@/types";
 import { Prisma } from "@prisma/client";
 
 const StudentsListPage = async ({ searchParams }: SearchParams) => {
   const { page, ...queryParams } = await searchParams
   const p = page ? parseInt(page) : 1;
 
-  const { sessionClaims } = await auth();
-  const role = (sessionClaims?.metadata as { role?: UserRole })?.role;
+  const { role } = await getCurrentUser()
 
   const query: Prisma.StudentWhereInput = {}
 
@@ -56,7 +55,7 @@ const StudentsListPage = async ({ searchParams }: SearchParams) => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <ListHeader role={role!} title="All Students" />
+      <ListHeader role={role!} title="All Students" table="student" />
       <Table columns={studentsColumn} data={data} role={role!} />
       <Pagination count={count} page={p} />
     </div>

@@ -2,10 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import FormModal from "../FormModal";
 import { Class, Student } from "@prisma/client";
+import { UserRole } from "@/types";
 
 type StudentsList = Student & { class: Class };
 
-export const studentsColumn = (role: string) => [
+export const studentsColumn = (role: UserRole) => [
     {
         header: "Info",
         accessor: "info",
@@ -28,7 +29,6 @@ export const studentsColumn = (role: string) => [
     {
         header: "Student ID",
         accessor: "studentId",
-        className: "hidden md:table-cell",
         cell: (item: StudentsList) => (
             <span className="hidden md:table-cell">{item.username}</span>
         )
@@ -43,7 +43,6 @@ export const studentsColumn = (role: string) => [
     {
         header: "Phone",
         accessor: "phone",
-        className: "hidden lg:table-cell",
         cell: (item: StudentsList) => (
             <span className="hidden md:table-cell">{item.phone}</span>
         )
@@ -51,7 +50,6 @@ export const studentsColumn = (role: string) => [
     {
         header: "Address",
         accessor: "address",
-        className: "hidden lg:table-cell",
         cell: (item: StudentsList) => (
             <span className="hidden md:table-cell">{item.address}</span>
         )

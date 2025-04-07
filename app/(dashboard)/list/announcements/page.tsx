@@ -3,17 +3,16 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import { announcementsColumn } from "@/components/tables/announcementsColumn";
 import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/serverUtils";
 import { ITEMS_PER_PAGE } from "@/lib/settings";
-import { SearchParams, UserRole } from "@/types";
-import { auth } from "@clerk/nextjs/server";
+import { SearchParams } from "@/types";
 import { Prisma } from "@prisma/client";
 
 const AnnouncementsListPage = async ({ searchParams }: SearchParams) => {
   const { page, ...queryParams } = await searchParams
   const p = page ? parseInt(page) : 1;
 
-  const { sessionClaims } = await auth();
-  const role = (sessionClaims?.metadata as { role?: UserRole })?.role;
+  const { role, currentUserId } = await getCurrentUser()
 
   const query: Prisma.AnnouncementWhereInput = {}
 
@@ -32,6 +31,17 @@ const AnnouncementsListPage = async ({ searchParams }: SearchParams) => {
     }
   }
 
+  const roleConditions = {
+    teacher: { lessons: { some: { teacherId: currentUserId! } } },
+    student: { students: { some: { id: currentUserId! } } },
+    parent: { students: { some: { parentId: currentUserId! } } },
+  }
+
+  query.OR = [
+    { classId: null },
+    { class: roleConditions[role as keyof typeof roleConditions] || {} },
+  ]
+
   const [data, count] = await prisma.$transaction([
     prisma.announcement.findMany({
       where: query,
@@ -46,7 +56,7 @@ const AnnouncementsListPage = async ({ searchParams }: SearchParams) => {
   ])
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <ListHeader title="All Announcements" role={role!} />
+      <ListHeader title="All Announcements" role={role!} table="announcement" />
       <Table columns={announcementsColumn} data={data} role={role!} />
       <Pagination page={p} count={count} />
     </div>

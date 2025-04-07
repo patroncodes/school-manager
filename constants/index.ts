@@ -42,7 +42,7 @@ export const menuItems = [
         icon: "/lesson.svg",
         label: "Lessons",
         href: "/list/lessons",
-        visible: ["admin", "teacher"],
+        visible: ["admin", "teacher", "parent", "student"],
       },
       {
         icon: "/exam.svg",

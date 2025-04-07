@@ -42,7 +42,7 @@ const LoginPage = () => {
                         <Clerk.FieldError className="text-xs text-red-300" />
                     </Clerk.Field>
 
-                    <SignIn.Action submit className="bg-blue-500 text-white my-1 rounded-md text-sm py-[10px]">Sign In</SignIn.Action>
+                    <SignIn.Action submit className="bg-blue-500 text-white my-1 rounded-md text-sm py-[10px] cursor-pointer">Sign In</SignIn.Action>
                 </SignIn.Step>
             </SignIn.Root>
         </div>

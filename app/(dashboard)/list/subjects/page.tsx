@@ -1,11 +1,17 @@
+import ListHeader from "@/components/ListHeader";
+import Pagination from "@/components/Pagination";
+import Table from "@/components/Table";
 import { subjectsColumn } from "@/components/tables/subjectsColumn";
-import { DataTable } from "@/components/ui/data-table";
 import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/serverUtils";
 import { SearchParams } from "@/types";
 import { Prisma } from "@prisma/client";
 
 const SubjectsListPage = async ({ searchParams }: SearchParams) => {
-  const { ...queryParams } = await searchParams
+  const { page, ...queryParams } = await searchParams
+  const p = page ? parseInt(page) : 1;
+
+  const { role } = await getCurrentUser()
 
   const query: Prisma.SubjectWhereInput = {}
 
@@ -23,15 +29,22 @@ const SubjectsListPage = async ({ searchParams }: SearchParams) => {
       }
     }
   }
-  const subjects = await prisma.subject.findMany({
-    where: query,
-    include: {
-      teachers: true,
-    },
-  })
+  const [data, count] = await prisma.$transaction([
+    prisma.subject.findMany({
+      where: query,
+      include: {
+        teachers: true,
+      },
+    }),
+
+    prisma.subject.count({ where: query })
+  ])
+
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <DataTable tableFor="subject" columns={subjectsColumn} data={subjects} filterBy="name" />
+      <ListHeader title="All Subjects" role={role!} table="subject" />
+      <Table columns={subjectsColumn} data={data} role={role!} />
+      <Pagination page={p} count={count} />
     </div>
   );
 };

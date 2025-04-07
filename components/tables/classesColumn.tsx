@@ -1,9 +1,10 @@
+import { UserRole } from "@/types"
 import FormModal from "../FormModal"
 import { Class, Teacher } from "@prisma/client"
 
 type ClassesList = Class & { supervisor: Teacher | null }
 
-export const classesColumn = (role: string) => [
+export const classesColumn = (role: UserRole) => [
     {
         accessor: "name",
         header: "Class",

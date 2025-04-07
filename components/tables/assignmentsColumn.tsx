@@ -1,3 +1,4 @@
+import { UserRole } from "@/types";
 import FormModal from "../FormModal";
 import { Assignment, Class, Subject, Teacher } from "@prisma/client";
 
@@ -9,7 +10,7 @@ type AssignmentsList = Assignment & {
     };
 };
 
-export const assignmentsColumn = (role: string) => [
+export const assignmentsColumn = (role: UserRole) => [
     {
         accessor: "subject",
         header: "Subject",
@@ -30,7 +31,7 @@ export const assignmentsColumn = (role: string) => [
         header: "Start Date",
         cell: (item: AssignmentsList) => <span>{new Intl.DateTimeFormat("en-NG").format(item.startDate)}</span>
     },
-    ...(role === "admin"
+    ...(role === "admin" || role === "teacher"
         ? [
             {
                 header: "Actions",

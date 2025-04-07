@@ -1,16 +1,17 @@
+import { UserRole } from "@/types"
 import FormModal from "../FormModal"
 import { Subject, Teacher } from "@prisma/client"
 
 type SubjectsList = Subject & { teachers: Teacher[] }
 
-export const subjectsColumn = (role: string) => [
+export const subjectsColumn = (role: UserRole) => [
     {
-        accessorKey: "name",
+        accessor: "name",
         header: 'Subject',
         cell: (item: SubjectsList) => <div className="flex items-center p-2">{item.name}</div>
     },
     {
-        accessorKey: "teachers",
+        accessor: "teachers",
         header: "Teachers",
         cell: (item: SubjectsList) => <div>{item.teachers.map(teacher => teacher.name).join(',')}</div>
     },

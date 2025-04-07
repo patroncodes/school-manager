@@ -1,8 +1,10 @@
 import Announcements from "@/components/Announcements";
 import BigCalendar from "@/components/BigCalendar";
 import EventCalendar from "@/components/EventCalendar";
+import { getCurrentUser } from "@/lib/serverUtils";
 
-const StudentPage = () => {
+const StudentPage = async () => {
+  const { role, currentUserId } = await getCurrentUser()
   return (
     <div className="p-4 flex gap-4 flex-col xl:flex-row">
       {/* LEFT */}
@@ -16,7 +18,7 @@ const StudentPage = () => {
       {/* RIGHT */}
       <div className="w-full xl:w-1/3 flex flex-col gap-8">
         <EventCalendar />
-        <Announcements />
+        <Announcements userId={currentUserId!} role={role!} />
       </div>
     </div>
   );

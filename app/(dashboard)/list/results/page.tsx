@@ -3,17 +3,16 @@ import Pagination from "@/components/Pagination";
 import Table from "@/components/Table";
 import { resultsColumn } from "@/components/tables/resultsColumn";
 import prisma from "@/lib/prisma";
+import { getCurrentUser } from "@/lib/serverUtils";
 import { ITEMS_PER_PAGE } from "@/lib/settings";
-import { SearchParams, UserRole } from "@/types";
-import { auth } from "@clerk/nextjs/server";
+import { SearchParams } from "@/types";
 import { Prisma } from "@prisma/client";
 
 const ResultsListPage = async ({ searchParams }: SearchParams) => {
   const { page, ...queryParams } = await searchParams
   const p = page ? parseInt(page) : 1;
 
-  const { sessionClaims } = await auth();
-  const role = (sessionClaims?.metadata as { role?: UserRole })?.role;
+  const { role, currentUserId } = await getCurrentUser()
   const query: Prisma.ResultWhereInput = {}
 
   // URL PARAMS CONDITION
@@ -40,6 +39,23 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
         }
       }
     }
+  }
+
+  switch (role) {
+    case 'admin':
+      break;
+    case 'teacher':
+      query.OR = [
+        { exam: { lesson: { teacherId: currentUserId! } } },
+        { assignment: { lesson: { teacherId: currentUserId! } } }
+      ]
+      break;
+    case 'student':
+      query.studentId = currentUserId!
+    case 'student':
+      query.student = { parentId: currentUserId! }
+    default:
+      break;
   }
 
   const [results, count] = await prisma.$transaction([
@@ -100,7 +116,7 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
 
   return (
     <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <ListHeader title="All Results" role={role!} />
+      <ListHeader title="All Results" role={role!} table="result" />
       <Table columns={resultsColumn} data={data} role={role!} />
       <Pagination count={count} page={p} />
     </div>
