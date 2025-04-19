@@ -1,83 +1,121 @@
 "use client";
 
+import { createAssignment, updateAssignment } from "@/lib/actions";
+import { assignmentSchema, AssignmentSchema } from "@/lib/validation";
+import { FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { toast } from "sonner";
 import InputField from "../InputField";
-import { assignmentSchema } from "@/lib/validation";
-import { Button } from "../ui/button";
-import Image from "next/image";
-import { useModalContext } from "@/context/ModalContext";
-import { Assignment } from "@/types";
+import { toDatetimeLocal } from "@/lib/utils";
 
-const AssignmentForm = ({ type, data }: { type: 'create' | 'update'; data: Assignment }) => {
-  const { setModalToOpen } = useModalContext()
+const AssignmentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
+  const router = useRouter();
 
-  const { register, handleSubmit, formState: { errors, isDirty } } = useForm<z.infer<typeof assignmentSchema>>({
-    resolver: zodResolver(assignmentSchema),
-    defaultValues: data,
+  const { lessons } = relatedData
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AssignmentSchema>({
+    resolver: zodResolver(assignmentSchema)
   });
 
-  const onSubmit = handleSubmit((data) => {
-    console.log(data);
-  });
+  const [state, formAction, pending] = useActionState(
+    type === 'create' ? createAssignment : updateAssignment,
+    { success: false, error: false }
+  )
+
+  useEffect(() => {
+    if (state.success) {
+      toast.success(`Assignment has been ${type}d`)
+      setOpen(false)
+
+      router.refresh()
+    } else if (state.error) {
+      if (typeof state.error === 'string') {
+        toast.error(state.error)
+      } else {
+        toast.error(`Failed to ${type} assignment`)
+      }
+    }
+  }, [state, type, router, setOpen])
+
+  const onSubmit = handleSubmit((values) => {
+    const formData = {
+      ...(type === 'update' && { id: data.id }),
+      ...values
+    }
+
+    startTransition(() => {
+      formAction(formData)
+    })
+  })
+
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <Button onClick={() => setModalToOpen(null)} className="absolute top-2 right-2 w-10 h-10 bg-lamaSky">
-        <Image src="/close.svg" alt="close form" width={20} height={20} />
-      </Button>
-      <h1 className="text-xl font-semibold">
-        {type === "create"
-          ? "Create a new assignment"
-          : "Update Assignment Information"}
-      </h1>
-
-      <span className="text-xs text-gray-400 font-medium">
-        Assignment Information
-      </span>
-
       <div className="flex justify-between gap-4 flex-wrap">
         <InputField
-          label="Subject"
-          name="subject"
-          defaultValue={data?.subject}
+          label="Title"
+          name="title"
+          defaultValue={data?.title}
           register={register}
-          error={errors.subject}
-        />
-
-        <InputField
-          label="Class"
-          name="class"
-          defaultValue={data?.class}
-          register={register}
-          error={errors.class}
-        />
-
-        <InputField
-          label="Teacher"
-          name="teacher"
-          defaultValue={data?.teacher}
-          register={register}
-          error={errors.teacher}
+          error={errors.title}
         />
         <InputField
-          label="Date"
+          label="Start Date"
+          name="startDate"
+          type="datetime-local"
+          defaultValue={data?.startDate ? toDatetimeLocal(data?.startDate) : undefined}
+          register={register}
+          error={errors.startDate}
+        />
+        <InputField
+          label="Due Date"
           name="dueDate"
-          type="date"
-          defaultValue={data?.dueDate}
+          type="datetime-local"
+          defaultValue={data?.dueDate ? toDatetimeLocal(data?.dueDate) : undefined}
           register={register}
           error={errors.dueDate}
         />
+
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <label htmlFor="gradeId" className="text-xs text-gray-500">
+            Lesson
+          </label>
+          <select
+            {...register("lessonId")}
+            id="lessonId"
+            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            defaultValue={data?.lessonId}
+          >
+            {lessons.map((lesson: { id: number; name: string }) => (
+              <option key={lesson.id} value={lesson.id} className="py-1">
+                {lesson.name}
+              </option>
+            ))}
+          </select>
+          {errors.lessonId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.lessonId.message.toString()}
+            </p>
+          )}
+        </div>
       </div>
 
-      <Button
+      {state.error && <span className="text-red-500">Something went wrong</span>}
+      <button
         type="submit"
-        disabled={!isDirty}
+        disabled={pending}
         className="form-submit_btn"
       >
-        {type}
-      </Button>
+        {!pending ? type : <Loader2 className="animate-spin text-lamaYellow" />}
+      </button>
     </form>
   );
 };

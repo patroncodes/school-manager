@@ -4,6 +4,7 @@ import Table from "@/components/Table";
 import { subjectsColumn } from "@/components/tables/subjectsColumn";
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/serverUtils";
+import { ITEMS_PER_PAGE } from "@/lib/settings";
 import { SearchParams } from "@/types";
 import { Prisma } from "@prisma/client";
 
@@ -31,10 +32,15 @@ const SubjectsListPage = async ({ searchParams }: SearchParams) => {
   }
   const [data, count] = await prisma.$transaction([
     prisma.subject.findMany({
+      orderBy: {
+        name: 'asc'
+      },
       where: query,
       include: {
         teachers: true,
       },
+      take: ITEMS_PER_PAGE,
+      skip: ITEMS_PER_PAGE * (p - 1)
     }),
 
     prisma.subject.count({ where: query })

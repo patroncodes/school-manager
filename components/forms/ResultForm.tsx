@@ -3,88 +3,90 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { StudentFormProps } from "../../..";
 import InputField from "../InputField";
-import { Result } from '@/types'
-import { resultSchema } from "@/lib/validation";
-import { useModalContext } from "@/context/ModalContext";
-import { Button } from "../ui/button";
-import Image from "next/image";
-import { Form } from "../ui/form";
 
-const ResultForm = ({ type, data }: { type: 'create' | 'update'; data: Result }) => {
-  const { setModalToOpen } = useModalContext()
+const schema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must be up to 3 characters")
+    .max(20, "Username must be at most 20 characters"),
+  subject: z.string().min(2, { message: "Lesson Name is required" }),
+  class: z.string().min(2, { message: "Class is required" }),
+  teacher: z.string().min(5, { message: "Teacher is required" }),
+  student: z.string().min(5, { message: "Student is required" }),
+  type: z.string().optional(),
+  score: z.number({ message: "Score is required" }),
+  date: z.date({ message: "Assignment Date is required" }),
+});
 
-  const form = useForm<z.infer<typeof resultSchema>>({
-    resolver: zodResolver(resultSchema),
+const ResultForm = ({ type, data }: StudentFormProps) => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: data,
   });
-
-  const { register, handleSubmit, formState: { errors, isDirty } } = form
 
   const onSubmit = handleSubmit((data) => {
     console.log(data);
   });
 
   return (
-    <Form {...form}>
-      <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-        <Button onClick={() => setModalToOpen(null)} className="absolute top-2 right-2 w-10 h-10 bg-lamaSky">
-          <Image src="/close.svg" alt="close form" width={20} height={20} />
-        </Button>
+    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+      <h1 className="text-xl font-semibold">
+        {type === "create"
+          ? "Create a new result"
+          : "Update Result Information"}
+      </h1>
 
-        <h1 className="text-xl font-semibold">
-          {type === "create"
-            ? "Create a new result"
-            : "Update Result Information"}
-        </h1>
+      <span className="text-xs text-gray-400 font-medium">
+        Result Information
+      </span>
 
-        <span className="text-xs text-gray-400 font-medium">
-          Result Information
-        </span>
+      <div className="flex justify-between gap-4 flex-wrap">
+        <InputField
+          label="Subject"
+          name="subject"
+          defaultValue={data?.subject}
+          register={register}
+          error={errors.subject}
+        />
 
-        <div className="flex justify-between gap-4 flex-wrap">
-          <InputField
-            label="Subject"
-            name="subject"
-            defaultValue={data?.subject}
-            register={register}
-            error={errors.subject}
-          />
+        <InputField
+          label="Class"
+          name="class"
+          defaultValue={data?.class}
+          register={register}
+          error={errors.class}
+        />
 
-          <InputField
-            label="Class"
-            name="class"
-            defaultValue={data?.class}
-            register={register}
-            error={errors.class}
-          />
+        <InputField
+          label="Teacher"
+          name="teacher"
+          defaultValue={data?.teacher}
+          register={register}
+          error={errors.teacher}
+        />
+        <InputField
+          label="Date"
+          name="date"
+          type="date"
+          defaultValue={data?.date}
+          register={register}
+          error={errors.date}
+        />
+      </div>
 
-          <InputField
-            label="Teacher"
-            name="teacher"
-            defaultValue={data?.teacher}
-            register={register}
-            error={errors.teacher}
-          />
-          <InputField
-            label="Date"
-            name="date"
-            type="date"
-            defaultValue={data?.date}
-            register={register}
-            error={errors.date}
-          />
-        </div>
-
-        <Button
-          type="submit"
-          disabled={!isDirty}
-          className="form-submit_btn"
-        >
-          {type}
-        </Button>
-      </form>
-    </Form>
+      <button
+        type="submit"
+        className="bg-blue-400 text-white p-4 rounded-md capitalize"
+      >
+        {type}
+      </button>
+    </form>
   );
 };
 

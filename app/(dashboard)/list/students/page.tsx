@@ -47,6 +47,9 @@ const StudentsListPage = async ({ searchParams }: SearchParams) => {
       include: {
         class: true,
       },
+      orderBy: {
+        createdAt: 'desc'
+      },
       take: ITEMS_PER_PAGE,
       skip: ITEMS_PER_PAGE * (p - 1),
     }),

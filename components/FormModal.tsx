@@ -1,29 +1,28 @@
 "use client";
 
-import { useModalContext } from "@/context/ModalContext";
-import { FormModalProps } from "@/types";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle
+} from "@/components/ui/alert-dialog";
+import { FormContainerProps } from "@/types";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React from "react";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./ui/alert-dialog";
+import React, { Dispatch, SetStateAction, useState } from "react";
+import DeleteModal from "./DeleteModal";
 
-// This approach is used if you want to make your client components dynamic || lazing loading. This will help with optimization
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const ParentForm = dynamic(() => import("./forms/ParentForm"), {
-  loading: () => <h1>Loading...</h1>,
-});
-const ClassForm = dynamic(() => import("./forms/ClassForm"), {
-  loading: () => <h1>Loading...</h1>,
-});
 const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const LessonForm = dynamic(() => import("./forms/LessonForm"), {
+const ClassForm = dynamic(() => import("./forms/ClassForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ExamForm = dynamic(() => import("./forms/ExamForm"), {
@@ -32,27 +31,72 @@ const ExamForm = dynamic(() => import("./forms/ExamForm"), {
 const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const ResultForm = dynamic(() => import("./forms/ResultForm"), {
-  loading: () => <h1>Loading...</h1>,
-});
 
 const forms: {
-  [key: string]: (type: "create" | "update", data?: any) => React.JSX.Element;
+  [key: string]: (
+    setOpen: Dispatch<SetStateAction<boolean>>,
+    type: "create" | "update",
+    data?: any,
+    relatedData?: any
+  ) => React.JSX.Element;
 } = {
-  teacher: (type, data) => <TeacherForm type={type} data={data} />,
-  student: (type, data) => <StudentForm type={type} data={data} />,
-  parent: (type, data) => <ParentForm type={type} data={data} />,
-  class: (type, data) => <ClassForm type={type} data={data} />,
-  subject: (type, data) => <SubjectForm type={type} data={data} />,
-  lesson: (type, data) => <LessonForm type={type} data={data} />,
-  exam: (type, data) => <ExamForm type={type} data={data} />,
-  assignment: (type, data) => <AssignmentForm type={type} data={data} />,
-  result: (type, data) => <ResultForm type={type} data={data} />,
+  subject: (setOpen, type, data, relatedData) => (
+    <SubjectForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  class: (setOpen, type, data, relatedData) => (
+    <ClassForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  teacher: (setOpen, type, data, relatedData) => (
+    <TeacherForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  student: (setOpen, type, data, relatedData) => (
+    <StudentForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  exam: (setOpen, type, data, relatedData) => (
+    <ExamForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  assignment: (setOpen, type, data, relatedData) => (
+    <AssignmentForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
 };
 
-const FormModal = ({ table, type, data, id }: FormModalProps) => {
-  const { modalToOpen, setModalToOpen } = useModalContext()
-
+const FormModal = ({
+  table,
+  type,
+  data,
+  id,
+  relatedData,
+}: FormContainerProps & { relatedData?: any }) => {
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
     type === "create"
@@ -61,60 +105,39 @@ const FormModal = ({ table, type, data, id }: FormModalProps) => {
         ? "bg-lamaSky"
         : "bg-lamaPurple";
 
-  const Form = () => {
-    return modalToOpen?.type === "delete" ? (
-      <div className="flex flex-col gap-4">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="capitalize text-center font-semibold text-xl text-gray-700">
-            {type} {table}
-          </AlertDialogTitle>
-
-          <AlertDialogDescription className="font-medium">
-            All data will be removed permanently. Are you sure you want to delete this {table}
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
-      </div>
-    ) : type === "create" || type === "update" ? (
-      forms[table](type, data)
-    ) : (
-      "Form Not Found"
-    );
-  };
+  const [open, setOpen] = useState(false);
 
   return (
     <>
       <button
-        className="cursor-pointer"
-        onClick={() => setModalToOpen({
-          type: type as typeof type,
-          id: id?.toString()
-        })}
+        className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
+        onClick={() => setOpen(true)}
       >
-        <div className={`${size} flex-center rounded-full ${bgColor}`}>
-          <Image src={`/${type}.svg`} alt={type} width={16} height={16} />
-        </div>
+        <Image src={`/${type}.svg`} alt="" width={16} height={16} />
       </button>
+      {open && type === 'delete' && id && (
+        <DeleteModal id={id} open={open} setOpen={setOpen} table={table} />
+      )}
 
-      {!!modalToOpen && (modalToOpen.id === id) && (
-        <AlertDialog
-          open={!!modalToOpen?.type}
-          onOpenChange={() => {
-            if (modalToOpen.type === type) {
-              setModalToOpen(null)
-            } else {
-              setModalToOpen({ type, id })
-            }
-          }}>
-          <AlertDialogContent>
-            <AlertDialogTitle className="hidden">Subject Information</AlertDialogTitle>
-            <Form />
+      {open && (type === 'create' || type === 'update') && (
+        <AlertDialog open={open} onOpenChange={setOpen}>
+          <AlertDialogContent className="max-h-[90vh] sm:w-[75vw] overflow-y-scroll custom-scrollbar">
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {type === 'create' ? `Create a new ${table}` : `Update ${table} information`}
+              </AlertDialogTitle>
+              <AlertDialogDescription>Fill out the form below</AlertDialogDescription>
+            </AlertDialogHeader>
+            {forms[table](setOpen, type, data, relatedData)}
+
+            <div
+              className="absolute top-4 right-4 cursor-pointer"
+              onClick={() => setOpen(false)}
+            >
+              <Image src="/close.svg" alt="" width={14} height={14} />
+            </div>
           </AlertDialogContent>
         </AlertDialog>
-
       )}
     </>
   );

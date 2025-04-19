@@ -1,6 +1,6 @@
 import { UserRole } from "@/types"
-import FormModal from "../FormModal"
 import { Class, Teacher } from "@prisma/client"
+import FormContainer from "../FormContainer"
 
 type ClassesList = Class & { supervisor: Teacher | null }
 
@@ -8,24 +8,22 @@ export const classesColumn = (role: UserRole) => [
     {
         accessor: "name",
         header: "Class",
-        cell: (item: ClassesList) => <div className="py-4 px-2">{item.name}</div>
+        cell: (item: ClassesList) => <span>{item.name}</span>
     },
     {
         accessor: "capacity",
         header: "Capacity",
-        cell: (item: ClassesList) => <div className="py-4 px-2">{item.capacity}</div>
+        cell: (item: ClassesList) => <span>{item.capacity}</span>
     },
     {
         accessor: "grade",
         header: "Grade",
-        className: "hidden md:table-cell",
-        cell: (item: ClassesList) => <div className="hidden md:table-cell py-4 px-2">{item.name[0]}</div>
+        cell: (item: ClassesList) => <span>{item.name[0]}</span>
     },
     {
         accessor: "supervisor",
         header: "Supervisor",
-        className: "hidden md:table-cell",
-        cell: (item: ClassesList) => <div className="py-4 px-2">{item?.supervisor?.name} {item?.supervisor?.surname}</div>
+        cell: (item: ClassesList) => <span>{item?.supervisor?.name} {item?.supervisor?.surname}</span>
     },
     ...(role === "admin"
         ? [
@@ -35,8 +33,8 @@ export const classesColumn = (role: UserRole) => [
                 cell: (item: ClassesList) => (
                     <div>
                         <div className="flex items-center gap-2">
-                            <FormModal table="class" type="update" data={item} />
-                            <FormModal table="class" type="delete" id={item.id} />
+                            <FormContainer table="class" type="update" data={item} />
+                            <FormContainer table="class" type="delete" id={item.id} />
                         </div>
                     </div>
                 )

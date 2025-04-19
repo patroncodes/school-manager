@@ -1,6 +1,6 @@
 import { UserRole } from "@/types";
-import FormModal from "../FormModal";
 import { Assignment, Class, Subject, Teacher } from "@prisma/client";
+import FormContainer from "../FormContainer";
 
 type AssignmentsList = Assignment & {
     lesson: {
@@ -39,8 +39,8 @@ export const assignmentsColumn = (role: UserRole) => [
                 cell: (item: AssignmentsList) => (
                     <div>
                         <div className="flex items-center gap-2">
-                            <FormModal table="assignment" type="update" data={item} />
-                            <FormModal table="assignment" type="delete" id={item.id} />
+                            <FormContainer table="assignment" type="update" data={item} />
+                            <FormContainer table="assignment" type="delete" id={item.id} />
                         </div>
                     </div>
                 )

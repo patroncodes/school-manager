@@ -1,8 +1,8 @@
+import { UserRole } from "@/types";
+import { Class, Student } from "@prisma/client";
 import Image from "next/image";
 import Link from "next/link";
-import FormModal from "../FormModal";
-import { Class, Student } from "@prisma/client";
-import { UserRole } from "@/types";
+import FormContainer from "../FormContainer";
 
 type StudentsList = Student & { class: Class };
 
@@ -14,10 +14,10 @@ export const studentsColumn = (role: UserRole) => [
             <span className="flex items-center gap-4 p-4">
                 <Image
                     src={item.img || "/noAvatar.png"}
-                    alt=""
+                    alt="student"
                     width={40}
                     height={40}
-                    className="md:hidden xl:block w-10 h-10 rounded-full object-cover"
+                    className="w-10 h-10 rounded-full"
                 />
                 <div className="flex flex-col">
                     <h3 className="font-semibold">{item.name + " " + item.surname}</h3>
@@ -29,30 +29,22 @@ export const studentsColumn = (role: UserRole) => [
     {
         header: "Student ID",
         accessor: "studentId",
-        cell: (item: StudentsList) => (
-            <span className="hidden md:table-cell">{item.username}</span>
-        )
+        cell: (item: StudentsList) => <span>{item.username}</span>
     },
     {
         header: "Grade",
         accessor: "grade",
-        cell: (item: StudentsList) => (
-            <span>{item.class.name[0]}</span>
-        )
+        cell: (item: StudentsList) => <span>{item.class.name[0]}</span>
     },
     {
         header: "Phone",
         accessor: "phone",
-        cell: (item: StudentsList) => (
-            <span className="hidden md:table-cell">{item.phone}</span>
-        )
+        cell: (item: StudentsList) => <span>{item.phone}</span>
     },
     {
         header: "Address",
         accessor: "address",
-        cell: (item: StudentsList) => (
-            <span className="hidden md:table-cell">{item.address}</span>
-        )
+        cell: (item: StudentsList) => <span>{item.address}</span>
     },
     ...(role === "admin"
         ? [
@@ -64,10 +56,10 @@ export const studentsColumn = (role: UserRole) => [
                         <div className="flex items-center gap-2">
                             <Link href={`/list/students/${item.id}`}>
                                 <button className="w-7 h-7 flex items-center justify-center rounded-full bg-lamaSky">
-                                    <Image src="/view.png" alt="" width={16} height={16} />
+                                    <Image src="/view.svg" alt="view" width={16} height={16} />
                                 </button>
                             </Link>
-                            <FormModal table="student" type="delete" id={item.id} />
+                            <FormContainer table="student" type="delete" id={item.id} />
                         </div>
                     </div>
                 )

@@ -79,6 +79,15 @@ async function main() {
 
   // LESSON
   for (let i = 1; i <= 30; i++) {
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const startTime = new Date(tomorrow);
+    startTime.setHours(new Date().getHours() + 1, 0, 0, 0);
+
+    const endTime = new Date(tomorrow);
+    endTime.setHours(new Date().getHours() + 3, 0, 0, 0);
+
     await prisma.lesson.create({
       data: {
         name: `Lesson${i}`,
@@ -87,8 +96,8 @@ async function main() {
             Math.floor(Math.random() * Object.keys(Day).length)
           ] as keyof typeof Day
         ],
-        startTime: new Date(new Date().setHours(new Date().getHours() + 1)),
-        endTime: new Date(new Date().setHours(new Date().getHours() + 3)),
+        startTime,
+        endTime,
         subjectId: (i % 10) + 1,
         classId: (i % 6) + 1,
         teacherId: `teacher${(i % 15) + 1}`,

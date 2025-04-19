@@ -112,3 +112,5 @@ export const menuItems = [
     ],
   },
 ];
+
+export const bloodTypes = ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"];

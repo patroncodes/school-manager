@@ -1,9 +1,12 @@
+import React, { ReactNode, SetStateAction } from "react";
 import { FieldError } from "react-hook-form";
 
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string }>;
-  params: string;
+  params: Promise<{ [key: string]: string }>;
 };
+
+type CurrentState = { success: boolean; error: boolean | string };
 
 type Table =
   | "teacher"
@@ -26,11 +29,18 @@ enum Sex {
   FEMALE = "female",
 }
 
-declare type FormModalProps = {
+declare type FormContainerProps = {
   table: Table;
   type: "create" | "update" | "delete";
   data?: any;
   id?: number | string;
+};
+
+declare type FormProps = {
+  type: "create" | "update";
+  data: any;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  relatedData: any;
 };
 
 declare type InputFieldProps = {
@@ -41,4 +51,13 @@ declare type InputFieldProps = {
   defaultValue?: Date | string | number;
   error?: FieldError;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+};
+
+declare type SelectFieldProps = {
+  label: string;
+  selectOptions: () => ReactNode;
+  selectedItem: string;
+  setSelectedItem: Dispatch<SetStateAction<string>>;
+  error?: FieldError;
+  selectProps?: React.SelectHTMLAttributes<HTMLSelectElement>;
 };

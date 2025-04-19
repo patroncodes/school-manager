@@ -36,6 +36,9 @@ const ClassesListPage = async ({ searchParams }: SearchParams) => {
 
   const [data, count] = await prisma.$transaction([
     prisma.class.findMany({
+      orderBy: {
+        name: 'asc'
+      },
       where: query,
       include: {
         supervisor: true

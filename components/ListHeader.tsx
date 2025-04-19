@@ -1,8 +1,8 @@
-import TableSearch from './TableSearch'
-import Image from 'next/image'
-import FormModal from './FormModal'
-import { Table, UserRole } from '@/types';
 import { listCreationAccess } from '@/lib/settings';
+import { Table, UserRole } from '@/types';
+import Image from 'next/image';
+import FormContainer from './FormContainer';
+import TableSearch from './TableSearch';
 
 const ListHeader = ({ role, table, title }: { role: UserRole; table: Table; title: string }) => {
     return (
@@ -18,7 +18,7 @@ const ListHeader = ({ role, table, title }: { role: UserRole; table: Table; titl
                         <Image src="/sort.svg" alt="" width={14} height={14} />
                     </button>
                     {listCreationAccess[role].includes(table) && (
-                        <FormModal table={table} type="create" />
+                        <FormContainer table={table} type="create" />
                     )}
                 </div>
             </div>

@@ -1,48 +1,56 @@
 import Announcements from "@/components/Announcements";
-import BigCalendar from "@/components/BigCalendar";
-import PerformanceChart from "@/components/PerformanceChart";
+import BigCalendarContainer from "@/components/BigCalendarContainer";
 import { InfoCard, SmallCard } from "@/components/Card";
+import PerformanceChart from "@/components/PerformanceChart";
+import prisma from "@/lib/prisma";
+import { SearchParams } from "@/types";
+import { Teacher } from "@prisma/client";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
-const smallCards = [
-  {
-    value: "90%",
-    desc: "Attendance",
-    img: "/singleAttendance.svg",
-  },
-  {
-    value: "2",
-    desc: "Branches",
-    img: "/singleBranch.svg",
-  },
-  {
-    value: "4%",
-    desc: "Lessons",
-    img: "/singleLesson.svg",
-  },
-  {
-    value: "6%",
-    desc: "Classes",
-    img: "/singleClass.svg",
-  },
-];
+const SingleTeacherPage = async ({ params }: SearchParams) => {
+  const { id } = await params
 
-const data = {
-  id: 1,
-  username: "deanguerrero",
-  email: "deanguerrero@gmail.com",
-  password: "password",
-  firstName: "Dean",
-  lastName: "Guerrero",
-  phone: "+1 234 567 890",
-  address: "1234 Main St, Anytown, USA",
-  bloodType: "A+",
-  birthday: "2000-01-01",
-  sex: "male",
-  img: "https://images.pexels.com/photos/936126/pexels-photo-936126.jpeg?auto=compress&cs=tinysrgb&w=1200",
-};
+  const teacher: (Teacher & { _count: { subjects: number; lessons: number, classes: number } }) | null = await prisma.teacher.findUnique({
+    where: {
+      id
+    },
+    include: {
+      _count: {
+        select: {
+          subjects: true,
+          lessons: true,
+          classes: true
+        }
+      }
+    }
+  })
 
-const SingleTeacherPage = () => {
+  if (!teacher) return notFound()
+
+  const smallCards = [
+    {
+      value: "90%",
+      desc: "Attendance",
+      img: "/singleAttendance.svg",
+    },
+    {
+      value: `${teacher._count.subjects}`,
+      desc: "Subjects",
+      img: "/singleBranch.svg",
+    },
+    {
+      value: `${teacher._count.lessons}`,
+      desc: "Lessons",
+      img: "/singleLesson.svg",
+    },
+    {
+      value: `${teacher._count.classes}`,
+      desc: "Classes",
+      img: "/singleClass.svg",
+    },
+  ];
+
   return (
     <div className="flex-1 p-4 flex flex-col xl:flex-row gap-4">
       {/* LEFT */}
@@ -51,8 +59,7 @@ const SingleTeacherPage = () => {
         <div className="flex flex-col lg:flex-row gap-4">
           <InfoCard
             table="teacher"
-            description="Lorem ipsum dolor sit amet consectetur adipisicing elit."
-            data={data}
+            data={teacher}
           />
           <SmallCard cards={smallCards} />
         </div>
@@ -60,7 +67,7 @@ const SingleTeacherPage = () => {
         {/* BOTTOM */}
         <div className="mt-4 bg-white rounded-md p-4 h-[800px]">
           <h2 className="text-lg font-semibold">Teacher&apos;s Schedule</h2>
-          <BigCalendar />
+          <BigCalendarContainer type="teacherId" id={id} />
         </div>
       </div>
 
@@ -69,19 +76,19 @@ const SingleTeacherPage = () => {
         <div className="bg-white p-4 rounded-md">
           <h2 className="text-lg font-semibold">Shortcuts</h2>
           <div className="mt-4 flex gap-4 flex-wrap text-xs text-gray-500">
-            <Link className="p-3 rounded-md bg-lamaSkyLight" href={`/list/classes?supervisorId=${'teacher12'}`}>
+            <Link className="p-3 rounded-md bg-lamaSkyLight" href={`/list/classes?supervisorId=${id}`}>
               Teacher&apos;s Classes
             </Link>
-            <Link className="p-3 rounded-md bg-lamaPurpleLight" href={`/list/students?teacherId=${'teacher2'}`}>
+            <Link className="p-3 rounded-md bg-lamaPurpleLight" href={`/list/students?teacherId=${id}`}>
               Teacher&apos;s Students
             </Link>
-            <Link className="p-3 rounded-md bg-lamaYellowLight" href={`/list/lessons?teacherId=${'teacher12'}`}>
+            <Link className="p-3 rounded-md bg-lamaYellowLight" href={`/list/lessons?teacherId=${id}`}>
               Teacher&apos;s Lessons
             </Link>
-            <Link className="p-3 rounded-md bg-pink-50" href={`/list/exams?teacherId=${'teacher12'}`}>
+            <Link className="p-3 rounded-md bg-pink-50" href={`/list/exams?teacherId=${id}`}>
               Teacher&apos;s Exams
             </Link>
-            <Link className="p-3 rounded-md bg-lamaSkyLight" href={`/list/assignments?teacherId=${'teacher12'}`}>
+            <Link className="p-3 rounded-md bg-lamaSkyLight" href={`/list/assignments?teacherId=${id}`}>
               Teacher&apos;s Assignments
             </Link>
           </div>
@@ -89,7 +96,7 @@ const SingleTeacherPage = () => {
 
         <PerformanceChart />
 
-        <Announcements />
+        <Announcements role="teacher" userId={id} />
       </div>
     </div>
   );

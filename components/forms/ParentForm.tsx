@@ -3,22 +3,34 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { StudentFormProps } from "../../..";
 import InputField from "../InputField";
-import { Parent } from "@prisma/client";
-import { parentSchema } from "@/lib/validation";
-import { Button } from "../ui/button";
 import Image from "next/image";
-import { useModalContext } from "@/context/ModalContext";
 
-const ParentForm = ({ type, data }: { type: 'create' | 'update'; data?: Parent }) => {
-  const { setModalToOpen } = useModalContext()
+const schema = z.object({
+  username: z
+    .string()
+    .min(3, "Username must be up to 3 characters")
+    .max(20, "Username must be at most 20 characters"),
+  email: z.string().email(),
+  password: z.string().min(8, "Password must be at least 8 characters long"),
+  firstName: z.string().min(1, { message: "First Name is required" }),
+  lastName: z.string().min(1, { message: "Last Name is required" }),
+  phone: z.string().min(11, { message: "Phone is required" }),
+  address: z.string().min(10, { message: "Address is required" }),
+  bloodType: z.string().min(1, { message: "Blood Type is required" }),
+  birthday: z.date({ message: "Birthday is required" }),
+  sex: z.enum(["male", "female"], { message: "Sex is required" }),
+  img: z.instanceof(File, { message: "Image is required" }),
+});
 
+const ParentForm = ({ type, data }: StudentFormProps) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<z.infer<typeof parentSchema>>({
-    resolver: zodResolver(parentSchema),
+  } = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: data,
   });
 
@@ -28,9 +40,6 @@ const ParentForm = ({ type, data }: { type: 'create' | 'update'; data?: Parent }
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <Button onClick={() => setModalToOpen(null)} className="absolute top-2 right-2 w-10 h-10 bg-lamaSky">
-        <Image src="/close.svg" alt="close form" width={20} height={20} />
-      </Button>
       <h1 className="text-xl font-semibold">
         {type === "create"
           ? "Create a new parent"
@@ -52,7 +61,7 @@ const ParentForm = ({ type, data }: { type: 'create' | 'update'; data?: Parent }
           label="Email"
           name="email"
           type="email"
-          defaultValue={data?.email || ""}
+          defaultValue={data?.email}
           register={register}
           error={errors.email}
         />
@@ -60,7 +69,7 @@ const ParentForm = ({ type, data }: { type: 'create' | 'update'; data?: Parent }
           label="Password"
           name="password"
           type="password"
-          defaultValue={''}
+          defaultValue={data?.password}
           register={register}
           error={errors.password}
         />
@@ -73,17 +82,17 @@ const ParentForm = ({ type, data }: { type: 'create' | 'update'; data?: Parent }
       <div className="flex justify-between gap-4 flex-wrap">
         <InputField
           label="First Name"
-          name="name"
-          defaultValue={data?.name}
+          name="firstName"
+          defaultValue={data?.firstName}
           register={register}
-          error={errors.name}
+          error={errors.firstName}
         />
         <InputField
-          label="Surname"
-          name="surname"
-          defaultValue={data?.surname}
+          label="Last Name"
+          name="lastName"
+          defaultValue={data?.lastName}
           register={register}
-          error={errors.surname}
+          error={errors.lastName}
         />
         <InputField
           label="Phone"
@@ -99,9 +108,24 @@ const ParentForm = ({ type, data }: { type: 'create' | 'update'; data?: Parent }
           register={register}
           error={errors.address}
         />
+        <InputField
+          label="Blood Type"
+          name="bloodType"
+          defaultValue={data?.bloodType}
+          register={register}
+          error={errors.bloodType}
+        />
+        <InputField
+          label="Date of Birth"
+          name="birthday"
+          type="date"
+          defaultValue={data?.birthday}
+          register={register}
+          error={errors.birthday}
+        />
 
         {/* SEX */}
-        {/* <div className="flex flex-col gap-2 w-full md:w-1/4">
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label htmlFor="sex" className="text-xs text-gray-500">
             Sex
           </label>
@@ -119,12 +143,12 @@ const ParentForm = ({ type, data }: { type: 'create' | 'update'; data?: Parent }
               {errors.sex.message.toString()}
             </p>
           )}
-        </div> */}
+        </div>
       </div>
 
       <button
         type="submit"
-        className="form-submit_btn rounded-md capitalize"
+        className="bg-blue-400 text-white p-4 rounded-md capitalize"
       >
         {type}
       </button>

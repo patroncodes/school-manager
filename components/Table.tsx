@@ -45,7 +45,7 @@ const Table = ({
                         data.map((item, rowIndex) => (
                             <tr key={rowIndex} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight h-16">
                                 {cols.map((col) => (
-                                    <td key={col.accessor} className={cn("px-4 border-r border-gray-200 min-w-32", col.className)}>
+                                    <td key={col.accessor} className={cn("px-4 min-w-32", col.className)}>
                                         {col.cell(item)}
                                     </td>
                                 ))}

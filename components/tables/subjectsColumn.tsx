@@ -1,6 +1,6 @@
 import { UserRole } from "@/types"
-import FormModal from "../FormModal"
 import { Subject, Teacher } from "@prisma/client"
+import FormContainer from "../FormContainer"
 
 type SubjectsList = Subject & { teachers: Teacher[] }
 
@@ -8,12 +8,12 @@ export const subjectsColumn = (role: UserRole) => [
     {
         accessor: "name",
         header: 'Subject',
-        cell: (item: SubjectsList) => <div className="flex items-center p-2">{item.name}</div>
+        cell: (item: SubjectsList) => <span>{item.name}</span>
     },
     {
         accessor: "teachers",
         header: "Teachers",
-        cell: (item: SubjectsList) => <div>{item.teachers.map(teacher => teacher.name).join(',')}</div>
+        cell: (item: SubjectsList) => <span>{item.teachers.map(teacher => teacher.name).join(',')}</span>
     },
     ...(role === "admin"
         ? [
@@ -23,8 +23,8 @@ export const subjectsColumn = (role: UserRole) => [
                 cell: (item: SubjectsList) => (
                     <div>
                         <div className="flex items-center gap-2">
-                            <FormModal table="subject" type="update" data={item} />
-                            <FormModal table="subject" type="delete" id={item?.id} />
+                            <FormContainer table="subject" type="update" data={item} />
+                            <FormContainer table="subject" type="delete" id={item?.id} />
                         </div>
                     </div>
                 )

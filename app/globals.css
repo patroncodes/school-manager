@@ -118,19 +118,9 @@
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
-/* backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
-      },
-      colors: {
-        lamaSky: "#C3EBFA",
-        lamaSkyLight: "#EDF9FD",
-        lamaPurple: "#CFCEFF",
-        lamaPurpleLight: "#F1F0FF",
-        lamaYellow: "#FAE27C",
-        lamaYellowLight: "#FEFCE8",
-      }, */
+* {
+  pointer-events: auto !important;
+}
 
 @layer base {
   * {
@@ -150,11 +140,15 @@
 }
 
 .table-actions {
-  @apply flex-center bg-primary h-6 w-6 rounded-full p-1.5;
+  @apply flex-center h-6 w-6 rounded-full bg-primary p-1.5;
 }
 
 .form-submit_btn {
-  @apply cursor-pointer rounded-md bg-blue-400 capitalize text-white;
+  @apply flex-center cursor-pointer rounded-md bg-blue-400 py-2 text-white capitalize;
+}
+
+.select-input {
+  @apply w-full rounded-md p-2 text-sm ring-[1.5px] ring-gray-300;
 }
 
 @layer utilities {
@@ -169,11 +163,12 @@
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: #edf9fd;
+    background: var(--color-blue-300);
     border-radius: 50px;
   }
 }
 
+/* ===REACT CALENDAR */
 .react-calendar {
   width: 100% !important;
   border: none !important;
@@ -190,7 +185,14 @@
 }
 
 .rbc-btn-group:first-child {
+  font-size: 13px !important;
   display: none !important;
+}
+
+.rbc-btn-group:first-child button {
+  border: none !important;
+  background-color: #f1f0ff !important;
+  margin-left: 2px !important;
 }
 
 .rbc-toolbar-label {
@@ -216,6 +218,10 @@
 
 .rbc-time-view {
   border-color: #eee !important;
+}
+
+.rbc-today {
+  background-color: transparent !important;
 }
 
 .rbc-time-header {
@@ -248,6 +254,7 @@
   padding: 10px !important;
   margin: 10px !important;
   width: 99% !important;
+  height: 5rem !important;
 }
 
 .rbc-event:nth-child(1) {
@@ -276,6 +283,6 @@
 }
 
 .rbc-event-label {
-  color: gray !important;
+  color: black !important;
   margin-bottom: 5px;
 }

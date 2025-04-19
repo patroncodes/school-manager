@@ -1,14 +1,12 @@
 import prisma from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/serverUtils";
+import { UserRole } from "@/types";
 import Link from "next/link";
 
-const Announcements = async () => {
-  const { role, currentUserId } = await getCurrentUser()
-
+const Announcements = async ({ role, userId }: { role: UserRole; userId: string }) => {
   const roleConditions = {
-    teacher: { lessons: { some: { teacherId: currentUserId! } } },
-    student: { students: { some: { id: currentUserId! } } },
-    parent: { students: { some: { parentId: currentUserId! } } },
+    teacher: { lessons: { some: { teacherId: userId! } } },
+    student: { students: { some: { id: userId! } } },
+    parent: { students: { some: { parentId: userId! } } },
   }
 
   const data = await prisma.announcement.findMany({

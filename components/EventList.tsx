@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma';
-import { formatTimeRange } from '@/lib/utils';
+import moment from 'moment';
 
 const EventList = async ({ dateParam }: { dateParam: string }) => {
     const date = dateParam ? new Date(dateParam) : new Date()
@@ -21,7 +21,7 @@ const EventList = async ({ dateParam }: { dateParam: string }) => {
                 >
                     <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-gray-900">{event.title}</h3>
-                        <span className="text-gray-600 text-xs">{formatTimeRange(event.startTime, event.endTime)}</span>
+                        <span className="text-gray-600 text-xs">{moment(event.startTime).format("h:mmA")} - ${moment(event.endTime).format("h:mmA")}</span>
                     </div>
                     <p className="mt-2 text-gray-700 text-sm">{event.description}</p>
                 </div>
