@@ -7,13 +7,13 @@ import {
     AlertDialogHeader,
     AlertDialogTitle
 } from "@/components/ui/alert-dialog";
-import { deleteAssignment, deleteClass, deleteExam, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/actions";
 import { Table } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
+import { deleteAssignment, deleteClass, deleteExam, deleteLesson, deleteParent, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/actions"
 
 type DeleteModalProps = {
     id: string | number
@@ -29,8 +29,8 @@ const deleteActionMap = {
     student: deleteStudent,
     exam: deleteExam,
     assignment: deleteAssignment,
-    parent: deleteSubject,
-    lesson: deleteSubject,
+    lesson: deleteLesson,
+    parent: deleteParent,
     result: deleteSubject,
     attendance: deleteSubject,
     event: deleteSubject,

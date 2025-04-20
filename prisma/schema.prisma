@@ -11,6 +11,8 @@ datasource db {
 model Admin {
   id String @id
   username String @unique
+  name String
+  surname String
 }
 
 model Student {
@@ -63,9 +65,12 @@ model Parent {
   email String? @unique
   phone String @unique
   address String
+  sex UserSex
   createdAt DateTime @default(now())
 
   students Student[]
+
+  @@index([name, surname])
 }
 
 model Grade {

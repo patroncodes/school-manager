@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/;
+const usernamePattern = /^[a-z0-9._]+$/;
 
 export const studentSchema = z.object({
   id: z.string().optional(),
@@ -9,7 +10,7 @@ export const studentSchema = z.object({
     .min(3, "Username must be up to 3 characters")
     .max(20, "Username must be at most 20 characters")
     .regex(
-      /^[a-z0-9._]+$/,
+      usernamePattern,
       "Username must contain only lowercase letters, numbers, dots, or underscores",
     ),
   name: z.string().min(1, { message: "First Name is required" }),
@@ -19,7 +20,7 @@ export const studentSchema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
-    .regex(passwordRegex, {
+    .regex(passwordPattern, {
       message:
         "Password must include uppercase, lowercase, number, and special character",
     })
@@ -44,7 +45,7 @@ export const teacherSchema = z.object({
     .min(3, "Username must be up to 3 characters")
     .max(20, "Username must be at most 20 characters")
     .regex(
-      /^[a-z0-9._]+$/,
+      usernamePattern,
       "Username must contain only lowercase letters, numbers, dots, or underscores",
     ),
   name: z.string().min(1, { message: "First Name is required" }),
@@ -54,7 +55,7 @@ export const teacherSchema = z.object({
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
-    .regex(passwordRegex, {
+    .regex(passwordPattern, {
       message:
         "Password must include uppercase, lowercase, number, and special character",
     })
@@ -118,11 +119,22 @@ export const assignmentSchema = z
 
 export type AssignmentSchema = z.infer<typeof assignmentSchema>;
 
-export const lessonSchema = z.object({
-  name: z.string().min(2, { message: "Lesson Name is required" }),
-  class: z.string().min(2, { message: "Class is required" }),
-  teacher: z.string().min(5, { message: "Teacher is required" }),
-});
+export const lessonSchema = z
+  .object({
+    id: z.coerce.number().optional(),
+    name: z.string().min(2, { message: "Lesson Name is required" }),
+    startTime: z.coerce.date({ message: "Start Time is required" }),
+    endTime: z.coerce.date({ message: "End Time is required" }),
+    teacherId: z.string(),
+    subjectId: z.coerce.number(),
+    classId: z.coerce.number(),
+  })
+  .refine((data) => data.endTime >= data.startTime, {
+    path: ["endTime"],
+    message: "End time cannot be before start time",
+  });
+
+export type LessonSchema = z.infer<typeof lessonSchema>;
 
 export const resultSchema = z.object({
   subject: z.string().min(2, { message: "Lesson Name is required" }),
@@ -135,14 +147,30 @@ export const resultSchema = z.object({
 });
 
 export const parentSchema = z.object({
+  id: z.string().optional(),
   username: z
     .string()
     .min(3, "Username must be up to 3 characters")
-    .max(20, "Username must be at most 20 characters"),
+    .max(20, "Username must be at most 20 characters")
+    .regex(
+      usernamePattern,
+      "Username must contain only lowercase letters, numbers, dots, or underscores",
+    ),
   name: z.string().min(1, { message: "First Name is required" }),
-  surname: z.string().min(1, { message: "Last Name is required" }),
-  email: z.string().email().nullable(),
+  surname: z.string().min(1, { message: "Surname is required" }),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
   phone: z.string().min(11, { message: "Phone is required" }),
-  address: z.string().min(10, { message: "Address is required" }),
-  password: z.string().min(8, "Password must be at least 8 characters long"),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(passwordPattern, {
+      message:
+        "Password must include uppercase, lowercase, number, and special character",
+    })
+    .optional()
+    .or(z.literal("")),
+  address: z.string(),
+  sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required" }),
 });
+
+export type ParentSchema = z.infer<typeof parentSchema>;

@@ -19,6 +19,11 @@ const SingleStudentPage = async ({ params }: SearchParams) => {
         lessons: number;
       };
     };
+    parent: {
+      id: string;
+      name: string;
+      surname: string;
+    } | null;
   } & Student) | null
     = await prisma.student.findUnique({
       where: {
@@ -27,7 +32,8 @@ const SingleStudentPage = async ({ params }: SearchParams) => {
       include: {
         class: {
           select: { id: true, name: true, _count: { select: { lessons: true } } }
-        }
+        },
+        parent: { select: { id: true, name: true, surname: true } },
       }
     })
 

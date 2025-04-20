@@ -1,17 +1,11 @@
 "use client";
 
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from "@/components/ui/alert-dialog";
 import { FormContainerProps } from "@/types";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { Dispatch, SetStateAction, useState } from "react";
 import DeleteModal from "./DeleteModal";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 
 const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
   loading: () => <h1>Loading...</h1>,
@@ -29,6 +23,12 @@ const ExamForm = dynamic(() => import("./forms/ExamForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const LessonForm = dynamic(() => import("./forms/LessonForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ParentForm = dynamic(() => import("./forms/ParentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 
@@ -88,6 +88,22 @@ const forms: {
       relatedData={relatedData}
     />
   ),
+  lesson: (setOpen, type, data, relatedData) => (
+    <LessonForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  parent: (setOpen, type, data, relatedData) => (
+    <ParentForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
 };
 
 const FormModal = ({
@@ -120,24 +136,17 @@ const FormModal = ({
       )}
 
       {open && (type === 'create' || type === 'update') && (
-        <AlertDialog open={open} onOpenChange={setOpen}>
-          <AlertDialogContent className="max-h-[90vh] sm:w-[75vw] overflow-y-scroll custom-scrollbar">
-            <AlertDialogHeader>
-              <AlertDialogTitle>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogContent className="max-h-[90vh] sm:w-[75vw] overflow-y-scroll custom-scrollbar">
+            <DialogHeader>
+              <DialogTitle>
                 {type === 'create' ? `Create a new ${table}` : `Update ${table} information`}
-              </AlertDialogTitle>
-              <AlertDialogDescription>Fill out the form below</AlertDialogDescription>
-            </AlertDialogHeader>
+              </DialogTitle>
+              <DialogDescription>Fill out the form below</DialogDescription>
+            </DialogHeader>
             {forms[table](setOpen, type, data, relatedData)}
-
-            <div
-              className="absolute top-4 right-4 cursor-pointer"
-              onClick={() => setOpen(false)}
-            >
-              <Image src="/close.svg" alt="" width={14} height={14} />
-            </div>
-          </AlertDialogContent>
-        </AlertDialog>
+          </DialogContent>
+        </Dialog>
       )}
     </>
   );

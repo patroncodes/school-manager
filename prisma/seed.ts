@@ -8,12 +8,16 @@ async function main() {
     data: {
       id: "admin1",
       username: "admin1",
+      name: "Admin",
+      surname: "One",
     },
   });
   await prisma.admin.create({
     data: {
       id: "admin2",
       username: "admin2",
+      name: "Admin",
+      surname: "Two",
     },
   });
 
@@ -116,6 +120,7 @@ async function main() {
         email: `parent${i}@example.com`,
         phone: `123-456-789${i}`,
         address: `Address${i}`,
+        sex: i % 2 === 0 ? UserSex.MALE : UserSex.FEMALE,
       },
     });
   }

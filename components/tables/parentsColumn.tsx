@@ -1,6 +1,6 @@
 import { UserRole } from "@/types"
-import FormModal from "../FormModal"
 import { Parent, Student } from "@prisma/client"
+import FormContainer from "../FormContainer"
 
 type ParentsList = Parent & { students: Student[] }
 
@@ -42,8 +42,8 @@ export const parentsColumn = (role: UserRole) => [
                 cell: (item: ParentsList) => (
                     <div>
                         <div className="flex items-center gap-2">
-                            <FormModal table="parent" type="update" data={item} />
-                            <FormModal table="parent" type="delete" id={item.id} />
+                            <FormContainer table="parent" type="update" data={item} />
+                            <FormContainer table="parent" type="delete" id={item.id} />
                         </div>
                     </div>
                 )

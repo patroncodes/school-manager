@@ -10,6 +10,7 @@ export const studentsColumn = (role: UserRole) => [
     {
         header: "Info",
         accessor: "info",
+        className: 'min-w-56',
         cell: (item: StudentsList) => (
             <span className="flex items-center gap-4 p-4">
                 <Image
@@ -29,21 +30,25 @@ export const studentsColumn = (role: UserRole) => [
     {
         header: "Student ID",
         accessor: "studentId",
+        className: 'min-w-56',
         cell: (item: StudentsList) => <span>{item.username}</span>
     },
     {
         header: "Grade",
         accessor: "grade",
+        className: 'min-w-56',
         cell: (item: StudentsList) => <span>{item.class.name[0]}</span>
     },
     {
         header: "Phone",
         accessor: "phone",
+        className: 'min-w-56',
         cell: (item: StudentsList) => <span>{item.phone}</span>
     },
     {
         header: "Address",
         accessor: "address",
+        className: 'min-w-56',
         cell: (item: StudentsList) => <span>{item.address}</span>
     },
     ...(role === "admin"

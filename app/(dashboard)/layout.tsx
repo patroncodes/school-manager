@@ -1,10 +1,9 @@
 import Menu from "@/components/Menu";
-import Navbar, { NavbarSkeleton } from "@/components/Navbar";
+import Navbar from "@/components/Navbar";
 import { getCurrentUser } from "@/lib/serverUtils";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Suspense } from "react";
 
 export default async function DashboardLayout({
   children,
@@ -34,9 +33,7 @@ export default async function DashboardLayout({
 
       {/* RIGHT */}
       <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] flex flex-col overflow-x-hidden">
-        <Suspense fallback={<NavbarSkeleton />}>
-          <Navbar role={role} userId={currentUserId} />
-        </Suspense>
+        <Navbar role={role} userId={currentUserId} />
 
         {children}
       </div>

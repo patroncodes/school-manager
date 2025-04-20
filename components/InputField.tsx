@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { InputFieldProps } from "@/types";
 
 const InputField = ({
@@ -6,11 +7,12 @@ const InputField = ({
   register,
   name,
   defaultValue,
+  containerClassName,
   error,
   inputProps
 }: InputFieldProps) => {
   return (
-    <div className="flex flex-col gap-2 w-full md:w-1/4">
+    <div className={cn("flex flex-col gap-2 w-full md:w-1/4", containerClassName)}>
       <label htmlFor={name} className="text-sm text-gray-700">
         {label}
       </label>

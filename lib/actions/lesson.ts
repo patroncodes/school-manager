@@ -1,36 +1,27 @@
 "use server";
 
 import { handleServerErrors } from "@/lib/utils";
-import { AssignmentSchema } from "@/lib/validation";
+import { LessonSchema } from "@/lib/validation";
 import { CurrentState } from "@/types";
-import { getCurrentUser } from "../serverUtils";
 import prisma from "../prisma";
+import { getCurrentUser } from "../serverUtils";
+import { dayOfWeek } from "@/constants";
+import { Day } from "@prisma/client";
 
-export const createAssignment = async (
+export const createLesson = async (
   currentState: CurrentState,
-  data: AssignmentSchema,
+  data: LessonSchema,
 ) => {
   try {
-    const { currentUserId, role } = await getCurrentUser();
-    if (role === "teacher") {
-      const teacherLesson = await prisma.lesson.findFirst({
-        where: {
-          teacherId: currentUserId!,
-          id: data.lessonId,
-        },
-      });
+    const startDayIndex = new Date(data.startTime).getDay();
+    const index = startDayIndex === 0 ? 6 : startDayIndex - 1;
+    const startDay = dayOfWeek[index] as Day;
 
-      if (!teacherLesson) {
-        return {
-          success: false,
-          error:
-            "You can't create an assignment for a lesson that doesn't belong to you",
-        };
-      }
-    }
-
-    const resData = await prisma.assignment.create({
-      data,
+    const resData = await prisma.lesson.create({
+      data: {
+        ...data,
+        day: startDay,
+      },
     });
 
     if (!resData) throw Error;
@@ -50,34 +41,23 @@ export const createAssignment = async (
   }
 };
 
-export const updateAssignment = async (
+export const updateLesson = async (
   currentState: CurrentState,
-  data: AssignmentSchema,
+  data: LessonSchema,
 ) => {
   try {
-    const { currentUserId, role } = await getCurrentUser();
-    if (role === "teacher") {
-      const teacherLesson = await prisma.lesson.findFirst({
-        where: {
-          teacherId: currentUserId!,
-          id: data.lessonId,
-        },
-      });
+    const startDayIndex = new Date(data.startTime).getDay();
+    const index = startDayIndex === 0 ? 6 : startDayIndex - 1;
+    const startDay = dayOfWeek[index] as Day;
 
-      if (!teacherLesson) {
-        return {
-          success: false,
-          error:
-            "You can't update an assignment for a lesson that doesn't belong to you",
-        };
-      }
-    }
-
-    const resData = await prisma.assignment.update({
+    const resData = await prisma.lesson.update({
       where: {
         id: data.id,
       },
-      data,
+      data: {
+        ...data,
+        day: startDay,
+      },
     });
 
     if (!resData) throw Error;
@@ -97,11 +77,11 @@ export const updateAssignment = async (
   }
 };
 
-export const deleteAssignment = async (id: string) => {
+export const deleteLesson = async (id: string) => {
   try {
     const { role, currentUserId } = await getCurrentUser();
 
-    const resData = await prisma.assignment.delete({
+    const resData = await prisma.lesson.delete({
       where: {
         id: parseInt(id),
         ...(role === "teacher"

@@ -1,3 +1,5 @@
+"use server";
+
 import { CurrentState } from "@/types";
 import prisma from "../prisma";
 import { handleServerErrors } from "../utils";

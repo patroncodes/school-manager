@@ -109,10 +109,14 @@ export const handleServerErrors = (error: any) => {
   // // PRISMA ERRORS
   if (error?.code) {
     const errorCode = error.code;
+    const target = error?.meta?.target[0];
 
     switch (errorCode) {
       case "P2002":
-        return { success: false, error: "Resource Already Exists" };
+        return {
+          success: false,
+          error: `${target} already exists. Please use another`,
+        };
 
       case "P2003":
         return { success: false, error: "Cannot delete resource" };

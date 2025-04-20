@@ -1,3 +1,5 @@
+"use server";
+
 import { clerkClient } from "@clerk/nextjs/server";
 import { handleServerErrors } from "../utils";
 import prisma from "../prisma";
@@ -8,6 +10,8 @@ export const createStudent = async (
   currentState: CurrentState,
   { password, ...data }: StudentSchema,
 ) => {
+  const client = await clerkClient();
+  let userId = "";
   try {
     const classItem = await prisma.class.findUnique({
       where: { id: data.classId },
@@ -21,8 +25,6 @@ export const createStudent = async (
       };
     }
 
-    const client = await clerkClient();
-
     const user = await client.users.createUser({
       username: data.username,
       password: password,
@@ -31,17 +33,20 @@ export const createStudent = async (
       publicMetadata: { role: "student" },
     });
 
-    const resData = await prisma.student.create({
+    userId = user.id;
+
+    await prisma.student.create({
       data: {
-        id: user.id,
+        id: userId,
         ...data,
       },
     });
 
-    if (!resData) throw Error;
-
     return { success: true, error: false };
   } catch (err: any) {
+    if (userId !== "") {
+      await client.users.deleteUser(userId);
+    }
     console.log(err);
     const serverErrors = handleServerErrors(err);
 

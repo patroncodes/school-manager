@@ -1,10 +1,12 @@
 export {
   createAssignment,
-  deleteAssignment,
   updateAssignment,
+  deleteAssignment,
 } from "./assignment";
-export { createClass, deleteClass, updateClass } from "./class";
-export { createExam, deleteExam, updateExam } from "./exam";
-export { createStudent, deleteStudent, updateStudent } from "./student";
-export { createSubject, deleteSubject, updateSubject } from "./subject";
-export { createTeacher, deleteTeacher, updateTeacher } from "./teacher";
+export { createClass, updateClass, deleteClass } from "./class";
+export { createExam, updateExam, deleteExam } from "./exam";
+export { createLesson, updateLesson, deleteLesson } from "./lesson";
+export { createStudent, updateStudent, deleteStudent } from "./student";
+export { createSubject, updateSubject, deleteSubject } from "./subject";
+export { createTeacher, updateTeacher, deleteTeacher } from "./teacher";
+export { createParent, updateParent, deleteParent } from "./parent";

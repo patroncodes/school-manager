@@ -1,7 +1,9 @@
+"use server";
+
 import { CurrentState } from "@/types";
-import prisma from "../prisma";
 import { handleServerErrors } from "../utils";
 import { ClassSchema } from "../validation";
+import prisma from "../prisma";
 
 export const createClass = async (
   currentState: CurrentState,

@@ -13,6 +13,8 @@ import { startTransition, useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import InputField from "../InputField";
+import ParentSearchForm from "../ParentSearchForm";
+import { Label } from "../ui/label";
 
 const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   const image = {
@@ -20,6 +22,11 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   }
   const router = useRouter()
   const [img, setImg] = useState<any>(image)
+  const [parent, setParent] = useState({
+    id: data?.parent.id ?? "",
+    name: data?.parent.name ?? "",
+    surname: data?.parent.surname ?? ""
+  })
 
   const { classes, grades } = relatedData
 
@@ -55,11 +62,8 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
     const formData = {
       ...(type === 'update' && { id: data.id }),
       ...values,
+      parentId: parent.id,
       img: img?.secure_url
-    }
-
-    if (Object.values(formData) === Object.values(data)) {
-      return;
     }
 
     startTransition(() => {
@@ -132,13 +136,7 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           register={register}
           error={errors.address}
         />
-        <InputField
-          label="Parents"
-          name="parentId"
-          defaultValue={data?.parentId}
-          register={register}
-          error={errors.parentId}
-        />
+
         <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label htmlFor="bloodType" className="text-xs text-gray-500">
             BloodType
@@ -235,39 +233,63 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           )}
         </div>
 
+        <div className="flex flex-col gap-2 w-full md:w-1/2">
+          <Label htmlFor="parentId" className="text-sm text-gray-700">
+            Parent
+          </Label>
+          <div className="flex items-center gap-2 w-full">
+            <input
+              id="parentId"
+              readOnly
+              value={parent.id ? `${parent.name} ${parent.surname}` : "Select Parent"}
+              {...register("parentId")}
+              className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            />
+            <ParentSearchForm setParent={setParent} />
+          </div>
+          {errors.parentId?.message && (
+            <p className="text-xs text-red-400">
+              {errors.parentId.message.toString()}
+            </p>
+          )}
+        </div>
+
         {/* PROFILE PHOTO */}
-        {!img.secure_url ? (
-          <CldUploadWidget
-            uploadPreset="school-manager"
-            onSuccess={(result, { widget }) => {
-              setImg(result?.info)
-              widget.close()
-            }}
-          >
-            {({ open }) => {
-              return (
-                <div
-                  className="flex-center py-8 rounded-md border-2 border-dashed w-full md:w-1/4 border-gray-300 text-xs text-gray-500 gap-2 cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    open()
-                  }}
-                >
-                  <Image src="/upload.svg" alt="upload" width={28} height={28} />
-                  <span>Upload a photo</span>
-                </div>
-              );
-            }}
-          </CldUploadWidget>
-        ) : (
-          <CldImage
-            width="200"
-            height="300"
-            src={img.secure_url}
-            alt="profile photo"
-            className=" w-full md:w-1/4 h-auto object-center rounded-md"
-          />
-        )}
+        <CldUploadWidget
+          uploadPreset="school-manager"
+          onSuccess={(result, { widget }) => {
+            setImg(result?.info)
+            widget.close()
+          }}
+        >
+          {({ open }) => {
+            return (
+              <div
+                className="w-full md:w-1/4"
+                onClick={(e) => {
+                  e.preventDefault()
+                  open()
+                }}
+              >
+                {img.secure_url ? (
+                  <CldImage
+                    width="200"
+                    height="300"
+                    src={img.secure_url}
+                    alt="profile photo"
+                    className="w-full h-auto object-center rounded-md"
+                  />
+                ) : (
+                  <div className="flex-center w-full py-8 rounded-md border-2 border-dashed border-gray-300 text-xs text-gray-500 gap-2 cursor-pointer">
+                    <Image src="/upload.svg" alt="upload" width={28} height={28} />
+                    <span>Upload a photo</span>
+                  </div>
+                )}
+
+              </div>
+            );
+          }}
+        </CldUploadWidget>
       </div>
 
       {state.error && <span className="text-red-500">Something went wrong</span>}

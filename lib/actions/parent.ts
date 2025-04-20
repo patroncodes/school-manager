@@ -1,37 +1,33 @@
 "use server";
 
 import { CurrentState } from "@/types";
-import { TeacherSchema } from "../validation";
-import prisma from "../prisma";
 import { clerkClient } from "@clerk/nextjs/server";
+import prisma from "../prisma";
 import { handleServerErrors } from "../utils";
+import { ParentSchema } from "../validation";
 
-export const createTeacher = async (
+export const createParent = async (
   currentState: CurrentState,
-  data: TeacherSchema,
+  { password, ...data }: ParentSchema,
 ) => {
   const client = await clerkClient();
   let userId = "";
+
   try {
     const user = await client.users.createUser({
       username: data.username,
-      password: data.password,
+      password: password,
       firstName: data.name,
       lastName: data.surname,
-      publicMetadata: { role: "student" },
+      publicMetadata: { role: "parent" },
     });
 
     userId = user.id;
 
-    await prisma.teacher.create({
+    await prisma.parent.create({
       data: {
-        ...data,
         id: userId,
-        subjects: {
-          connect: data.subjects?.map((subjectId) => ({
-            id: parseInt(subjectId),
-          })),
-        },
+        ...data,
       },
     });
 
@@ -53,50 +49,34 @@ export const createTeacher = async (
 
     return {
       success: false,
-      error: "Something went wrong while creating the teacher",
+      error: "Something went wrong while creating the parent",
     };
   }
 };
 
-export const updateTeacher = async (
+export const updateParent = async (
   currentState: CurrentState,
-  data: TeacherSchema,
+  { password, ...data }: ParentSchema,
 ) => {
   try {
-    const client = await clerkClient();
+    if (!data.id) return { success: false, error: "Parent doesn't exist" };
 
-    if (!data.id) return { success: false, error: "Teacher doesn't exist" };
+    const client = await clerkClient();
 
     const user = await client.users.updateUser(data.id, {
       username: data.username,
-      ...(data.password !== "" && { password: data.password }),
+      ...(password !== "" && { password: password }),
       firstName: data.name,
       lastName: data.surname,
     });
 
     if (!user) throw Error;
 
-    const resData = await prisma.teacher.update({
+    const resData = await prisma.parent.update({
       where: {
         id: data.id,
       },
-      data: {
-        username: data.username,
-        name: data.name,
-        surname: data.surname,
-        email: data.email,
-        phone: data.phone,
-        address: data.address,
-        img: data.img,
-        bloodType: data.bloodType,
-        birthday: data.birthday,
-        sex: data.sex,
-        subjects: {
-          set: data.subjects?.map((subjectId) => ({
-            id: parseInt(subjectId),
-          })),
-        },
-      },
+      data,
     });
 
     if (!resData) throw Error;
@@ -115,19 +95,19 @@ export const updateTeacher = async (
 
     return {
       success: false,
-      error: "Something went wrong while updating the teacher",
+      error: "Something went wrong while updating the parent",
     };
   }
 };
 
-export const deleteTeacher = async (id: string) => {
+export const deleteParent = async (id: string) => {
   try {
     const client = await clerkClient();
 
     const user = await client.users.deleteUser(id);
 
     if (!user) throw Error;
-    const resData = await prisma.teacher.delete({
+    const resData = await prisma.parent.delete({
       where: {
         id,
       },
@@ -148,5 +128,30 @@ export const deleteTeacher = async (id: string) => {
     }
 
     return { success: false, error: true };
+  }
+};
+
+export const getParents = async (
+  currentState: {
+    data: { id: string; name: string; surname: string }[] | undefined;
+    error: boolean;
+  },
+  searchTerm: string,
+) => {
+  try {
+    const parents = await prisma.parent.findMany({
+      where: {
+        OR: [
+          { name: { contains: searchTerm, mode: "insensitive" } },
+          { surname: { contains: searchTerm, mode: "insensitive" } },
+        ],
+      },
+      select: { id: true, name: true, surname: true },
+    });
+
+    return { data: parents, error: false };
+  } catch (error) {
+    console.log(error);
+    return { data: undefined, error: true };
   }
 };

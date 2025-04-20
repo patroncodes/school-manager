@@ -1,18 +1,18 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import InputField from "../InputField";
-import { CldUploadWidget, CldImage } from 'next-cloudinary';
-import { FormProps } from "@/types";
+import { bloodTypes } from "@/constants";
+import { createTeacher, updateTeacher } from "@/lib/actions";
 import { teacherSchema, TeacherSchema } from "@/lib/validation";
+import { FormProps } from "@/types";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { CldImage, CldUploadWidget } from 'next-cloudinary';
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect, useState } from "react";
-import { createTeacher, updateTeacher } from "@/lib/actions";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
-import Image from "next/image";
-import { bloodTypes } from "@/constants";
+import InputField from "../InputField";
 
 const TeacherForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   const image = {

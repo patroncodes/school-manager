@@ -70,6 +70,9 @@ const LessonsListPage = async ({ searchParams }: SearchParams) => {
         subject: { select: { name: true } },
         class: { select: { name: true } }
       },
+      orderBy: {
+        startTime: 'desc'
+      },
       take: ITEMS_PER_PAGE,
       skip: ITEMS_PER_PAGE * (p - 1),
     }),

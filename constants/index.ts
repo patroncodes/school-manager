@@ -114,3 +114,12 @@ export const menuItems = [
 ];
 
 export const bloodTypes = ["O-", "O+", "A-", "A+", "B-", "B+", "AB-", "AB+"];
+
+export const userSex = ["MALE", "FEMALE"];
+export const dayOfWeek = [
+  "MONDAY",
+  "TUESDAY",
+  "WEDNESDAY",
+  "THURSDAY",
+  "FRIDAY",
+];

@@ -48,6 +48,7 @@ declare type InputFieldProps = {
   type?: string;
   register: any;
   name: string;
+  containerClassName?: string;
   defaultValue?: Date | string | number;
   error?: FieldError;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
