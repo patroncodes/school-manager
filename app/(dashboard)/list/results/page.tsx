@@ -62,7 +62,7 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
     prisma.result.findMany({
       where: query,
       include: {
-        student: { select: { name: true, surname: true } },
+        student: { select: { id: true, name: true, surname: true } },
         exam: {
           include: {
             lesson: {
@@ -85,6 +85,9 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
           }
         }
       },
+      // orderBy: {
+      //   uploadedAt: 'desc'
+      // },
       take: ITEMS_PER_PAGE,
       skip: ITEMS_PER_PAGE * (p - 1),
     }),
@@ -102,12 +105,19 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
     return {
       id: item.id,
       title: assessment.title,
-      studentName: item.student.name,
-      studentSurname: item.student.surname,
-      teacherName: assessment.lesson.teacher.name,
-      teacherSurname: assessment.lesson.teacher.surname,
+      student: {
+        id: item.student.id,
+        name: item.student.name,
+        surname: item.student.surname
+      },
+      teacher: {
+        name: assessment.lesson.teacher.name,
+        surname: assessment.lesson.teacher.surname
+      },
       score: item.score,
       className: assessment.lesson.class.name,
+      testId: assessment.id,
+      lessonId: assessment.lessonId,
       startTime: isExam ? assessment.startTime : assessment.startDate,
       endTime: isExam ? assessment.endTime : assessment.dueDate,
       type: isExam ? "Exam" : "Assignment"

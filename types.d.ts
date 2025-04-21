@@ -1,4 +1,4 @@
-import React, { ReactNode, SetStateAction } from "react";
+import React from "react";
 import { FieldError } from "react-hook-form";
 
 type SearchParams = {
@@ -52,13 +52,4 @@ declare type InputFieldProps = {
   defaultValue?: Date | string | number;
   error?: FieldError;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
-};
-
-declare type SelectFieldProps = {
-  label: string;
-  selectOptions: () => ReactNode;
-  selectedItem: string;
-  setSelectedItem: Dispatch<SetStateAction<string>>;
-  error?: FieldError;
-  selectProps?: React.SelectHTMLAttributes<HTMLSelectElement>;
 };

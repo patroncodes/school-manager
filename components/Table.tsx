@@ -32,7 +32,7 @@ const Table = ({
                 <thead>
                     <tr className="text-left text-gray-500 text-sm bg-slate-100 rounded-lg">
                         {cols.map((col) => (
-                            <th key={col.accessor} className={cn("font-semibold text-base p-3 min-w-32", col.className)}>{col.header}</th>
+                            <th key={col.accessor} className={cn("font-semibold text-base p-3 min-w-32 md:max-w-80", col.className)}>{col.header}</th>
                         ))}
                     </tr>
                 </thead>
@@ -45,7 +45,7 @@ const Table = ({
                         data.map((item, rowIndex) => (
                             <tr key={rowIndex} className="border-b border-gray-200 even:bg-slate-50 text-sm hover:bg-lamaPurpleLight h-16">
                                 {cols.map((col) => (
-                                    <td key={col.accessor} className={cn("px-4 min-w-32", col.className)}>
+                                    <td key={col.accessor} className={cn("px-4 min-w-32 md:max-w-80", col.className)}>
                                         {col.cell(item)}
                                     </td>
                                 ))}

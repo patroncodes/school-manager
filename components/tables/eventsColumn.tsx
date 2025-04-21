@@ -1,6 +1,6 @@
 import { UserRole } from "@/types"
-import FormModal from "../FormModal"
 import { Event } from "@prisma/client"
+import FormContainer from "../FormContainer"
 
 type EventsList = Event & { class: { name: string } | null }
 
@@ -46,8 +46,8 @@ export const eventsColumn = (role: UserRole) => [
                 cell: (item: EventsList) => (
                     <div>
                         <div className="flex items-center gap-2">
-                            <FormModal table="event" type="update" data={item} />
-                            <FormModal table="event" type="delete" id={item.id} />
+                            <FormContainer table="event" type="update" data={item} />
+                            <FormContainer table="event" type="delete" id={item.id} />
                         </div>
                     </div>
                 )

@@ -153,6 +153,7 @@ model Result {
   assignment Assignment? @relation(fields: [assignmentId], references: [id])
   studentId String
   student Student @relation(fields: [studentId], references: [id])
+  // TODO: Add the uploadedAt field
 }
 
 model Event {

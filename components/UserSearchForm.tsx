@@ -19,25 +19,29 @@ import type { Dispatch, SetStateAction } from "react"
 import { startTransition, useActionState, useEffect, useState } from "react"
 import { Label } from "./ui/label"
 import { toast } from "sonner"
+import { getStudents } from "@/lib/actions/student"
 
 const initState = [{ id: '', name: '', surname: '' }]
 
 type ParentSearchFormProps = {
-    setParent: Dispatch<SetStateAction<{
+    type: "parent" | "student";
+    setUser: Dispatch<SetStateAction<{
         id: string;
         name: string;
         surname: string;
     }>>
 }
 
-const ParentSearchForm = ({
-    setParent,
+const UserSearchForm = ({
+    type,
+    setUser,
 }: ParentSearchFormProps) => {
     const [open, setOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [searchResults, setSearchResults] = useState<{ id: string; name: string; surname: string }[]>([])
 
-    const [state, formAction, pending] = useActionState(getParents,
+    const [state, formAction, pending] = useActionState(
+        type === 'parent' ? getParents : getStudents,
         { data: initState, error: false }
     )
 
@@ -60,8 +64,8 @@ const ParentSearchForm = ({
         })
     }
 
-    const handleParentSelect = ({ id, name, surname }: { id: string; name: string; surname: string }) => {
-        setParent({ id, name, surname })
+    const handleUserSelect = ({ id, name, surname }: { id: string; name: string; surname: string }) => {
+        setUser({ id, name, surname })
 
         setOpen(false)
     }
@@ -73,8 +77,8 @@ const ParentSearchForm = ({
             </DialogTrigger>
             <DialogContent overlayClassName="bg-black" className="sm:max-w-lg z-[9999]" forceMount>
                 <DialogHeader>
-                    <DialogTitle>Find Parent</DialogTitle>
-                    <DialogDescription>Search for a parent by entering an ID or name</DialogDescription>
+                    <DialogTitle className="capitalize">Find {type}</DialogTitle>
+                    <DialogDescription>Search for a {type} by entering a name</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="flex items-center space-x-2">
                     <div className="grid flex-1 gap-2">
@@ -82,7 +86,6 @@ const ParentSearchForm = ({
                         <Input
                             id="searchTerm"
                             type="text"
-                            placeholder="Enter name"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             autoComplete="off"
@@ -110,7 +113,7 @@ const ParentSearchForm = ({
                         <div
                             key={result.id}
                             className="hover:bg-lamaSky w-full rounded-sm px-1 cursor-default"
-                            onClick={() => handleParentSelect({ id: result.id, name: result.name, surname: result.surname })}
+                            onClick={() => handleUserSelect({ id: result.id, name: result.name, surname: result.surname })}
                         >
                             {result.name} {result.surname}
                         </div>
@@ -121,4 +124,4 @@ const ParentSearchForm = ({
     )
 }
 
-export default ParentSearchForm
+export default UserSearchForm

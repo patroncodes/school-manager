@@ -141,10 +141,8 @@ export const getParents = async (
   try {
     const parents = await prisma.parent.findMany({
       where: {
-        OR: [
-          { name: { contains: searchTerm, mode: "insensitive" } },
-          { surname: { contains: searchTerm, mode: "insensitive" } },
-        ],
+        name: { contains: searchTerm, mode: "insensitive" },
+        surname: { contains: searchTerm, mode: "insensitive" },
       },
       select: { id: true, name: true, surname: true },
     });

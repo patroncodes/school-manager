@@ -136,16 +136,6 @@ export const lessonSchema = z
 
 export type LessonSchema = z.infer<typeof lessonSchema>;
 
-export const resultSchema = z.object({
-  subject: z.string().min(2, { message: "Lesson Name is required" }),
-  class: z.string().min(2, { message: "Class is required" }),
-  teacher: z.string().min(5, { message: "Teacher is required" }),
-  student: z.string().min(5, { message: "Student is required" }),
-  type: z.string().optional(),
-  score: z.number({ message: "Score is required" }),
-  date: z.date({ message: "Assignment Date is required" }),
-});
-
 export const parentSchema = z.object({
   id: z.string().optional(),
   username: z
@@ -174,3 +164,48 @@ export const parentSchema = z.object({
 });
 
 export type ParentSchema = z.infer<typeof parentSchema>;
+
+export const resultSchema = z.object({
+  id: z.coerce.number().optional(),
+  score: z.coerce.number().nonnegative(),
+  testId: z.coerce.number().optional(),
+  studentId: z.string(),
+});
+
+export type ResultSchema = z.infer<typeof resultSchema>;
+
+export const eventSchema = z
+  .object({
+    id: z.coerce.number().optional(),
+    title: z
+      .string()
+      .min(8, { message: "Event title must be over 8 characters" }),
+    description: z
+      .string()
+      .min(15, { message: "Description is too short" })
+      .max(100, { message: "Description is too long" }),
+    startTime: z.coerce.date({ message: "Start time is required" }),
+    endTime: z.coerce.date({ message: "End Time is required" }),
+    classId: z.coerce.number().optional().nullable(),
+  })
+  .refine((data) => data.endTime >= data.startTime, {
+    path: ["endTime"],
+    message: "End Time cannot be before start time",
+  });
+
+export type EventSchema = z.infer<typeof eventSchema>;
+
+export const announcementSchema = z.object({
+  id: z.coerce.number().optional(),
+  title: z
+    .string()
+    .min(8, { message: "Event title must be over 8 characters" }),
+  description: z
+    .string()
+    .min(15, { message: "Description is too short" })
+    .max(100, { message: "Description is too long" }),
+  date: z.coerce.date({ message: "Date is required" }),
+  classId: z.coerce.number().optional().nullable(),
+});
+
+export type AnnouncementSchema = z.infer<typeof announcementSchema>;

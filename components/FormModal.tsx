@@ -31,6 +31,15 @@ const LessonForm = dynamic(() => import("./forms/LessonForm"), {
 const ParentForm = dynamic(() => import("./forms/ParentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const AnnouncementForm = dynamic(() => import("./forms/AnnouncementForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ResultForm = dynamic(() => import("./forms/ResultForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const EventForm = dynamic(() => import("./forms/EventForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const forms: {
   [key: string]: (
@@ -98,6 +107,30 @@ const forms: {
   ),
   parent: (setOpen, type, data, relatedData) => (
     <ParentForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  event: (setOpen, type, data, relatedData) => (
+    <EventForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  result: (setOpen, type, data, relatedData) => (
+    <ResultForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  announcement: (setOpen, type, data, relatedData) => (
+    <AnnouncementForm
       type={type}
       data={data}
       setOpen={setOpen}

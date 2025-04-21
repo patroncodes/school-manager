@@ -13,7 +13,7 @@ import { startTransition, useActionState, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import InputField from "../InputField";
-import ParentSearchForm from "../ParentSearchForm";
+import UserSearchForm from "../UserSearchForm";
 import { Label } from "../ui/label";
 
 const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
@@ -22,7 +22,7 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   }
   const router = useRouter()
   const [img, setImg] = useState<any>(image)
-  const [parent, setParent] = useState({
+  const [user, setUser] = useState({
     id: data?.parent.id ?? "",
     name: data?.parent.name ?? "",
     surname: data?.parent.surname ?? ""
@@ -62,7 +62,7 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
     const formData = {
       ...(type === 'update' && { id: data.id }),
       ...values,
-      parentId: parent.id,
+      parentId: user.id,
       img: img?.secure_url
     }
 
@@ -233,6 +233,7 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           )}
         </div>
 
+        {/* PARENT ID */}
         <div className="flex flex-col gap-2 w-full md:w-1/2">
           <Label htmlFor="parentId" className="text-sm text-gray-700">
             Parent
@@ -241,11 +242,11 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
             <input
               id="parentId"
               readOnly
-              value={parent.id ? `${parent.name} ${parent.surname}` : "Select Parent"}
+              value={user.id ? `${user.name} ${user.surname}` : "Select Parent"}
               {...register("parentId")}
               className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             />
-            <ParentSearchForm setParent={setParent} />
+            <UserSearchForm type="parent" setUser={setUser} />
           </div>
           {errors.parentId?.message && (
             <p className="text-xs text-red-400">

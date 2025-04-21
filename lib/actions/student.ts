@@ -140,3 +140,26 @@ export const deleteStudent = async (id: string) => {
     return { success: false, error: true };
   }
 };
+
+export const getStudents = async (
+  currentState: {
+    data: { id: string; name: string; surname: string }[] | undefined;
+    error: boolean;
+  },
+  searchTerm: string,
+) => {
+  try {
+    const students = await prisma.student.findMany({
+      where: {
+        name: { contains: searchTerm, mode: "insensitive" },
+        surname: { contains: searchTerm, mode: "insensitive" },
+      },
+      select: { id: true, name: true, surname: true },
+    });
+
+    return { data: students, error: false };
+  } catch (error) {
+    console.log(error);
+    return { data: undefined, error: true };
+  }
+};

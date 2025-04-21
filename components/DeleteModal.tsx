@@ -1,19 +1,11 @@
-import {
-    AlertDialog,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle
-} from "@/components/ui/alert-dialog";
+import { deleteAnnouncement, deleteAssignment, deleteClass, deleteEvent, deleteExam, deleteLesson, deleteParent, deleteResult, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/actions";
 import { Table } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Dispatch, SetStateAction, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { deleteAssignment, deleteClass, deleteExam, deleteLesson, deleteParent, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/actions"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
 
 type DeleteModalProps = {
     id: string | number
@@ -31,10 +23,10 @@ const deleteActionMap = {
     assignment: deleteAssignment,
     lesson: deleteLesson,
     parent: deleteParent,
-    result: deleteSubject,
+    result: deleteResult,
+    event: deleteEvent,
+    announcement: deleteAnnouncement,
     attendance: deleteSubject,
-    event: deleteSubject,
-    announcement: deleteSubject,
 };
 
 const DeleteModal = ({ id, table, open, setOpen }: DeleteModalProps) => {
@@ -63,17 +55,16 @@ const DeleteModal = ({ id, table, open, setOpen }: DeleteModalProps) => {
     };
 
     return (
-        <AlertDialog open={open} onOpenChange={setOpen}>
-            <AlertDialogContent>
-                <AlertDialogHeader>
-                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                    <AlertDialogDescription>
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Are you absolutely sure?</DialogTitle>
+                    <DialogDescription>
                         This action cannot be undone. This will permanently delete this {table} and remove all data from the servers.
-                    </AlertDialogDescription>
-                </AlertDialogHeader>
+                    </DialogDescription>
+                </DialogHeader>
 
-                <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <DialogFooter>
                     <Button
                         type="button"
                         disabled={isDeleting}
@@ -82,9 +73,9 @@ const DeleteModal = ({ id, table, open, setOpen }: DeleteModalProps) => {
                     >
                         {isDeleting ? <Loader2 className="animate-spin h-4 w-4" /> : "Delete"}
                     </Button>
-                </AlertDialogFooter>
-            </AlertDialogContent>
-        </AlertDialog>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     )
 }
 

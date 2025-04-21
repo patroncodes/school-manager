@@ -1,18 +1,25 @@
 import { UserRole } from "@/types";
-import FormModal from "../FormModal"
+import FormContainer from "../FormContainer";
 
 type ResultsList = {
     id: number;
-    title: string;
-    studentName: string;
-    studentSurname: string;
-    teacherName: string;
-    teacherSurname: string;
     score: number;
+    title: string;
+    student: {
+        id: string;
+        name: string;
+        surname: string;
+    };
+    teacher: {
+        name: string;
+        surname: string;
+    };
     className: string;
     startTime: Date;
     endTime: Date;
     type: string;
+    lessonId: number;
+    testId: number;
 } | null
 
 
@@ -25,13 +32,13 @@ export const resultsColumn = (role: UserRole) => [
     {
         accessor: "student",
         header: "Student",
-        cell: (item: ResultsList) => <div>{item?.studentName} {item?.studentSurname}</div>
+        cell: (item: ResultsList) => <div>{item?.student.name} {item?.student.surname}</div>
     },
-    {
+    ...(role === 'admin' ? [{
         accessor: "teacher",
         header: "Teacher",
-        cell: (item: ResultsList) => <div>{item?.teacherName} {item?.teacherSurname}</div>
-    },
+        cell: (item: ResultsList) => <div>{item?.teacher.name} {item?.teacher.surname}</div>
+    }] : []),
     {
         accessor: "score",
         header: "Score",
@@ -55,8 +62,8 @@ export const resultsColumn = (role: UserRole) => [
                 cell: (item: ResultsList) => (
                     <div>
                         <div className="flex items-center gap-2">
-                            <FormModal table="result" type="update" data={item} />
-                            <FormModal table="result" type="delete" id={item?.id} />
+                            <FormContainer table="result" type="update" data={item} />
+                            <FormContainer table="result" type="delete" id={item?.id} />
                         </div>
                     </div>
                 )
