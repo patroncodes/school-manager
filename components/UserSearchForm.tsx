@@ -23,7 +23,7 @@ import { getStudents } from "@/lib/actions/student"
 
 const initState = [{ id: '', name: '', surname: '' }]
 
-type ParentSearchFormProps = {
+type UserSearchProps = {
     type: "parent" | "student";
     setUser: Dispatch<SetStateAction<{
         id: string;
@@ -35,7 +35,7 @@ type ParentSearchFormProps = {
 const UserSearchForm = ({
     type,
     setUser,
-}: ParentSearchFormProps) => {
+}: UserSearchProps) => {
     const [open, setOpen] = useState(false)
     const [searchTerm, setSearchTerm] = useState("")
     const [searchResults, setSearchResults] = useState<{ id: string; name: string; surname: string }[]>([])

@@ -6,7 +6,7 @@ import { StudentSchema, studentSchema } from "@/lib/validation";
 import { FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { CldImage, CldUploadWidget } from "next-cloudinary";
+import { CldImage, CldUploadWidget } from 'next-cloudinary'
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { startTransition, useActionState, useEffect, useState } from "react";

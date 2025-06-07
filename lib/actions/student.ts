@@ -1,9 +1,9 @@
 "use server";
 
-import { clerkClient } from "@clerk/nextjs/server";
-import { handleServerErrors } from "../utils";
-import prisma from "../prisma";
 import { CurrentState } from "@/types";
+import { clerkClient } from "@clerk/nextjs/server";
+import prisma from "../prisma";
+import { handleServerErrors } from "../utils";
 import { StudentSchema } from "../validation";
 
 export const createStudent = async (
@@ -78,6 +78,7 @@ export const updateStudent = async (
       ...(password !== "" && { password: password }),
       firstName: data.name,
       lastName: data.surname,
+      publicMetadata: { role: "student" },
     });
 
     if (!user) throw Error;
@@ -149,13 +150,16 @@ export const getStudents = async (
   searchTerm: string,
 ) => {
   try {
-    const students = await prisma.student.findMany({
-      where: {
-        name: { contains: searchTerm, mode: "insensitive" },
-        surname: { contains: searchTerm, mode: "insensitive" },
-      },
-      select: { id: true, name: true, surname: true },
-    });
+    const students: { id: string; name: string; surname: string }[] =
+      await prisma.student.findMany({
+        where: {
+          OR: [
+            { name: { contains: searchTerm, mode: "insensitive" } },
+            { surname: { contains: searchTerm, mode: "insensitive" } },
+          ],
+        },
+        select: { id: true, name: true, surname: true },
+      });
 
     return { data: students, error: false };
   } catch (error) {

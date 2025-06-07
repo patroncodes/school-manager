@@ -31,22 +31,27 @@ const AttendanceChartContainer = async () => {
     }
 
     resData.forEach(item => {
-        if (dayOfWeek >= 1 && dayOfWeek <= 5) {
-            const dayName = daysOfWeek[dayOfWeek - 1];
+        const itemDate = new Date(item.date);
+        const itemDay = itemDate.getDay();
+        const dayIndex = itemDay === 0 ? 6 : itemDay - 1;
+        const dayName = daysOfWeek[dayIndex];
 
+        if (dayName in attendanceMap) {
             if (item.present) {
-                attendanceMap[dayName].present += 1;
+                attendanceMap[dayName].present++;
             } else {
-                attendanceMap[dayName].absent += 1;
+                attendanceMap[dayName].absent++;
             }
         }
-    })
+    });
+
 
     const data = daysOfWeek.map(day => ({
         name: day,
         present: attendanceMap[day].present,
         absent: attendanceMap[day].absent,
     }))
+
     return (
         <div className="bg-white rounded-xl w-full h-full p-4">
             <div className="flex justify-between items-center">

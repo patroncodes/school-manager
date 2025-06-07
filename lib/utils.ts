@@ -128,3 +128,9 @@ export const handleServerErrors = (error: any) => {
     }
   }
 };
+
+export const extractImageId = (url: string) => {
+  const publicId = url.split("/").pop()?.split(".")[0];
+
+  return { id: publicId };
+};

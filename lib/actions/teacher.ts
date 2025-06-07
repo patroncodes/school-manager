@@ -4,21 +4,22 @@ import { CurrentState } from "@/types";
 import { TeacherSchema } from "../validation";
 import prisma from "../prisma";
 import { clerkClient } from "@clerk/nextjs/server";
-import { handleServerErrors } from "../utils";
+import { extractImageId, handleServerErrors } from "../utils";
+import { deleteImage } from "../cloudinary";
 
 export const createTeacher = async (
   currentState: CurrentState,
-  data: TeacherSchema,
+  { password, ...data }: TeacherSchema,
 ) => {
   const client = await clerkClient();
   let userId = "";
   try {
     const user = await client.users.createUser({
       username: data.username,
-      password: data.password,
+      password: password,
       firstName: data.name,
       lastName: data.surname,
-      publicMetadata: { role: "student" },
+      publicMetadata: { role: "teacher" },
     });
 
     userId = user.id;
@@ -127,6 +128,18 @@ export const deleteTeacher = async (id: string) => {
     const user = await client.users.deleteUser(id);
 
     if (!user) throw Error;
+    const teacherImg = await prisma.teacher.findUnique({
+      where: {
+        id,
+      },
+      select: { img: true },
+    });
+
+    if (teacherImg?.img) {
+      const imageId = extractImageId(teacherImg.img);
+      await deleteImage(imageId.id as string);
+    }
+
     const resData = await prisma.teacher.delete({
       where: {
         id,

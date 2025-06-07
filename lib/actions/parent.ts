@@ -139,13 +139,16 @@ export const getParents = async (
   searchTerm: string,
 ) => {
   try {
-    const parents = await prisma.parent.findMany({
-      where: {
-        name: { contains: searchTerm, mode: "insensitive" },
-        surname: { contains: searchTerm, mode: "insensitive" },
-      },
-      select: { id: true, name: true, surname: true },
-    });
+    const parents: { id: string; name: string; surname: string }[] =
+      await prisma.parent.findMany({
+        where: {
+          OR: [
+            { name: { contains: searchTerm, mode: "insensitive" } },
+            { surname: { contains: searchTerm, mode: "insensitive" } },
+          ],
+        },
+        select: { id: true, name: true, surname: true },
+      });
 
     return { data: parents, error: false };
   } catch (error) {

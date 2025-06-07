@@ -18,8 +18,10 @@ const TeacherForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   const image = {
     secure_url: data?.img
   }
+  const initial_image = (data && data?.img) ? image : undefined
+
   const router = useRouter()
-  const [img, setImg] = useState<any>(image)
+  const [img, setImg] = useState<any>(initial_image)
 
   const { subjects } = relatedData
 
@@ -62,6 +64,7 @@ const TeacherForm = ({ type, data, setOpen, relatedData }: FormProps) => {
       formAction(formData)
     })
   })
+
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
       <span className="text-xs text-gray-400 font-medium">
@@ -154,6 +157,12 @@ const TeacherForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           defaultValue={data?.birthday.toISOString().split("T")[0]}
           register={register}
           error={errors.birthday}
+          inputProps={
+            {
+              min: new Date(new Date().setFullYear(new Date().getFullYear() - 60)).toISOString().split("T")[0],
+              max: new Date().toISOString().split("T")[0]
+            }
+          }
         />
 
         {/* SEX */}
