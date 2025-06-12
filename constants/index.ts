@@ -5,8 +5,14 @@ export const menuItems = [
       {
         icon: "/home.svg",
         label: "Home",
-        href: "/admin",
+        href: "/",
         visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        icon: "/money.svg",
+        label: "Fees",
+        href: "/fees-payment",
+        visible: ["admin", "parent"],
       },
       {
         icon: "/teacher.svg",
@@ -94,19 +100,13 @@ export const menuItems = [
       {
         icon: "/profile.svg",
         label: "Profile",
-        href: "/profile",
+        href: "/account/profile",
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
         icon: "/setting.svg",
         label: "Settings",
-        href: "/settings",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        icon: "/logout.svg",
-        label: "Logout",
-        href: "/logout",
+        href: "/account/settings",
         visible: ["admin", "teacher", "student", "parent"],
       },
     ],

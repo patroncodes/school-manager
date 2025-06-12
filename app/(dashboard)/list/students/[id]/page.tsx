@@ -11,6 +11,13 @@ import { notFound } from "next/navigation";
 const SingleStudentPage = async ({ params }: SearchParams) => {
   const { id } = await params
 
+  const today = new Date()
+  const dayOfWeek = today.getDay()
+  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+
+  const lastMonday = new Date(today)
+  lastMonday.setDate(today.getDate() - daysSinceMonday);
+
   const student: ({
     class: {
       id: number;
@@ -24,6 +31,10 @@ const SingleStudentPage = async ({ params }: SearchParams) => {
       name: string;
       surname: string;
     } | null;
+    attendances: {
+      date: Date;
+      present: boolean;
+    }[]
   } & Student) | null
     = await prisma.student.findUnique({
       where: {
@@ -34,12 +45,24 @@ const SingleStudentPage = async ({ params }: SearchParams) => {
           select: { id: true, name: true, _count: { select: { lessons: true } } }
         },
         parent: { select: { id: true, name: true, surname: true } },
+        attendances: {
+          where: { studentId: id, date: { gte: lastMonday } },
+          select: { date: true, present: true }
+        }
       }
     })
 
   if (!student) return notFound()
 
+  const presentDays = student.attendances.filter((day) => day.present).length
+  const percentage = Math.floor((presentDays / 5) * 100)
+
   const cards = [
+    {
+      value: `${percentage || "-"}%`,
+      desc: "Attendance",
+      img: '/singleAttendance.svg'
+    },
     {
       value: `${student.class.name[0]}`,
       desc: "Grade",
@@ -67,7 +90,7 @@ const SingleStudentPage = async ({ params }: SearchParams) => {
             table="student"
             data={student}
           />
-          <SmallCard cards={cards} id={id} />
+          <SmallCard cards={cards} />
         </div>
 
         {/* BOTTOM */}

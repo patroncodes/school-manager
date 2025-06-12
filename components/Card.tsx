@@ -1,7 +1,6 @@
+import { Calendar, Mail } from "lucide-react";
 import Image from "next/image";
 import FormContainer from "./FormContainer";
-import { Calendar, Mail } from "lucide-react";
-import prisma from "@/lib/prisma";
 
 export const InfoCard = ({
   data,
@@ -12,13 +11,13 @@ export const InfoCard = ({
 }) => {
   return (
     <div className="bg-lamaSky py-6 px-4 rounded-md flex-1 flex gap-4">
-      <div className="w-1/3 sm:w-[28%] md:w-[20%] lg:w-1/3 xl:w-[36%]">
+      <div className="w-32 h-32 rounded-full">
         <Image
           src={data.img || '/noAvatar.png'}
           alt="teacher"
           width={144}
           height={144}
-          className="w-36 h-36 rounded-full object-cover"
+          className="w-full h-full rounded-full object-cover object-center"
         />
       </div>
       <div className="w-2/3 flex flex-col justify-between gap-4 max-w-96">
@@ -57,33 +56,14 @@ export const InfoCard = ({
 };
 
 export const SmallCard = async ({
-  cards,
-  id
+  cards
 }: {
   cards: {
     value: string;
     desc: string;
     img: string;
   }[];
-  id?: string // For fetching the student's attendance
 }) => {
-  if (id) {
-    const attendance = await prisma.attendance.findMany({
-      where: {
-        studentId: id,
-        date: {
-          gte: new Date(new Date().getFullYear(), 0, 1)
-        }
-      },
-    })
-
-    const totalDays = attendance.length
-    const presentDays = attendance.filter((day) => day.present).length
-    const percentage = (presentDays / totalDays) * 100
-
-    cards.unshift({ value: `${percentage || "-"}%`, desc: "Attendance", img: '/singleAttendance.svg' })
-  }
-
   return (
     <div className="flex-1 flex gap-4 justify-between flex-wrap">
       {cards.map((card, index) => (

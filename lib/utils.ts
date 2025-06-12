@@ -5,19 +5,25 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-const getLatestMonday = (): Date => {
+export const getLastWeekMonday = () => {
   const today = new Date();
-  const dayOfWeek = today.getDay();
-  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
-  const latestMonday = today;
-  latestMonday.setDate(today.getDate() - daysSinceMonday);
-  return latestMonday;
+  const day = today.getDay();
+
+  const daysSinceMonday = ((day + 6) % 7) + 7;
+
+  const lastMonday = new Date(today);
+  lastMonday.setDate(today.getDate() - daysSinceMonday);
+  return lastMonday;
 };
 
 export const adjustScheduleToCurrentWeek = (
   lessons: { title: string; start: Date; end: Date }[],
 ): { title: string; start: Date; end: Date }[] => {
-  const latestMonday = getLatestMonday();
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const daysSinceMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+  const latestMonday = today;
+  latestMonday.setDate(today.getDate() - daysSinceMonday);
 
   return lessons.map((lesson) => {
     const lessonDayOfWeek = lesson.start.getDay();

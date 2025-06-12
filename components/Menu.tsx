@@ -2,6 +2,7 @@ import { menuItems } from "@/constants";
 import { UserRole } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
+import SignOutButton from "./SignOutButton";
 
 const Menu = async ({ role }: { role: UserRole }) => {
   return (
@@ -16,7 +17,7 @@ const Menu = async ({ role }: { role: UserRole }) => {
             if (item.visible.includes(role)) {
               return (
                 <Link
-                  href={item.href}
+                  href={item.label === 'Home' ? `/${role}` : item.href}
                   key={item.label}
                   className="flex items-center justify-center lg:justify-start gap-4 text-gray-500 py-2 md:px-2 rounded-md hover:bg-lamaSkyLight"
                 >
@@ -34,6 +35,8 @@ const Menu = async ({ role }: { role: UserRole }) => {
           })}
         </div>
       ))}
+
+      <SignOutButton />
     </div>
   );
 };

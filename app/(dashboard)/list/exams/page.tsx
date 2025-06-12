@@ -60,7 +60,6 @@ const ExamsListPage = async ({ searchParams }: SearchParams) => {
         }
       }
       break;
-
     default:
       break;
   }

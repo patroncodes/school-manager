@@ -28,6 +28,7 @@ export const studentSchema = z.object({
     .or(z.literal("")),
   address: z.string(),
   img: z.string().optional(),
+  oldImg: z.string().optional(),
   birthday: z.coerce.date({ message: "Birthday is required" }),
   bloodType: z.string().min(2, { message: "Blood Type is required" }),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required" }),
@@ -66,6 +67,7 @@ export const teacherSchema = z.object({
   birthday: z.coerce.date({ message: "Birthday is required" }),
   sex: z.enum(["MALE", "FEMALE"], { message: "Sex is required" }),
   img: z.string().optional(),
+  oldImg: z.string().optional(),
   subjects: z.array(z.string()).optional(),
 });
 
@@ -123,11 +125,15 @@ export const lessonSchema = z
   .object({
     id: z.coerce.number().optional(),
     name: z.string().min(2, { message: "Lesson Name is required" }),
+    description: z.string().optional(),
     startTime: z.coerce.date({ message: "Start Time is required" }),
     endTime: z.coerce.date({ message: "End Time is required" }),
     teacherId: z.string(),
     subjectId: z.coerce.number(),
     classId: z.coerce.number(),
+
+    materials: z.string().optional(),
+    objectives: z.string().optional(),
   })
   .refine((data) => data.endTime >= data.startTime, {
     path: ["endTime"],

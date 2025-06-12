@@ -60,7 +60,7 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
 
   const onSubmit = handleSubmit((values) => {
     const formData = {
-      ...(type === 'update' && { id: data.id }),
+      ...(type === 'update' && { id: data.id, oldImg: image?.secure_url }),
       ...values,
       parentId: user.id,
       img: img?.secure_url

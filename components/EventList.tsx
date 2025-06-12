@@ -20,8 +20,8 @@ const EventList = async ({ dateParam }: { dateParam: string }) => {
                     className="p-5 rounded-md border-2 border-gray-100 border-t-4 odd:border-t-lamaSky even:border-t-lamaPurple"
                 >
                     <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-gray-900">{event.title}</h3>
-                        <span className="text-gray-600 text-xs">{moment(event.startTime).format("h:mmA")} - ${moment(event.endTime).format("h:mmA")}</span>
+                        <h3 className="font-semibold text-gray-900 line-clamp-1 w-[60%]">{event.title}</h3>
+                        <span className="text-gray-600 text-xs">{moment(event.startTime).format("h:mmA")} - {moment(event.endTime).format("h:mmA")}</span>
                     </div>
                     <p className="mt-2 text-gray-700 text-sm">{event.description}</p>
                 </div>

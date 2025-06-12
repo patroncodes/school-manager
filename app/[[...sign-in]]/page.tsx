@@ -33,12 +33,12 @@ const LoginPage = () => {
                     <Clerk.GlobalError className="text-sm text-red-300" />
                     <Clerk.Field name='identifier' className="flex flex-col gap-2">
                         <Clerk.Label className="text-md text-gray-500">Username</Clerk.Label>
-                        <Clerk.Input className="p-2 rounded-md ring-1 ring-gray-300" type="text" required autoFocus />
+                        <Clerk.Input className="p-2 rounded-md ring-1 ring-gray-300" type="text" placeholder="vicDouglas12" required autoFocus />
                         <Clerk.FieldError className="text-xs text-red-300" />
                     </Clerk.Field>
                     <Clerk.Field name="password" className="flex flex-col gap-2">
                         <Clerk.Label className="text-md text-gray-500">Password</Clerk.Label>
-                        <Clerk.Input className="p-2 rounded-md ring-1 ring-gray-300" type="password" required />
+                        <Clerk.Input className="p-2 rounded-md ring-1 ring-gray-300" type="password" placeholder="Douglas12" required />
                         <Clerk.FieldError className="text-xs text-red-300" />
                     </Clerk.Field>
 

@@ -54,10 +54,12 @@ const LessonsListPage = async ({ searchParams }: SearchParams) => {
       query.class = {
         students: { some: { id: currentUserId! } }
       }
+      break;
     case 'parent':
       query.class = {
         students: { some: { parentId: currentUserId! } }
       }
+      break;
     default:
       break;
   }

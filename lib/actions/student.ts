@@ -3,8 +3,9 @@
 import { CurrentState } from "@/types";
 import { clerkClient } from "@clerk/nextjs/server";
 import prisma from "../prisma";
-import { handleServerErrors } from "../utils";
+import { extractImageId, handleServerErrors } from "../utils";
 import { StudentSchema } from "../validation";
+import { deleteImage } from "../cloudinary";
 
 export const createStudent = async (
   currentState: CurrentState,
@@ -83,6 +84,12 @@ export const updateStudent = async (
 
     if (!user) throw Error;
 
+    if (data.img && data.oldImg) {
+      const publicId = extractImageId(data.oldImg);
+
+      await deleteImage(publicId.id as string);
+    }
+
     const resData = await prisma.student.update({
       where: {
         id: data.id,
@@ -118,6 +125,19 @@ export const deleteStudent = async (id: string) => {
     const user = await client.users.deleteUser(id);
 
     if (!user) throw Error;
+
+    const studentImg = await prisma.student.findUnique({
+      where: {
+        id,
+      },
+      select: { img: true },
+    });
+
+    if (studentImg?.img) {
+      const imageId = extractImageId(studentImg.img);
+      await deleteImage(imageId.id as string);
+    }
+
     const resData = await prisma.student.delete({
       where: {
         id,

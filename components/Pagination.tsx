@@ -14,6 +14,9 @@ const Pagination = ({ page, count }: { page: number; count: number }) => {
         params.set("page", newPage.toString());
         router.push(`${window.location.pathname}?${params}`);
     };
+
+    const pageLength = Math.ceil(count / ITEMS_PER_PAGE)
+
     return (
         <div className="p-4 flex items-center justify-between text-gray-500">
             <button
@@ -27,7 +30,7 @@ const Pagination = ({ page, count }: { page: number; count: number }) => {
             </button>
             <div className="flex items-center gap-2 text-sm">
                 {Array.from(
-                    { length: Math.ceil(count / ITEMS_PER_PAGE) },
+                    { length: pageLength },
                     (_, index) => {
                         const pageIndex = index + 1;
                         return (
@@ -43,6 +46,22 @@ const Pagination = ({ page, count }: { page: number; count: number }) => {
                             </button>
                         );
                     }
+                ).slice(0, 3)}
+
+                {pageLength > 3 && (
+                    <>
+                        <span>...</span>
+
+                        <button
+                            className={`px-2 rounded-sm  ${page === pageLength ? "bg-lamaSky" : ""
+                                }}`}
+                            onClick={() => {
+                                changePage(pageLength);
+                            }}
+                        >
+                            {pageLength}
+                        </button>
+                    </>
                 )}
             </div>
             <button

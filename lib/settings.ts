@@ -21,6 +21,8 @@ export const routeAccessMap: RouteAccessMap = {
   "/list/attendance": ["admin", "teacher", "student", "parent"],
   "/list/events": ["admin", "teacher", "student", "parent"],
   "/list/announcements": ["admin", "teacher", "student", "parent"],
+  "/account/profile": ["admin", "teacher", "student", "parent"],
+  "/account/settings": ["admin", "teacher", "student", "parent"],
 };
 
 export const listCreationAccess: { [key: string]: string[] } = {

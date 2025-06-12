@@ -1,10 +1,9 @@
 import prisma from "@/lib/prisma";
 import { UserRole } from "@/types";
 import Image from "next/image";
-import SignOutButton from "./SignOutButton";
-import { Skeleton } from "./ui/skeleton";
 import { Suspense } from "react";
 import Notifications from "./Notifications";
+import { Skeleton } from "./ui/skeleton";
 
 const Navbar = async ({ role, userId }: { role: UserRole, userId: string }) => {
 
@@ -13,7 +12,6 @@ const Navbar = async ({ role, userId }: { role: UserRole, userId: string }) => {
       id: userId
     },
     select: {
-      ...(role !== 'admin' && { img: true }),
       name: true,
       surname: true,
     }
@@ -50,7 +48,7 @@ const Navbar = async ({ role, userId }: { role: UserRole, userId: string }) => {
           <span className="text-[10px] text-gray-500 text-right capitalize">{role}</span>
         </div>
 
-        <SignOutButton />
+        <div className="w-9 h-9 p-0.5 rounded-full flex-center bg-lamaPurple">{user?.name[0]}{user?.surname[0]}</div>
       </div>
     </div>
   );

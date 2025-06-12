@@ -1,12 +1,13 @@
 import Image from 'next/image'
 import CountChart from './CountChart'
 import prisma from '@/lib/prisma'
+import { UserSex } from '@prisma/client'
 
 const CountChartContainer = async () => {
     const data = await prisma.student.groupBy({
         by: ['sex'],
         _count: true
-    })
+    }) as { _count: number; sex: UserSex }[]
 
     const boys = data.find((d) => d.sex === 'MALE')?._count || 0;
     const girls = data.find((d) => d.sex === 'FEMALE')?._count || 0;

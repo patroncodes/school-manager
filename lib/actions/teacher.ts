@@ -73,9 +73,16 @@ export const updateTeacher = async (
       ...(data.password !== "" && { password: data.password }),
       firstName: data.name,
       lastName: data.surname,
+      publicMetadata: { role: "teacher" },
     });
 
     if (!user) throw Error;
+
+    if (data.img && data.oldImg) {
+      const publicId = extractImageId(data.oldImg);
+
+      await deleteImage(publicId.id as string);
+    }
 
     const resData = await prisma.teacher.update({
       where: {

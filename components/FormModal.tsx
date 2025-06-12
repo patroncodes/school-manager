@@ -151,7 +151,7 @@ const FormModal = ({
     type === "create"
       ? "bg-lamaYellow"
       : type === "update"
-        ? "bg-lamaSky"
+        ? "bg-lamaPurple"
         : "bg-lamaPurple";
 
   const [open, setOpen] = useState(false);
@@ -164,6 +164,7 @@ const FormModal = ({
       >
         <Image src={`/${type}.svg`} alt="" width={16} height={16} />
       </button>
+
       {open && type === 'delete' && id && (
         <DeleteModal id={id} open={open} setOpen={setOpen} table={table} />
       )}

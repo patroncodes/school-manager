@@ -17,9 +17,14 @@ export const createLesson = async (
     const index = startDayIndex === 0 ? 6 : startDayIndex - 1;
     const startDay = dayOfWeek[index] as Day;
 
+    const materials = data.materials?.split(";") || [];
+    const objectives = data.objectives?.split(";") || [];
+
     const resData = await prisma.lesson.create({
       data: {
         ...data,
+        materials,
+        objectives,
         day: startDay,
       },
     });
@@ -50,12 +55,19 @@ export const updateLesson = async (
     const index = startDayIndex === 0 ? 6 : startDayIndex - 1;
     const startDay = dayOfWeek[index] as Day;
 
+    const materials =
+      data.materials?.split(";").map((item) => item.trim()) || [];
+    const objectives =
+      data.objectives?.split(";").map((item) => item.trim()) || [];
+
     const resData = await prisma.lesson.update({
       where: {
         id: data.id,
       },
       data: {
         ...data,
+        materials,
+        objectives,
         day: startDay,
       },
     });

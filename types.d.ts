@@ -53,3 +53,11 @@ declare type InputFieldProps = {
   error?: FieldError;
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 };
+
+declare type AttendanceSchema = {
+  id?: number;
+  date: Date;
+  present: boolean;
+  studentId: string;
+  lessonId: number;
+};

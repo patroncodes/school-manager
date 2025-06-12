@@ -69,6 +69,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
                     select: { id: true, name: true, surname: true }
                 })
                 relatedData = { subjects: lessonSubjects, classes: lessonClasses, teachers: lessonTeachers }
+                break;
             case "result":
                 const resultExams = await prisma.exam.findMany({
                     where: {
@@ -83,16 +84,19 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
                     select: { id: true, title: true, lessonId: true }
                 })
                 relatedData = { exams: resultExams, assignments: resultAssignments };
+                break;
             case "event":
                 const eventClasses = await prisma.class.findMany({
                     select: { id: true, name: true }
                 })
                 relatedData = { classes: eventClasses }
+                break;
             case "announcement":
                 const announcementClasses = await prisma.class.findMany({
                     select: { id: true, name: true }
                 })
                 relatedData = { classes: announcementClasses }
+                break;
             default:
                 break;
         }

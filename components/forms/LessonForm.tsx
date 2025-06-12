@@ -1,7 +1,8 @@
 "use client";
 
 import { createLesson, updateLesson } from "@/lib/actions";
-import { lessonSchema, LessonSchema } from "@/lib/validation";
+import { toDatetimeLocal } from "@/lib/utils";
+import { LessonSchema, lessonSchema } from "@/lib/validation";
 import { FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -10,7 +11,9 @@ import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import InputField from "../InputField";
-import { toDatetimeLocal } from "@/lib/utils";
+import { Label } from "../ui/label";
+import { Textarea } from "../ui/textarea";
+
 
 const LessonForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   const router = useRouter();
@@ -72,6 +75,18 @@ const LessonForm = ({ type, data, setOpen, relatedData }: FormProps) => {
         />
 
         <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <Label htmlFor="description" className="text-xs text-gray-500">
+            Description
+          </Label>
+          <Textarea
+            id="description"
+            {...register("description")}
+            className="custom-scrollbar ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            defaultValue={data?.description?.join("; ") ?? ""}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
           <label htmlFor="classId" className="text-xs text-gray-500">
             Class
           </label>
@@ -81,7 +96,7 @@ const LessonForm = ({ type, data, setOpen, relatedData }: FormProps) => {
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             defaultValue={data?.classId}
           >
-            {classes.map((item: { id: number; name: string }) => (
+            {classes?.map((item: { id: number; name: string }) => (
               <option key={item.id} value={item.id} className="py-1">
                 {item.name}
               </option>
@@ -104,7 +119,7 @@ const LessonForm = ({ type, data, setOpen, relatedData }: FormProps) => {
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             defaultValue={data?.teacherId}
           >
-            {teachers.map((teacher: { id: string; name: string; surname: string }) => (
+            {teachers?.map((teacher: { id: string; name: string; surname: string }) => (
               <option key={teacher.id} value={teacher.id} className="py-1">
                 {teacher.name + " " + teacher.surname}
               </option>
@@ -127,7 +142,7 @@ const LessonForm = ({ type, data, setOpen, relatedData }: FormProps) => {
             className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
             defaultValue={data?.subjectId}
           >
-            {subjects.map((subject: { id: number; name: string }) => (
+            {subjects?.map((subject: { id: number; name: string }) => (
               <option key={subject.id} value={subject.id} className="py-1">
                 {subject.name}
               </option>
@@ -147,6 +162,9 @@ const LessonForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           defaultValue={data?.startTime ? toDatetimeLocal(data?.startTime) : undefined}
           register={register}
           error={errors.startTime}
+          inputProps={{
+            min: new Date().toISOString().slice(0, 16)
+          }}
         />
         <InputField
           label="End Time"
@@ -155,7 +173,34 @@ const LessonForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           defaultValue={data?.endTime ? toDatetimeLocal(data?.endTime) : undefined}
           register={register}
           error={errors.endTime}
+          inputProps={{
+            min: new Date().toISOString().slice(0, 16)
+          }}
         />
+
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <Label htmlFor="materials" className="text-xs text-gray-500">
+            Materials
+          </Label>
+          <Textarea
+            id="materials"
+            {...register("materials")}
+            className="custom-scrollbar ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            defaultValue={data?.materials?.join("; ") ?? ""}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2 w-full md:w-1/4">
+          <Label htmlFor="objectives" className="text-xs text-gray-500">
+            Objectives
+          </Label>
+          <Textarea
+            id="objectives"
+            {...register("objectives")}
+            className="custom-scrollbar max-h-16 ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            defaultValue={data?.objectives?.join("; ") ?? ""}
+          />
+        </div>
       </div>
 
       {state.error && <span className="text-red-500">Something went wrong</span>}

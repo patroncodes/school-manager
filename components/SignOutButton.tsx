@@ -1,35 +1,19 @@
 'use client'
 
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
-import Image from "next/image"
-import { Button } from "./ui/button"
 import { useClerk } from "@clerk/nextjs"
 import { LogOut } from "lucide-react"
 
-const SignOutButton = ({ img }: { img?: string }) => {
+const SignOutButton = () => {
     const { signOut } = useClerk()
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Image
-                    src={img ?? "/avatar.svg"}
-                    alt="avatar"
-                    width={36}
-                    height={36}
-                    className="rounded-full"
-                />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-                <Button className="w-full bg-transparent text-black hover:bg-transparent cursor-pointer" onClick={() => signOut({ redirectUrl: '/' })}>
-                    <LogOut /> Sign Out
-                </Button>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <button
+            className="flex items-center justify-center lg:justify-start gap-4 w-full py-2 md:px-2 ml-0.5 md:ml-0 rounded-md bg-transparent hover:bg-lamaSkyLight"
+            onClick={() => signOut({ redirectUrl: '/' })}
+        >
+            <LogOut size={21} color="#4a5565" />
+            <span className="hidden lg:block text-gray-500">Sign Out</span>
+        </button>
     )
 }
 

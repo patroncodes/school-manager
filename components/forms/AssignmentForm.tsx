@@ -74,6 +74,9 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           defaultValue={data?.startDate ? toDatetimeLocal(data?.startDate) : undefined}
           register={register}
           error={errors.startDate}
+          inputProps={{
+            min: new Date().toISOString().slice(0, 16)
+          }}
         />
         <InputField
           label="Due Date"
@@ -82,6 +85,9 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           defaultValue={data?.dueDate ? toDatetimeLocal(data?.dueDate) : undefined}
           register={register}
           error={errors.dueDate}
+          inputProps={{
+            min: new Date().toISOString().slice(0, 16)
+          }}
         />
 
         <div className="flex flex-col gap-2 w-full md:w-1/4">

@@ -18,10 +18,9 @@ const TeacherForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   const image = {
     secure_url: data?.img
   }
-  const initial_image = (data && data?.img) ? image : undefined
 
   const router = useRouter()
-  const [img, setImg] = useState<any>(initial_image)
+  const [img, setImg] = useState<any>(image)
 
   const { subjects } = relatedData
 
@@ -55,7 +54,7 @@ const TeacherForm = ({ type, data, setOpen, relatedData }: FormProps) => {
 
   const onSubmit = handleSubmit((values) => {
     const formData = {
-      ...(type === 'update' && { id: data.id }),
+      ...(type === 'update' && { id: data.id, oldImg: image?.secure_url }),
       ...values,
       img: img?.secure_url
     }
@@ -212,38 +211,41 @@ const TeacherForm = ({ type, data, setOpen, relatedData }: FormProps) => {
         </div>
 
         {/* PROFILE PHOTO */}
-        {!img ? (
-          <CldUploadWidget
-            uploadPreset="school-manager"
-            onSuccess={(result, { widget }) => {
-              setImg(result?.info)
-              widget.close()
-            }}
-          >
-            {({ open }) => {
-              return (
-                <div
-                  className="flex-center py-8 rounded-md border-2 border-dashed w-full md:w-1/4 border-gray-300 text-xs text-gray-500 gap-2 cursor-pointer"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    open()
-                  }}
-                >
-                  <Image src="/upload.svg" alt="upload" width={28} height={28} />
-                  <span>Upload a photo</span>
-                </div>
-              );
-            }}
-          </CldUploadWidget>
-        ) : (
-          <CldImage
-            width="200"
-            height="300"
-            src={img.secure_url}
-            alt="profile photo"
-            className=" w-full md:w-1/4 h-auto object-center rounded-md"
-          />
-        )}
+        <CldUploadWidget
+          uploadPreset="school-manager"
+          onSuccess={(result, { widget }) => {
+            setImg(result?.info)
+            widget.close()
+          }}
+        >
+          {({ open }) => {
+            return (
+              <div
+                className="w-full md:w-1/4"
+                onClick={(e) => {
+                  e.preventDefault()
+                  open()
+                }}
+              >
+                {img.secure_url ? (
+                  <CldImage
+                    width="200"
+                    height="300"
+                    src={img.secure_url}
+                    alt="profile photo"
+                    className="w-full h-auto object-center rounded-md"
+                  />
+                ) : (
+                  <div className="flex-center w-full py-8 rounded-md border-2 border-dashed border-gray-300 text-xs text-gray-500 gap-2 cursor-pointer">
+                    <Image src="/upload.svg" alt="upload" width={28} height={28} />
+                    <span>Upload a photo</span>
+                  </div>
+                )}
+
+              </div>
+            );
+          }}
+        </CldUploadWidget>
       </div>
 
       {state.error && <span className="text-red-500">Something went wrong</span>}

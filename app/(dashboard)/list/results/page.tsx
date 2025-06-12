@@ -52,8 +52,10 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
       break;
     case 'student':
       query.studentId = currentUserId!
-    case 'student':
+      break;
+    case 'parent':
       query.student = { parentId: currentUserId! }
+      break;
     default:
       break;
   }
@@ -83,17 +85,20 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
               }
             }
           }
-        }
+        },
       },
-      // orderBy: {
-      //   uploadedAt: 'desc'
-      // },
       take: ITEMS_PER_PAGE,
       skip: ITEMS_PER_PAGE * (p - 1),
     }),
 
     prisma.result.count({ where: query }),
   ]);
+
+  results.sort((a, b) => {
+    const aDate = a.exam?.startTime ?? a.assignment?.dueDate ?? new Date(0);
+    const bDate = b.exam?.startTime ?? b.assignment?.dueDate ?? new Date(0);
+    return bDate.getTime() - aDate.getTime();
+  });
 
   const data = results.map((item) => {
     const assessment = item.exam || item.assignment;
