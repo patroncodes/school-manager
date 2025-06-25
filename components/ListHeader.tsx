@@ -4,7 +4,7 @@ import Image from 'next/image';
 import FormContainer from './FormContainer';
 import TableSearch from './TableSearch';
 
-const ListHeader = ({ role, table, title }: { role: UserRole; table: Table; title: string }) => {
+const ListHeader = ({ role, table, title }: { role: UserRole; table: Table; title: string; }) => {
     return (
         <div className="flex items-center justify-between">
             <h1 className="hidden md:block text-lg font-semibold">{title}</h1>

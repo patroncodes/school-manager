@@ -1,10 +1,9 @@
 import ProfileOverview from "@/components/profile-sections/ProfileOverview"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import prisma from "@/lib/prisma"
 import { getCurrentUser } from "@/lib/serverUtils"
-import { Calendar, Mail, Phone } from "lucide-react"
+import { Calendar, Mail, MapPin, Phone } from "lucide-react"
 import dynamic from "next/dynamic"
 
 const AdminProfile = dynamic(() => import('@/components/profile-sections/AdminProfile'), {
@@ -32,6 +31,7 @@ const AccountPage = async () => {
                 username: true,
                 name: true,
                 surname: true,
+                address: true,
                 email: true,
                 phone: true,
                 img: true,
@@ -55,6 +55,7 @@ const AccountPage = async () => {
                 username: true,
                 name: true,
                 surname: true,
+                address: true,
                 email: true,
                 phone: true,
                 img: true,
@@ -124,6 +125,7 @@ const AccountPage = async () => {
                 username: true,
                 name: true,
                 surname: true,
+                address: true,
                 email: true,
                 phone: true,
                 createdAt: true,
@@ -214,8 +216,8 @@ const AccountPage = async () => {
     return (
         <div className="container mx-auto p-6 space-y-6">
             <div className="flex flex-col lg:flex-row lg:justify-between gap-6 w-full">
-                <Card className="flex lg:flex-row justify-between lg:w-[60%]">
-                    <CardHeader>
+                <Card className="w-full lg:w-[60%]">
+                    <CardContent className="flex lg:flex-row justify-between items-center">
                         <div className="flex items-center gap-4">
                             <Avatar className="h-20 w-20">
                                 <AvatarImage src={user?.img} alt="profile-img" />
@@ -223,17 +225,9 @@ const AccountPage = async () => {
                                     {user?.name[0]}{user?.surname[0]}
                                 </AvatarFallback>
                             </Avatar>
-                            <div>
-                                <CardTitle className="text-xl">{user?.name} {user.surname}</CardTitle>
-                                <CardDescription>
-                                    <div className="flex items-center gap-2 mt-2">
-                                        <Badge className="">{role?.toUpperCase()}</Badge>
-                                    </div>
-                                </CardDescription>
-                            </div>
+                            <CardTitle className="text-xl line-clamp-1">{user?.name} {user.surname}</CardTitle>
                         </div>
-                    </CardHeader>
-                    <CardContent>
+
                         <div className="flex flex-col gap-4 text-sm">
                             <div className="flex items-center gap-2">
                                 <Mail className="h-4 w-4 text-muted-foreground" />
@@ -245,6 +239,10 @@ const AccountPage = async () => {
                                     <span>{user?.phone}</span>
                                 </div>
                             )}
+                            <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground" />
+                                <span>{user.address}</span>
+                            </div>
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-4 w-4 text-muted-foreground" />
                                 <span>Joined {new Date(user?.createdAt).toLocaleDateString()}</span>

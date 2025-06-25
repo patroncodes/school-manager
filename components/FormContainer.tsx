@@ -97,6 +97,58 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
                 })
                 relatedData = { classes: announcementClasses }
                 break;
+            case "fee":
+                const feeClasses = await prisma.class.findMany({
+                    select: { id: true, name: true }
+                })
+                relatedData = { classes: feeClasses }
+                break;
+            case "transaction":
+                let payerEmail;
+
+                if (role === 'parent') {
+                    payerEmail = await prisma.parent.findUnique({
+                        where: { id: currentUserId! },
+                        select: { email: true }
+                    });
+                }
+
+                const paymentDetails = await prisma.fee.findMany({
+                    where: {
+                        OR: [
+                            ...(id
+                                ? [
+                                    { id: id as number }
+                                ] : [
+                                    {
+                                        student: {
+                                            parentId: currentUserId!,
+                                        },
+                                    },
+                                    {
+                                        studentId: null,
+                                        classId: null,
+                                    },
+                                    {
+                                        class: {
+                                            students: {
+                                                some: {
+                                                    parentId: currentUserId!,
+                                                },
+                                            },
+                                        },
+                                    },
+                                ]),
+                        ],
+                    },
+                    select: { id: true, amount: true, description: true }
+                })
+
+                relatedData = {
+                    email: payerEmail?.email,
+                    paymentDetails
+                };
+                break;
             default:
                 break;
         }

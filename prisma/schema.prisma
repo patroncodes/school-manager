@@ -37,6 +37,8 @@ model Student {
   grade Grade @relation(fields: [gradeId], references: [id])
   attendances Attendance[]
   results Result[]
+  fees Fee[]
+  transactions Transaction[]
 }
 
 model Teacher {
@@ -95,6 +97,7 @@ model Class {
   grade Grade @relation(fields: [gradeId], references: [id])
   events Event[]
   announcements Announcement[]
+  fees Fee[]
 }
 
 model Subject {
@@ -193,6 +196,34 @@ model Attendance {
    lesson Lesson @relation(fields: [lessonId], references: [id])
 
    @@unique([studentId, lessonId])
+}
+
+model Transaction {
+  id    Int       @id @default(autoincrement())
+  amount  Float
+  reference String @unique
+  date DateTime  @default(now())
+
+  feeId Int
+  fee Fee       @relation(fields: [feeId], references: [id])
+
+  studentId  String
+  student  Student   @relation(fields: [studentId], references: [id])
+}
+
+model Fee {
+  id            Int @id @default(autoincrement())
+  amount        Float
+  description   String
+  dueDate       DateTime?
+  createdAt     DateTime    @default(now())
+  
+  classId  Int?
+  class  Class? @relation(fields: [classId], references: [id])
+  studentId String?
+  student Student? @relation(fields: [studentId], references: [id])
+
+  transactions  Transaction[]
 }
 
 enum UserSex {

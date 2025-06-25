@@ -1,28 +1,10 @@
-"use client"
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Admin } from "@prisma/client"
 import { AlertTriangle, BarChart3, Database, FileText, Settings, Shield, TrendingUp, Users } from "lucide-react"
 
-interface AdminProfileProps {
-    admin: Admin
-}
-
 export default function AdminProfile() {
-
     return (
         <div className="space-y-6">
-            {/* Admin Overview */}
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                {/* <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Profile Details</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="text-2xl font-bold">{admin.name} {admin.surname}</div>
-                    </CardContent>
-                </Card> */}
-
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">Total Users</CardTitle>

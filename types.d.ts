@@ -20,7 +20,9 @@ type Table =
   | "result"
   | "attendance"
   | "event"
-  | "announcement";
+  | "announcement"
+  | "fee"
+  | "transaction";
 
 type UserRole = "admin" | "teacher" | "student" | "parent";
 
@@ -34,6 +36,7 @@ declare type FormContainerProps = {
   type: "create" | "update" | "delete";
   data?: any;
   id?: number | string;
+  studentId?: string;
 };
 
 declare type FormProps = {
@@ -60,4 +63,22 @@ declare type AttendanceSchema = {
   present: boolean;
   studentId: string;
   lessonId: number;
+};
+
+declare type TransactionData = {
+  id: number;
+  status: boolean;
+  reference: string;
+  amount: number;
+  customer: {
+    email: string;
+  };
+  metadata: {
+    description: string;
+    fee_id: string;
+    first_name: string;
+    last_name: string;
+    user_id: string;
+  };
+  paidAt: Date | string;
 };

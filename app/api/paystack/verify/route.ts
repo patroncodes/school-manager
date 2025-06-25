@@ -1,3 +1,4 @@
+import prisma from "@/lib/prisma";
 import { type NextRequest, NextResponse } from "next/server";
 
 interface PaystackVerifyResponse {
@@ -60,7 +61,6 @@ interface PaystackVerifyResponse {
 
 export async function GET(request: NextRequest) {
   try {
-    // Get reference from query parameters
     const { searchParams } = new URL(request.url);
     const reference = searchParams.get("reference");
 
@@ -74,10 +74,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get Paystack secret key from environment variables
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
     if (!secretKey) {
-      console.error("PAYSTACK_SECRET_KEY not found in environment variables");
+      console.error("PSK missing");
       return NextResponse.json(
         {
           status: false,
@@ -87,7 +86,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Make request to Paystack API to verify transaction
     const response = await fetch(
       `https://api.paystack.co/transaction/verify/${reference}`,
       {
@@ -101,7 +99,6 @@ export async function GET(request: NextRequest) {
 
     const data: PaystackVerifyResponse = await response.json();
 
-    // Handle Paystack API errors
     if (!response.ok) {
       console.error("Paystack Verification Error:", data);
       return NextResponse.json(
@@ -113,12 +110,59 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Return verification response
-    return NextResponse.json({
-      status: true,
-      message: "Transaction verified successfully",
-      data: data.data,
-    });
+    if (data.status && data.data?.status === "success") {
+      try {
+        const student = await prisma.student.findFirst({
+          where: { parentId: data.data.metadata.user_id },
+          select: { id: true },
+        });
+
+        if (!student)
+          return NextResponse.json({
+            status: false,
+            message: "Student Not Found",
+          });
+
+        const existing = await prisma.transaction.findFirst({
+          where: { reference: data.data.reference },
+          select: { reference: true },
+        });
+
+        if (existing?.reference) {
+          return NextResponse.json({
+            status: true,
+            message: "Transaction already recorded",
+            data: existing,
+          });
+        }
+
+        await prisma.transaction.create({
+          data: {
+            amount: data.data.amount / 100,
+            reference: data.data.reference,
+            feeId: parseInt(data.data.metadata.fee_id),
+            studentId: student?.id,
+          },
+        });
+
+        return NextResponse.json({
+          status: true,
+          message: "Transaction verified and recorded",
+          data: data.data,
+        });
+      } catch (error) {
+        console.error("Database save error:", error);
+        return NextResponse.json(
+          { status: false, message: "Transaction verified, but saving failed" },
+          { status: 500 },
+        );
+      }
+    } else {
+      return NextResponse.json({
+        status: false,
+        message: "Transaction verification failed",
+      });
+    }
   } catch (error) {
     console.error("Payment verification error:", error);
 

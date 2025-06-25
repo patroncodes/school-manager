@@ -215,3 +215,22 @@ export const announcementSchema = z.object({
 });
 
 export type AnnouncementSchema = z.infer<typeof announcementSchema>;
+
+export const feeSchema = z
+  .object({
+    id: z.coerce.number().optional(),
+    amount: z.coerce.number().gt(0, { message: "Please enter an amount" }),
+    description: z
+      .string()
+      .min(8, { message: "Too short" })
+      .max(35, { message: "Too long" }),
+    dueDate: z.coerce.date().optional().nullable(),
+    classId: z.coerce.number().optional().nullable(),
+    studentId: z.string().optional().nullable(),
+  })
+  .refine((data) => data.dueDate && data?.dueDate >= new Date(), {
+    path: ["dueDate"],
+    message: "Due date cannot be in the past",
+  });
+
+export type FeeSchema = z.infer<typeof feeSchema>;

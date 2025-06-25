@@ -156,3 +156,19 @@ export const getParents = async (
     return { data: undefined, error: true };
   }
 };
+
+export const getParent = async (query: string) => {
+  try {
+    const parent = await prisma.parent.findFirst({
+      where: {
+        OR: [{ id: query }, { email: query }],
+      },
+      select: { id: true, name: true, surname: true },
+    });
+
+    return { data: parent, error: false };
+  } catch (error) {
+    console.log(error);
+    return { error: true };
+  }
+};

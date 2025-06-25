@@ -40,6 +40,12 @@ const ResultForm = dynamic(() => import("./forms/ResultForm"), {
 const EventForm = dynamic(() => import("./forms/EventForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const PaymentForm = dynamic(() => import("./forms/PaymentForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const FeeForm = dynamic(() => import("./forms/FeeForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const forms: {
   [key: string]: (
@@ -137,6 +143,20 @@ const forms: {
       relatedData={relatedData}
     />
   ),
+  fee: (setOpen, type, data, relatedData) => (
+    <FeeForm
+      type={type}
+      data={data}
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
+  transaction: (setOpen, type, data, relatedData) => (
+    <PaymentForm
+      setOpen={setOpen}
+      relatedData={relatedData}
+    />
+  ),
 };
 
 const FormModal = ({
@@ -162,7 +182,11 @@ const FormModal = ({
         className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
         onClick={() => setOpen(true)}
       >
-        <Image src={`/${type}.svg`} alt="" width={16} height={16} />
+        {(table === 'transaction' && type === 'create') ? (
+          <Image src={`/fee.svg`} alt="" width={16} height={16} title="Pay fee" />
+        ) : (
+          <Image src={`/${type}.svg`} alt="" width={16} height={16} />
+        )}
       </button>
 
       {open && type === 'delete' && id && (

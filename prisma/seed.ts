@@ -25,13 +25,11 @@ function randomBirthday(minAge: number, maxAge: number) {
 async function main() {
   const client = await clerkClient();
 
-  const users = await client.users.getUserList();
+  const users = await client.users.getUserList({ limit: 100 });
 
   for (const user of users.data) {
     await client.users.deleteUser(user.id);
   }
-
-  console.log("DELETED ALL USERS");
 
   const teachers = [];
   const students = [];
@@ -299,6 +297,40 @@ async function main() {
         description: faker.lorem.sentences(2),
         date: new Date(),
         classId: (i % 5) + 1,
+      },
+    });
+  }
+
+  await prisma.announcement.create({
+    data: {
+      title: "General Meeting",
+      description:
+        "There will be a general meeting on Tuesday. Be there on time",
+      date: new Date(),
+    },
+  });
+
+  // FEES
+  for (let i = 1; i <= 3; i++) {
+    const descriptions = [
+      "Textbook fees",
+      "Library fees",
+      "25/26 First term school fees",
+    ];
+    await prisma.fee.create({
+      data: {
+        amount: faker.number.float({
+          min: 20000,
+          max: 45000,
+          fractionDigits: 2,
+        }),
+        description:
+          descriptions[Math.floor(Math.random() * descriptions.length)],
+        ...(i == 1 && { classId: 2, dueDate: faker.date.soon({ days: 7 }) }),
+        ...(i == 2 && {
+          studentId: students[0].id,
+          dueDate: faker.date.soon({ days: 14 }),
+        }),
       },
     });
   }

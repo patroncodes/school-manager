@@ -2,42 +2,70 @@
 
 import type React from "react"
 
-import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { CreditCard, Loader2 } from "lucide-react"
+import { Loader2 } from "lucide-react"
+import { ChangeEvent, useEffect, useState } from "react"
 import { toast } from 'sonner'
+import { getParent } from "@/lib/actions/parent"
+
+interface Fee {
+    id: number;
+    amount: number;
+    description: string;
+}
 
 interface PaymentFormProps {
-    defaultEmail?: string
-    defaultAmount?: number
-    purpose?: string
-    onSuccess?: (data: any) => void
-    onError?: (error: string) => void
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>
+    relatedData: {
+        email?: string;
+        paymentDetails: Fee[]
+    }
 }
 
 export default function PaymentForm({
-    defaultEmail = "",
-    defaultAmount = 0,
-    purpose = "School Payment",
-    onSuccess,
-    onError,
+    setOpen,
+    relatedData,
 }: PaymentFormProps) {
-    const [email, setEmail] = useState(defaultEmail)
-    const [amount, setAmount] = useState(defaultAmount.toString())
-    const [description, setDescription] = useState("")
+    const { email, paymentDetails } = relatedData
+
+    const [payerEmail, setPayerEmail] = useState(email)
+    const [selectedDescription, setSelectedDescription] = useState("")
+    const [selectedFee, setSelectedFee] = useState<Fee | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+
+    useEffect(() => {
+        const selected = paymentDetails.find(fee => fee.description === selectedDescription)
+        if (selected) {
+            setSelectedFee({
+                id: selected.id,
+                amount: selected.amount,
+                description: selected.description
+            })
+        }
+    }, [selectedDescription, paymentDetails])
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsLoading(true)
 
         try {
-            // Convert amount to kobo (multiply by 100)
-            const amountInKobo = Math.round(Number.parseFloat(amount) * 100)
+            if (!payerEmail || !selectedFee) {
+                toast.error("No parent found with this email")
+                setIsLoading(false)
+                return
+            }
+            const { data: parentInfo, error } = await getParent(payerEmail)
+
+            if (error && !parentInfo) {
+                toast.error("No parent found with this email")
+                setIsLoading(false)
+                return
+            }
+
+            const amountInKobo = Math.round(selectedFee?.amount * 100)
 
             const response = await fetch("/api/paystack/initialize", {
                 method: "POST",
@@ -45,19 +73,15 @@ export default function PaymentForm({
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    email,
+                    email: payerEmail,
                     amount: amountInKobo,
-                    callback_url: `${window.location.origin}/payment`,
+                    callback_url: `${window.location.origin}/list/fees`,
                     metadata: {
-                        purpose,
-                        description,
-                        custom_fields: [
-                            {
-                                display_name: "Purpose",
-                                variable_name: "purpose",
-                                value: purpose,
-                            },
-                        ],
+                        fee_id: selectedFee.id,
+                        user_id: parentInfo?.id,
+                        first_name: parentInfo?.name,
+                        last_name: parentInfo?.surname,
+                        description: selectedFee.description
                     },
                 }),
             })
@@ -65,14 +89,10 @@ export default function PaymentForm({
             const data = await response.json()
 
             if (data.status && data.data?.authorization_url) {
-                toast.success("Payment Initialized", { description: "Redirecting to payment page" })
+                toast.success(data.message, { description: "Redirecting to payment page" })
+                setOpen(false)
 
-                // Redirect to Paystack payment page
                 window.location.href = data.data.authorization_url
-
-                if (onSuccess) {
-                    onSuccess(data.data)
-                }
             } else {
                 throw new Error(data.message || "Payment initialization failed")
             }
@@ -82,75 +102,68 @@ export default function PaymentForm({
                 description: errorMessage,
                 richColors: true
             })
-
-            if (onError) {
-                onError(errorMessage)
-            }
         } finally {
             setIsLoading(false)
         }
     }
 
     return (
-        <Card className="w-full max-w-md mx-auto">
-            <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Make Payment
-                </CardTitle>
-                <CardDescription>Enter your payment details to proceed</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                            id="email"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="Enter your email"
-                            required
-                        />
-                    </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <InputField
+                label="email"
+                onChange={(e) => setPayerEmail(e.target.value)}
+                value={payerEmail}
+                inputProps={{ placeholder: relatedData.email }}
+            />
 
-                    <div className="space-y-2">
-                        <Label htmlFor="amount">Amount (₦)</Label>
-                        <Input
-                            id="amount"
-                            type="number"
-                            step="0.01"
-                            min="1"
-                            value={amount}
-                            onChange={(e) => setAmount(e.target.value)}
-                            placeholder="Enter amount"
-                            required
-                        />
-                    </div>
+            <div className="space-y-2">
+                <Label htmlFor="description">Select Fee</Label>
+                <select
+                    id="description"
+                    value={selectedDescription}
+                    onChange={(e) => setSelectedDescription(e.target.value)}
+                    className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+                    required
+                >
+                    <option value="">-- Select Fee --</option>
+                    {paymentDetails.map((fee, idx) => (
+                        <option key={idx} value={fee.description}>
+                            {fee.description}
+                        </option>
+                    ))}
+                </select>
+            </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="description">Description (Optional)</Label>
-                        <Textarea
-                            id="description"
-                            value={description}
-                            onChange={(e) => setDescription(e.target.value)}
-                            placeholder="Payment description"
-                            rows={3}
-                        />
-                    </div>
+            <InputField
+                label="amount"
+                inputProps={{ type: 'number', disabled: true, placeholder: `${selectedFee?.amount}` }}
+            />
 
-                    <Button type="submit" className="w-full" disabled={isLoading || !email || !amount}>
-                        {isLoading ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Processing...
-                            </>
-                        ) : (
-                            `Pay ₦${Number.parseFloat(amount || "0").toLocaleString()}`
-                        )}
-                    </Button>
-                </form>
-            </CardContent>
-        </Card>
+            <Button type="submit" className="w-full cursor-pointer" disabled={isLoading || !selectedFee?.amount}>
+                {isLoading ? (
+                    <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Processing...
+                    </>
+                ) : (
+                    `Pay ₦${selectedFee?.amount || "0"}`
+                )}
+            </Button>
+        </form>
+    )
+}
+
+const InputField = ({ label, value, inputProps, onChange }: { label: string, value?: string | number | undefined; inputProps?: React.InputHTMLAttributes<HTMLInputElement>; onChange?: (e: ChangeEvent<HTMLInputElement>) => void }) => {
+    return (
+        <div className="space-y-2">
+            <Label htmlFor={label} className="capitalize text-xs text-gray-500">{label}</Label>
+            <Input
+                id={label}
+                value={value}
+                onChange={onChange}
+                className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+                {...inputProps}
+            />
+        </div>
     )
 }

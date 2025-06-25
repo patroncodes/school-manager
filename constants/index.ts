@@ -9,10 +9,16 @@ export const menuItems = [
         visible: ["admin", "teacher", "student", "parent"],
       },
       {
-        icon: "/money.svg",
+        icon: "/fee.svg",
         label: "Fees",
-        href: "/fees-payment",
-        visible: ["admin", "parent"],
+        href: "/list/fees",
+        visible: ["admin", "teacher", "parent", "student"],
+      },
+      {
+        icon: "/receipt.svg",
+        label: "Transactions",
+        href: "/list/transactions",
+        visible: ["admin"],
       },
       {
         icon: "/teacher.svg",
