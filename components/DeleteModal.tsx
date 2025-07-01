@@ -1,4 +1,4 @@
-import { deleteAnnouncement, deleteAssignment, deleteClass, deleteEvent, deleteExam, deleteLesson, deleteParent, deleteResult, deleteStudent, deleteSubject, deleteTeacher } from "@/lib/actions";
+import { deleteAnnouncement, deleteAssignment, deleteClass, deleteEvent, deleteExam, deleteLesson, deleteParent, deleteResult, deleteStudent, deleteSubject, deleteTeacher, deleteFee } from "@/lib/actions";
 import { Table } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -27,6 +27,9 @@ const deleteActionMap = {
     event: deleteEvent,
     announcement: deleteAnnouncement,
     attendance: deleteSubject,
+    fee: deleteFee,
+    // TRANSACTION DOESN'T HAVE A DELETE ACTION SINCE YOU SHOULDN'T DELETE A TRANSACTION HISTORY. THIS IS JUST TO AVOID TYPESCRIPT ERRORS, IT WON'T DO ANYTHING
+    transaction: deleteFee,
 };
 
 const DeleteModal = ({ id, table, open, setOpen }: DeleteModalProps) => {

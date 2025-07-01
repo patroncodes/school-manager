@@ -1,6 +1,10 @@
 import prisma from '@/lib/prisma'
 import Image from 'next/image'
-import AttendanceChart from './AttendanceChart'
+import dynamic from 'next/dynamic';
+
+const AttendanceChart = dynamic(() => import('./AttendanceChart'), {
+    loading: () => <h1>Loading...</h1>,
+});
 
 const AttendanceChartContainer = async () => {
     const today = new Date()

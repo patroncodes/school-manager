@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import prisma from "../prisma";
 import { handleServerErrors } from "../utils";
 
@@ -31,6 +32,8 @@ export const markAttendance = async (
     );
 
     if (!attendanceRecords) throw Error;
+
+    revalidatePath("/list/attendance");
 
     return { success: true, error: false };
   } catch (error) {

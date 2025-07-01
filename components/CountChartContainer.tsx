@@ -1,7 +1,11 @@
 import Image from 'next/image'
-import CountChart from './CountChart'
 import prisma from '@/lib/prisma'
 import { UserSex } from '@prisma/client'
+import dynamic from 'next/dynamic';
+
+const CountChart = dynamic(() => import('./CountChart'), {
+    loading: () => <h1>Loading...</h1>,
+});
 
 const CountChartContainer = async () => {
     const data = await prisma.student.groupBy({

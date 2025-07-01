@@ -1,9 +1,12 @@
-import React from 'react'
-import FinanceChart from './FinanceChart'
 import Image from 'next/image'
 import prisma from '@/lib/prisma'
 
 import moment from "moment";
+import dynamic from 'next/dynamic';
+
+const FinanceChart = dynamic(() => import('./FinanceChart'), {
+    loading: () => <h1>Loading...</h1>,
+});
 
 const FinanceChartContainer = async () => {
     const startOfYear = moment().startOf("year").toDate();
@@ -40,9 +43,9 @@ const FinanceChartContainer = async () => {
     }
 
     return (
-        <div className="bg-white rounded-xl w-full h-ful p-4">
+        <div className="bg-white rounded-xl w-full h-full p-4">
             <div className="flex justify-between items-center">
-                <h1 className="text-lg font-semibold">Students</h1>
+                <h1 className="text-lg font-semibold">Finance</h1>
                 <Image src="/moreDark.svg" alt="more" width={20} height={20} />
             </div>
 

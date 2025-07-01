@@ -14,133 +14,75 @@ const AttendanceListPage = async ({ searchParams }: SearchParams) => {
 
     const { role, currentUserId } = await getCurrentUser()
 
-    const query: Prisma.AttendanceWhereInput = {}
-
-    // Initialize nested objects
-    query.lesson = {}
-    query.student = {}
+    const query: Prisma.LessonWhereInput = {}
 
     // URL PARAMS CONDITION
     if (queryParams) {
         for (const [key, value] of Object.entries(queryParams)) {
             if (value !== undefined) {
                 switch (key) {
-                    case "classId":
-                        query.lesson.classId = Number.parseInt(value)
-                        break
-                    case "teacherId":
-                        query.lesson.teacherId = value
-                        break
-                    case "studentId":
-                        query.studentId = value
-                        break
-                    case "subjectId":
-                        query.lesson.subjectId = Number.parseInt(value)
-                        break
-                    case "present":
-                        query.present = value === "true"
-                        break
-                    case "date":
-                        // Filter by specific date
-                        const searchDate = new Date(value)
-                        const startOfDay = new Date(searchDate.setHours(0, 0, 0, 0))
-                        const endOfDay = new Date(searchDate.setHours(23, 59, 59, 999))
-                        query.date = {
-                            gte: startOfDay,
-                            lte: endOfDay,
-                        }
-                        break
-                    case "search":
-                        // Search by student name or lesson name
+                    case 'teacherId':
+                        query.teacherId = value
+                        break;
+                    case 'classId':
+                        query.classId = parseInt(value)
+                        break;
+                    case 'search':
                         query.OR = [
+                            { subject: { name: { contains: value, mode: 'insensitive' } } },
                             {
-                                student: {
-                                    name: { contains: value, mode: "insensitive" },
-                                },
-                            },
-                            {
-                                student: {
-                                    surname: { contains: value, mode: "insensitive" },
-                                },
-                            },
-                            {
-                                lesson: {
-                                    name: { contains: value, mode: "insensitive" },
-                                },
-                            },
-                            {
-                                lesson: {
-                                    subject: {
-                                        name: { contains: value, mode: "insensitive" },
-                                    },
-                                },
-                            },
-                        ]
-                        break
+                                teacher: {
+                                    name: { contains: value, mode: 'insensitive' },
+                                    surname: { contains: value, mode: 'insensitive' }
+                                }
+                            }
+                        ];
+                        break;
                     default:
-                        break
+                        break;
                 }
             }
         }
     }
 
-    // ROLE CONDITIONS
     switch (role) {
-        case "admin":
-            break
-        case "teacher":
-            query.lesson.teacherId = currentUserId!
-            break
-        case "student":
-            query.studentId = currentUserId!
-            break
-        case "parent":
-            query.student = {
-                parentId: currentUserId!,
-            }
-            break
+        case 'admin':
+            break;
+        case 'teacher':
+            query.teacherId = currentUserId!
+            break;
         default:
-            break
+            break;
     }
 
+    query.startTime = { lt: new Date() }
+
     const [data, count] = await prisma.$transaction([
-        prisma.attendance.findMany({
+        prisma.lesson.findMany({
             where: query,
-            include: {
-                student: {
-                    select: {
-                        name: true,
-                        surname: true,
-                    },
+            select: {
+                id: true,
+                name: true,
+                startTime: true,
+                class: {
+                    select: { name: true, _count: { select: { students: true } } }
                 },
-                lesson: {
-                    select: {
-                        id: true,
-                        subject: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                        teacher: {
-                            select: {
-                                name: true,
-                                surname: true,
-                            },
-                        },
-                        class: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                    },
+                teacher: {
+                    select: { name: true, surname: true }
+                },
+                subject: {
+                    select: { name: true }
+                },
+                _count: {
+                    select: { attendances: { where: { present: true } } }
                 },
             },
-            orderBy: [{ date: "desc" }, { lesson: { startTime: "desc" } }],
+            orderBy: { startTime: 'desc' },
             take: ITEMS_PER_PAGE,
             skip: ITEMS_PER_PAGE * (p - 1),
         }),
 
-        prisma.attendance.count({ where: query }),
+        prisma.lesson.count({ where: query }),
     ])
 
     return (

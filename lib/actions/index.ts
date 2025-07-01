@@ -17,3 +17,6 @@ export { createResult, deleteResult, updateResult } from "./result";
 export { createStudent, deleteStudent, updateStudent } from "./student";
 export { createSubject, deleteSubject, updateSubject } from "./subject";
 export { createTeacher, deleteTeacher, updateTeacher } from "./teacher";
+export { createFee, deleteFee, updateFee } from "./fee";
+export { markAttendance } from "./attendance";
+export { initiateTransaction } from "./transaction";

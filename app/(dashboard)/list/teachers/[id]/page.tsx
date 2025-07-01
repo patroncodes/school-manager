@@ -1,7 +1,7 @@
 import Announcements from "@/components/Announcements";
 import BigCalendarContainer from "@/components/BigCalendarContainer";
 import { InfoCard, SmallCard } from "@/components/Card";
-import PerformanceChart from "@/components/PerformanceChart";
+import PerformanceChartContainer from "@/components/PerformanceChartContainer";
 import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types";
 import { Teacher } from "@prisma/client";
@@ -94,7 +94,7 @@ const SingleTeacherPage = async ({ params }: SearchParams) => {
           </div>
         </div>
 
-        <PerformanceChart />
+        <PerformanceChartContainer />
 
         <Announcements role="teacher" userId={id} />
       </div>

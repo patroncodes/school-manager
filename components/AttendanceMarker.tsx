@@ -1,6 +1,6 @@
 'use client'
 
-import { markAttendance } from "@/lib/actions/attendance"
+import { markAttendance } from "@/lib/actions"
 import { Loader2, UserCheck, UserX } from "lucide-react"
 import { useState } from "react"
 import { Button } from "./ui/button"
