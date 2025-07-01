@@ -20,10 +20,8 @@ interface PaystackResponse {
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse the request body
     const body: PaystackInitializeRequest = await request.json();
 
-    // Validate required fields
     if (!body.email || !body.amount) {
       return NextResponse.json(
         {
@@ -34,7 +32,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(body.email)) {
       return NextResponse.json(
@@ -61,10 +58,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get Paystack secret key from environment variables
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
     if (!secretKey) {
-      console.error("PAYSTACK_SECRET_KEY not found in environment variables");
+      console.error("Secret is missing");
       return NextResponse.json(
         {
           status: false,
@@ -74,7 +70,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Prepare the request payload
     const payload = {
       email: body.email,
       amount: amount.toString(),
@@ -83,7 +78,6 @@ export async function POST(request: NextRequest) {
       ...(body.metadata && { metadata: body.metadata }),
     };
 
-    // Make request to Paystack API
     const response = await fetch(
       "https://api.paystack.co/transaction/initialize",
       {
@@ -98,7 +92,6 @@ export async function POST(request: NextRequest) {
 
     const data: PaystackResponse = await response.json();
 
-    // Handle Paystack API errors
     if (!response.ok) {
       console.error("Paystack API Error:", data);
       return NextResponse.json(
@@ -110,7 +103,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Return successful response
     return NextResponse.json({
       status: true,
       message: "Transaction initialized successfully",

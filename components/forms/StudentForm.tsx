@@ -59,8 +59,13 @@ const StudentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   }, [state, type, router, setOpen])
 
   const onSubmit = handleSubmit((values) => {
+    const hasNewImg = image?.secure_url !== img?.secure_url
+
     const formData = {
-      ...(type === 'update' && { id: data.id, oldImg: image?.secure_url }),
+      ...(type === 'update' && {
+        id: data.id,
+        ...(hasNewImg && { oldImg: image?.secure_url })
+      }),
       ...values,
       parentId: user.id,
       img: img?.secure_url

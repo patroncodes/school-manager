@@ -104,25 +104,38 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
                 relatedData = { classes: feeClasses }
                 break;
             case "transaction":
-                let payerEmail;
+                let studentDetails;
 
-                if (role === 'parent') {
-                    payerEmail = await prisma.parent.findUnique({
-                        where: { id: currentUserId! },
-                        select: { email: true }
-                    });
+                const parentId = role === 'admin' ? data?.parentId as string : currentUserId!
+
+                const parent = await prisma.parent.findUnique({
+                    where: { id: parentId },
+                    select: {
+                        email: true,
+                        students: {
+                            select: { id: true, name: true, surname: true }
+                        }
+                    },
+                });
+
+                const student = parent?.students.filter((student) => student.id === data?.studentId)
+
+                if (student && student.length < 1) {
+                    studentDetails = parent?.students
+                } else {
+                    studentDetails = student
                 }
 
                 const paymentDetails = await prisma.fee.findMany({
                     where: {
                         OR: [
-                            ...(id
+                            ...(data?.feeId
                                 ? [
-                                    { id: id as number }
+                                    { id: data.feeId as number }
                                 ] : [
                                     {
                                         student: {
-                                            parentId: currentUserId!,
+                                            parentId: parentId,
                                         },
                                     },
                                     {
@@ -133,7 +146,7 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
                                         class: {
                                             students: {
                                                 some: {
-                                                    parentId: currentUserId!,
+                                                    parentId: parentId,
                                                 },
                                             },
                                         },
@@ -145,8 +158,12 @@ const FormContainer = async ({ table, type, data, id }: FormContainerProps) => {
                 })
 
                 relatedData = {
-                    email: payerEmail?.email,
-                    paymentDetails
+                    email: parent?.email,
+                    paymentDetails,
+                    userRole: role,
+                    students: studentDetails,
+                    feeId: data?.feeId,
+                    studentId: data?.studentId
                 };
                 break;
             default:

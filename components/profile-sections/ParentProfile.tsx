@@ -1,35 +1,8 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Award, BookOpen, Calendar, CheckCircle, XCircle } from 'lucide-react';
-
-interface ParentProfileProps {
-    students: {
-        id: string;
-        name: string;
-        surname: string;
-        class: { name: string }
-        attendances: Array<{
-            date: string
-            present: boolean
-            lesson: {
-                name: string
-                subject: {
-                    name: string
-                }
-            }
-        }>
-        results: Array<{
-            score: number;
-            createdAt: Date;
-            exam?: {
-                title: string
-            }
-            assignment?: {
-                title: string
-            }
-        }>
-    }[]
-}
+import { type ParentProfileProps, type TabItemProps } from "@/types";
+import { cn } from "@/lib/utils";
 
 const StudentProfile = ({ students }: ParentProfileProps) => {
     const getPerformanceColor = (score: number) => {
@@ -59,27 +32,18 @@ const StudentProfile = ({ students }: ParentProfileProps) => {
                             <Card>
                                 <CardContent>
                                     <div className="space-y-3">
-                                        {student.attendances.map((attendance, index) => (
-                                            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                                                <div className="flex items-center gap-3">
-                                                    {attendance.present ? (
-                                                        <CheckCircle className="h-5 w-5 text-green-600" />
-                                                    ) : (
-                                                        <XCircle className="h-5 w-5 text-red-600" />
-                                                    )}
-                                                    <div>
-                                                        <div className="font-medium">{attendance.lesson.subject.name}</div>
-                                                        <div className="text-sm text-muted-foreground">
-                                                            {attendance.lesson.name}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="text-sm text-muted-foreground">
-                                                    {new Date(attendance.date).toLocaleDateString()}
-                                                </div>
-                                            </div>
-                                        ))}
-                                        {student.attendances.length === 0 && (
+                                        {student.attendances.length !== 0 ? student.attendances.map((attendance, index) => (
+                                            <TabItem
+                                                key={index}
+                                                icon={attendance.present
+                                                    ? <CheckCircle className="h-5 w-5 text-green-600" />
+                                                    : <XCircle className="h-5 w-5 text-red-600" />
+                                                }
+                                                label={attendance.lesson.subject.name}
+                                                subLabel={attendance.lesson.name}
+                                                value={new Date(attendance.date).toLocaleDateString()}
+                                            />
+                                        )) : (
                                             <p className="text-center text-muted-foreground py-8">
                                                 No attendance records available
                                             </p>
@@ -111,27 +75,16 @@ const StudentProfile = ({ students }: ParentProfileProps) => {
                             <Card>
                                 <CardContent>
                                     <div className="space-y-3">
-                                        {student.results.map((result, index) => (
-                                            <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                                                <div className="flex items-center gap-3">
-                                                    <BookOpen className="h-5 w-5 text-blue-600" />
-                                                    <div>
-                                                        <div className="font-medium">
-                                                            {result.exam?.title || result.assignment?.title}
-                                                        </div>
-                                                        <div className="text-sm text-muted-foreground">
-                                                            {result.exam ? 'Exam' : 'Assignment'}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="text-right">
-                                                    <div className={`text-lg font-bold ${getPerformanceColor(result.score)}`}>
-                                                        {result.score}%
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ))}
-                                        {student.results.length === 0 && (
+                                        {student.results.length !== 0 ? student.results.map((result, index) => (
+                                            <TabItem
+                                                key={index}
+                                                icon={<BookOpen className="h-5 w-5 text-blue-600" />}
+                                                label={result.exam?.title || result.assignment?.title || "NA"}
+                                                subLabel={result.exam ? 'Exam' : 'Assignment'}
+                                                value={`${result.score}%`}
+                                                className={`text-lg font-bold ${getPerformanceColor(result.score)}`}
+                                            />
+                                        )) : (
                                             <p className="text-center text-muted-foreground py-8">
                                                 No results available
                                             </p>
@@ -148,3 +101,22 @@ const StudentProfile = ({ students }: ParentProfileProps) => {
 }
 
 export default StudentProfile
+
+const TabItem = ({ icon, label, subLabel, value, className }: TabItemProps) => {
+    return (
+        <div className="flex items-center justify-between p-3 border rounded-lg">
+            <div className="flex items-center gap-3">
+                {icon}
+                <div>
+                    <div className="font-medium">{label}</div>
+                    <div className="text-sm text-muted-foreground">
+                        {subLabel}
+                    </div>
+                </div>
+            </div>
+            <div className={cn("text-sm text-muted-foreground", className)}>
+                {value}
+            </div>
+        </div>
+    )
+}

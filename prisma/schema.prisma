@@ -203,6 +203,8 @@ model Transaction {
   amount  Float
   reference String @unique
   date DateTime  @default(now())
+  type TransactionType
+  extraDescription String?
 
   feeId Int
   fee Fee       @relation(fields: [feeId], references: [id])
@@ -229,6 +231,11 @@ model Fee {
 enum UserSex {
   MALE
   FEMALE
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
 }
 
 enum Day {

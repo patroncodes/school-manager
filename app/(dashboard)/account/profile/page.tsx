@@ -217,7 +217,7 @@ const AccountPage = async () => {
         <div className="container mx-auto p-6 space-y-6">
             <div className="flex flex-col lg:flex-row lg:justify-between gap-6 w-full">
                 <Card className="w-full lg:w-[60%]">
-                    <CardContent className="flex lg:flex-row justify-between items-center">
+                    <CardContent className="flex flex-col gap-4 lg:flex-row justify-between lg:items-center">
                         <div className="flex items-center gap-4">
                             <Avatar className="h-20 w-20">
                                 <AvatarImage src={user?.img} alt="profile-img" />

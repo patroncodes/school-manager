@@ -1,5 +1,6 @@
 import ListHeader from "@/components/ListHeader"
 import Pagination from "@/components/Pagination"
+import PaymentVerification from "@/components/PaymentVerification"
 import Table from "@/components/Table"
 import { transactionsColumn } from "@/components/tables/transactionsColumn"
 import prisma from "@/lib/prisma"
@@ -71,6 +72,10 @@ const TransactionsListPage = async ({ searchParams }: SearchParams) => {
             <ListHeader title="All Transactions" role={role!} table="transaction" />
             <Table columns={transactionsColumn} data={data} role={role!} />
             <Pagination count={count} page={p} />
+
+            {queryParams.reference && (
+                <PaymentVerification reference={queryParams.reference} userRole={role!} />
+            )}
         </div>
     )
 }

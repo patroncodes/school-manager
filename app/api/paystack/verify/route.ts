@@ -1,63 +1,6 @@
 import prisma from "@/lib/prisma";
-import { type NextRequest, NextResponse } from "next/server";
-
-interface PaystackVerifyResponse {
-  status: boolean;
-  message: string;
-  data?: {
-    id: number;
-    domain: string;
-    status: string;
-    reference: string;
-    amount: number;
-    message: string | null;
-    gateway_response: string;
-    paid_at: string;
-    created_at: string;
-    channel: string;
-    currency: string;
-    ip_address: string;
-    metadata: Record<string, any>;
-    log: any;
-    fees: number;
-    fees_split: any;
-    authorization: {
-      authorization_code: string;
-      bin: string;
-      last4: string;
-      exp_month: string;
-      exp_year: string;
-      channel: string;
-      card_type: string;
-      bank: string;
-      country_code: string;
-      brand: string;
-      reusable: boolean;
-      signature: string;
-      account_name: string | null;
-    };
-    customer: {
-      id: number;
-      first_name: string | null;
-      last_name: string | null;
-      email: string;
-      customer_code: string;
-      phone: string | null;
-      metadata: Record<string, any>;
-      risk_action: string;
-      international_format_phone: string | null;
-    };
-    plan: any;
-    split: any;
-    order_id: any;
-    paidAt: string;
-    createdAt: string;
-    requested_amount: number;
-    pos_transaction_data: any;
-    source: any;
-    fees_breakdown: any;
-  };
-}
+import { PaystackVerifyResponse } from "@/types";
+import { type NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
@@ -65,7 +8,7 @@ export async function GET(request: NextRequest) {
     const reference = searchParams.get("reference");
 
     if (!reference) {
-      return NextResponse.json(
+      return Response.json(
         {
           status: false,
           message: "Transaction reference is required",
@@ -77,7 +20,7 @@ export async function GET(request: NextRequest) {
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
     if (!secretKey) {
       console.error("PSK missing");
-      return NextResponse.json(
+      return Response.json(
         {
           status: false,
           message: "Payment service configuration error",
@@ -101,7 +44,7 @@ export async function GET(request: NextRequest) {
 
     if (!response.ok) {
       console.error("Paystack Verification Error:", data);
-      return NextResponse.json(
+      return Response.json(
         {
           status: false,
           message: data.message || "Transaction verification failed",
@@ -112,24 +55,13 @@ export async function GET(request: NextRequest) {
 
     if (data.status && data.data?.status === "success") {
       try {
-        const student = await prisma.student.findFirst({
-          where: { parentId: data.data.metadata.user_id },
-          select: { id: true },
-        });
-
-        if (!student)
-          return NextResponse.json({
-            status: false,
-            message: "Student Not Found",
-          });
-
         const existing = await prisma.transaction.findFirst({
           where: { reference: data.data.reference },
           select: { reference: true },
         });
 
         if (existing?.reference) {
-          return NextResponse.json({
+          return Response.json({
             status: true,
             message: "Transaction already recorded",
             data: existing,
@@ -141,24 +73,26 @@ export async function GET(request: NextRequest) {
             amount: data.data.amount / 100,
             reference: data.data.reference,
             feeId: parseInt(data.data.metadata.fee_id),
-            studentId: student?.id,
+            studentId: data.data.metadata.student_id,
+            type: data.data.metadata.type,
+            extraDescription: data.data.metadata.extraDescription,
           },
         });
 
-        return NextResponse.json({
+        return Response.json({
           status: true,
           message: "Transaction verified and recorded",
           data: data.data,
         });
       } catch (error) {
         console.error("Database save error:", error);
-        return NextResponse.json(
+        return Response.json(
           { status: false, message: "Transaction verified, but saving failed" },
           { status: 500 },
         );
       }
     } else {
-      return NextResponse.json({
+      return Response.json({
         status: false,
         message: "Transaction verification failed",
       });
@@ -166,7 +100,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Payment verification error:", error);
 
-    return NextResponse.json(
+    return Response.json(
       {
         status: false,
         message: "Internal server error",

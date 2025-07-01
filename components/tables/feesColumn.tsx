@@ -53,11 +53,12 @@ export const feesColumn = (role: UserRole) => [
             header: 'Actions',
             cell: (item: FeesList) => (
                 <div>
-                    <div className={cn("", role === 'admin' && 'hidden')}>
-                        {!item.hasPaid && (
-                            <FormContainer table="transaction" type="create" id={item.id} />
-                        )}
-                    </div>
+                    {(role !== 'admin' && !item.hasPaid) && (
+                        <FormContainer table="transaction" type="create" data={{
+                            feedId: item.id,
+                            studentId: item.studentId
+                        }} />
+                    )}
                     <div className={cn("flex items-center gap-2", role !== 'admin' && 'hidden')}>
                         <FormContainer table="fee" type="update" data={item} />
                         <FormContainer table="fee" type="delete" id={item.id} />

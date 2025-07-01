@@ -67,7 +67,7 @@ export const createStudent = async (
 
 export const updateStudent = async (
   currentState: CurrentState,
-  { password, ...data }: StudentSchema,
+  { password, oldImg, ...data }: StudentSchema,
 ) => {
   try {
     if (!data.id) return { success: false, error: "Student doesn't exist" };
@@ -84,8 +84,8 @@ export const updateStudent = async (
 
     if (!user) throw Error;
 
-    if (data.img && data.oldImg) {
-      const publicId = extractImageId(data.oldImg);
+    if (data.img && oldImg) {
+      const publicId = extractImageId(oldImg);
 
       await deleteImage(publicId.id as string);
     }

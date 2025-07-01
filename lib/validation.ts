@@ -234,3 +234,13 @@ export const feeSchema = z
   });
 
 export type FeeSchema = z.infer<typeof feeSchema>;
+
+export const transactionSchema = z.object({
+  email: z.string().email({ message: "Enter a valid email" }),
+  studentId: z.string({ message: "Please select a student" }),
+  feeId: z.coerce.number(),
+  amount: z.coerce.number(),
+  extraDescription: z.string().nullable(),
+});
+
+export type TransactionSchema = z.infer<typeof transactionSchema>;

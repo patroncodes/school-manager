@@ -40,7 +40,7 @@ const ResultForm = dynamic(() => import("./forms/ResultForm"), {
 const EventForm = dynamic(() => import("./forms/EventForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const PaymentForm = dynamic(() => import("./forms/PaymentForm"), {
+const TransactionForm = dynamic(() => import("./forms/TransactionForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const FeeForm = dynamic(() => import("./forms/FeeForm"), {
@@ -152,7 +152,7 @@ const forms: {
     />
   ),
   transaction: (setOpen, type, data, relatedData) => (
-    <PaymentForm
+    <TransactionForm
       setOpen={setOpen}
       relatedData={relatedData}
     />

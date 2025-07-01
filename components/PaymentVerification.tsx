@@ -1,11 +1,13 @@
 "use client"
 
+import { UserRole } from "@/types"
 import { CheckCircle, Loader2, XCircle } from "lucide-react"
+import moment from "moment"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog"
 
-const PaymentVerification = ({ reference }: { reference: string }) => {
+const PaymentVerification = ({ reference, userRole }: { reference: string; userRole: UserRole }) => {
     const router = useRouter()
 
     const [verificationStatus, setVerificationStatus] = useState<"loading" | "success" | "failed" | null>(null)
@@ -49,9 +51,36 @@ const PaymentVerification = ({ reference }: { reference: string }) => {
         if (!open) {
             setVerificationStatus(null)
             setTransactionData(null)
-            router.replace('/list/fees', { scroll: false })
+            router.replace(userRole === "admin"
+                ? '/list/transactions'
+                : '/list/fees',
+                { scroll: false }
+            )
         }
     }
+
+    const transactionDetails = [
+        {
+            label: 'Reference',
+            value: transactionData?.reference
+        },
+        {
+            label: 'Amount',
+            value: `₦${transactionData?.amount / 100}`
+        },
+        {
+            label: 'Email',
+            value: transactionData?.customer.email
+        },
+        {
+            label: 'Student',
+            value: `${transactionData?.metadata.first_name} ${transactionData?.metadata.last_name}`
+        },
+        {
+            label: 'Date',
+            value: moment(transactionData?.paidAt).format('MMMM D, YYYY - h:mm A')
+        }
+    ]
 
     if (reference) {
         return (
@@ -78,18 +107,12 @@ const PaymentVerification = ({ reference }: { reference: string }) => {
 
                             {transactionData && (
                                 <div className="bg-green-50 p-4 rounded-lg space-y-2 text-left">
-                                    <p>
-                                        <strong>Reference:</strong> {transactionData.reference}
-                                    </p>
-                                    <p>
-                                        <strong>Amount:</strong> ₦{(transactionData.amount / 100).toLocaleString()}
-                                    </p>
-                                    <p>
-                                        <strong>Email:</strong> {transactionData.customer.email}
-                                    </p>
-                                    <p>
-                                        <strong>Date:</strong> {new Date(transactionData.paid_at).toLocaleString()}
-                                    </p>
+                                    {transactionDetails.map(item => (
+                                        <div key={item.label} className="flex gap-4 items-center">
+                                            <strong className="min-w-20">{item.label}:</strong>
+                                            <p>{item.value}</p>
+                                        </div>
+                                    ))}
                                 </div>
                             )}
                         </div>

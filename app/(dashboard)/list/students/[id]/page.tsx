@@ -1,6 +1,7 @@
 import Announcements from "@/components/Announcements";
 import BigCalendarContainer from "@/components/BigCalendarContainer";
 import { InfoCard, SmallCard } from "@/components/Card";
+import FormContainer from "@/components/FormContainer";
 import PerformanceChart from "@/components/PerformanceChart";
 import prisma from "@/lib/prisma";
 import { SearchParams } from "@/types";
@@ -30,6 +31,7 @@ const SingleStudentPage = async ({ params }: SearchParams) => {
       id: string;
       name: string;
       surname: string;
+      email: string | null;
     } | null;
     attendances: {
       date: Date;
@@ -44,7 +46,7 @@ const SingleStudentPage = async ({ params }: SearchParams) => {
         class: {
           select: { id: true, name: true, _count: { select: { lessons: true } } }
         },
-        parent: { select: { id: true, name: true, surname: true } },
+        parent: { select: { id: true, name: true, surname: true, email: true } },
         attendances: {
           where: { studentId: id, date: { gte: lastMonday } },
           select: { date: true, present: true }
@@ -120,6 +122,17 @@ const SingleStudentPage = async ({ params }: SearchParams) => {
             <Link className="p-3 rounded-md bg-lamaYellowLight" href={`/list/results?studentId=${id}`}>
               Student&apos;s Results
             </Link>
+            <div className="p-3 rounded-md bg-lamaSkyLight flex items-center gap-2 cursor-pointer">
+              <FormContainer
+                type="create"
+                table="transaction"
+                data={{
+                  parentId: student.parent?.id,
+                  studentId: student.id
+                }}
+              />
+              <span>Pay Fees</span>
+            </div>
           </div>
         </div>
 

@@ -24,8 +24,6 @@ const FeesListPage = async ({ searchParams }: SearchParams) => {
   const { page, ...queryParams } = await searchParams
   const p = page ? Number.parseInt(page) : 1
 
-  console.log(queryParams)
-
   const { role, currentUserId } = await getCurrentUser()
   const students: string[] = []
 
@@ -118,7 +116,7 @@ const FeesListPage = async ({ searchParams }: SearchParams) => {
         },
         transactions: {
           where: { studentId: { in: students } },
-          select: { id: true }
+          select: { id: true, reference: true }
         }
       },
       orderBy: [{ createdAt: "desc" }],
@@ -131,7 +129,7 @@ const FeesListPage = async ({ searchParams }: SearchParams) => {
 
   const updatedFees = (data as FeeWithRelations[]).map(fee => ({
     ...fee,
-    hasPaid: fee.transactions.length > 0
+    hasPaid: fee.transactions.length > 0,
   }))
 
   return (
@@ -141,7 +139,7 @@ const FeesListPage = async ({ searchParams }: SearchParams) => {
       <Pagination count={count} page={p} />
 
       {queryParams.reference && (
-        <PaymentVerification reference={queryParams.reference} />
+        <PaymentVerification reference={queryParams.reference} userRole={role!} />
       )}
     </div>
   )
