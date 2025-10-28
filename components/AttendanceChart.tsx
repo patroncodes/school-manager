@@ -7,7 +7,6 @@ import {
   Legend,
   ResponsiveContainer,
   Tooltip,
-  // Rectangle,
   XAxis,
   YAxis,
 } from "recharts";

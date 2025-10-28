@@ -1,110 +1,123 @@
 "use client";
 
-import { createSubject, updateSubject } from "@/lib/actions";
-import { subjectSchema, SubjectSchema } from "@/lib/validation";
+import { subjectSchema, SubjectSchema } from "@/lib/zod/validation";
 import { FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
+import InputField, { FormFieldType } from "../InputField";
+import { Form } from "@/components/ui/form";
+import {
+  AccessLevel,
+  CreateSubjectMutation,
+  UpdateSubjectMutation,
+  useCreateSubjectMutation,
+  useGetStaffsQuery,
+  useUpdateSubjectMutation,
+} from "@/lib/generated/graphql/client";
 import { toast } from "sonner";
-import InputField from "../InputField";
+import { handleGraphqlClientErrors } from "@/lib/utils";
 
-const SubjectForm = ({ type, data, setOpen, relatedData }: FormProps) => {
+const SubjectForm = ({ type, data, setOpen }: FormProps) => {
   const router = useRouter();
-
-  const { teachers } = relatedData
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<SubjectSchema>({
-    resolver: zodResolver(subjectSchema)
+  const [teachersResult] = useGetStaffsQuery({
+    variables: { filter: { isActive: true, accessLevel: AccessLevel.Teacher } },
   });
 
-  const [state, formAction, pending] = useActionState(
-    type === 'create' ? createSubject : updateSubject,
-    { success: false, error: false }
-  )
+  const [subjectsCreateResult, createSubject] = useCreateSubjectMutation();
+  const [subjectsUpdateResult, updateSubject] = useUpdateSubjectMutation();
 
-  useEffect(() => {
-    if (state.success) {
-      toast.success(`Subject has been ${type}d`)
-      setOpen(false)
+  const teachers = teachersResult.data?.staffs;
 
-      router.refresh()
-    } else if (state.error) {
-      if (typeof state.error === 'string') {
-        toast.error(state.error)
-      } else {
-        toast.error(`Failed to ${type} subject`)
-      }
-    }
-  }, [state, type, router, setOpen])
+  const form = useForm<SubjectSchema>({
+    resolver: zodResolver(subjectSchema),
+    defaultValues: {
+      name: data?.name ?? "",
+      teachers:
+        data?.teachers.map((teacher: { id: string }) => teacher.id) ?? [],
+    },
+  });
 
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = form.handleSubmit(async (values) => {
     const formData = {
-      ...(type === 'update' && { id: data.id }),
-      name: values.name,
-      teachers: values.teachers
+      ...(type === "update" && { id: data.id, relationId: data?.teachers?.id }),
+      ...values,
+    };
+
+    const response =
+      type === "create"
+        ? await createSubject({ input: formData })
+        : await updateSubject({ input: formData });
+
+    const mutationResult =
+      type === "create"
+        ? (response.data as CreateSubjectMutation)?.createSubject
+        : (response.data as UpdateSubjectMutation)?.updateSubject;
+
+    if (!mutationResult) {
+      toast.error("Something went wrong");
+      return;
     }
-    startTransition(() => {
-      formAction(formData)
-    })
-  })
+
+    if (
+      mutationResult.__typename === "MutationCreateSubjectSuccess" ||
+      mutationResult.__typename === "MutationUpdateSubjectSuccess"
+    ) {
+      toast.success(`Subject ${type}d successfully!`);
+      setOpen(false);
+      router.refresh();
+    } else {
+      const error = handleGraphqlClientErrors(mutationResult);
+      toast.error(error ?? "Something went wrong");
+    }
+  });
+
+  const formattedTeachers = teachers?.map(
+    (teacher: { id: string; name: string; surname: string }) => ({
+      id: teacher.id,
+      name: teacher.name + " " + teacher.surname,
+    }),
+  );
+
+  const isLoading =
+    subjectsCreateResult.fetching || subjectsUpdateResult.fetching;
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <span className="text-xs text-gray-400 font-medium">
-        Subject Information
-      </span>
+    <Form {...form}>
+      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+        <span className="text-xs font-medium text-gray-400">
+          Subject Information
+        </span>
 
-      <div className="flex gap-4">
-        <InputField
-          label="Subject Name"
-          name="name"
-          defaultValue={data?.name}
-          register={register}
-          error={errors.name}
-          inputProps={{ autoFocus: true }}
-        />
+        <div className="flex w-full flex-wrap justify-between gap-4">
+          <InputField
+            label="Name"
+            control={form.control}
+            name="name"
+            fieldType={FormFieldType.INPUT}
+            inputProps={{ autoFocus: true }}
+          />
 
-        <div className="flex flex-col gap-2 w-full md:w-1/2">
-          <label htmlFor="sex" className="text-xs text-gray-500">
-            Teachers
-          </label>
-          <select
-            multiple
-            {...register("teachers")}
-            id="teachers"
-            className="ring-[1.5px] ring-gray-500 p-2 rounded-md text-sm w-full"
-            defaultValue={data?.teachers.map((teacher: { id: string }) => teacher.id)}
-          >
-            {teachers.map((teacher: { id: string; name: string; surname: string }) => (
-              <option key={teacher.id} value={teacher.id} className="py-1">
-                {teacher.name + " " + teacher.surname}
-              </option>
-            ))}
-          </select>
-          {errors.teachers?.message && (
-            <p className="text-xs text-red-400">
-              {errors.teachers.message.toString()}
-            </p>
-          )}
+          <InputField
+            label="Teachers"
+            control={form.control}
+            name="teachers"
+            placeholder="Select teachers"
+            fieldType={FormFieldType.MULTI_SELECT}
+            options={formattedTeachers}
+          />
         </div>
-      </div>
 
-      {state.error && <span className="text-red-500">Something went wrong</span>}
-      <button
-        type="submit"
-        className="form-submit_btn"
-        disabled={pending}
-      >
-        {!pending ? type : <Loader2 className="animate-spin" />}
-      </button>
-    </form>
+        <button
+          type="submit"
+          className="form-submit_btn"
+          disabled={!form.formState.isDirty || isLoading}
+        >
+          {!isLoading ? type : <Loader2 className="animate-spin" />}
+        </button>
+      </form>
+    </Form>
   );
 };
 

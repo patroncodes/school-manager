@@ -1,7 +1,7 @@
 "use server";
 
 import { handleServerErrors } from "@/lib/utils";
-import { AssignmentSchema } from "@/lib/validation";
+import { AssignmentSchema } from "@/lib/zod/validation";
 import { CurrentState } from "@/types";
 import { getCurrentUser } from "../serverUtils";
 import prisma from "../prisma";
@@ -11,29 +11,24 @@ export const createAssignment = async (
   data: AssignmentSchema,
 ) => {
   try {
-    const { currentUserId, role } = await getCurrentUser();
-    if (role === "teacher") {
-      const teacherLesson = await prisma.lesson.findFirst({
-        where: {
-          teacherId: currentUserId!,
-          id: data.lessonId,
-        },
-      });
+    const { accessLevel, schoolId } = await getCurrentUser();
 
-      if (!teacherLesson) {
-        return {
-          success: false,
-          error:
-            "You can't create an assignment for a lesson that doesn't belong to you",
-        };
-      }
+    const permittedRoles = ["manager", "teacher", "administration"];
+
+    if (!permittedRoles.includes(accessLevel!)) {
+      return {
+        success: false,
+        error: "You don't have permission to update this assignment",
+      };
     }
 
-    const resData = await prisma.assignment.create({
-      data,
+    await prisma.assignment.create({
+      data: {
+        schoolId,
+        termId: data.termId!,
+        ...data,
+      },
     });
-
-    if (!resData) throw Error;
 
     return { success: true, error: false };
   } catch (err: any) {
@@ -55,32 +50,34 @@ export const updateAssignment = async (
   data: AssignmentSchema,
 ) => {
   try {
-    const { currentUserId, role } = await getCurrentUser();
-    if (role === "teacher") {
-      const teacherLesson = await prisma.lesson.findFirst({
-        where: {
-          teacherId: currentUserId!,
-          id: data.lessonId,
-        },
-      });
+    const { currentUserId, accessLevel, schoolId } = await getCurrentUser();
 
-      if (!teacherLesson) {
-        return {
-          success: false,
-          error:
-            "You can't update an assignment for a lesson that doesn't belong to you",
-        };
-      }
+    const permittedRoles = ["manager", "teacher", "administration"];
+
+    if (!permittedRoles.includes(accessLevel!)) {
+      return {
+        success: false,
+        error: "You don't have permission to update this assignment",
+      };
     }
 
-    const resData = await prisma.assignment.update({
+    await prisma.assignment.update({
       where: {
         id: data.id,
+        schoolId,
+        ...(accessLevel === "teacher"
+          ? {
+              class: {
+                OR: [
+                  { formTeacherId: currentUserId },
+                  { classTeacherId: currentUserId },
+                ],
+              },
+            }
+          : {}),
       },
       data,
     });
-
-    if (!resData) throw Error;
 
     return { success: true, error: false };
   } catch (err: any) {
@@ -99,18 +96,33 @@ export const updateAssignment = async (
 
 export const deleteAssignment = async (id: string) => {
   try {
-    const { role, currentUserId } = await getCurrentUser();
+    const { accessLevel, currentUserId, schoolId } = await getCurrentUser();
 
-    const resData = await prisma.assignment.delete({
+    const permittedRoles = ["manager", "teacher", "administration"];
+
+    if (!permittedRoles.includes(accessLevel!)) {
+      return {
+        success: false,
+        error: "You don't have permission to delete assignments",
+      };
+    }
+
+    await prisma.assignment.delete({
       where: {
-        id: parseInt(id),
-        ...(role === "teacher"
-          ? { lesson: { teacherId: currentUserId! } }
+        id,
+        schoolId,
+        ...(accessLevel === "teacher"
+          ? {
+              class: {
+                OR: [
+                  { formTeacherId: currentUserId },
+                  { classTeacherId: currentUserId },
+                ],
+              },
+            }
           : {}),
       },
     });
-
-    if (!resData) throw Error;
 
     return { success: true, error: false };
   } catch (err: any) {

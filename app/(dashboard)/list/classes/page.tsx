@@ -1,60 +1,59 @@
-import ListHeader from "@/components/ListHeader";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
 import { classesColumn } from "@/components/tables/classesColumn";
-import prisma from "@/lib/prisma";
-import { getCurrentUser } from "@/lib/serverUtils";
-import { ITEMS_PER_PAGE } from "@/lib/settings";
+import { createServerClient, getCurrentUser } from "@/lib/serverUtils";
 import { SearchParams } from "@/types";
-import { Prisma } from "@prisma/client";
+import { DataTable } from "@/components/tables/data-table";
+import { gql } from "@urql/core";
+import {
+  GetClassesQuery,
+  GetClassesQueryVariables,
+} from "@/lib/generated/graphql/server";
 
-const ClassesListPage = async ({ searchParams }: SearchParams) => {
-  const { page, ...queryParams } = await searchParams
-  const p = page ? parseInt(page) : 1;
-
-  const { role } = await getCurrentUser()
-
-  const query: Prisma.ClassWhereInput = {}
-
-  // URL PARAMS CONDITION
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case 'search':
-            query.name = { contains: value, mode: 'insensitive' }
-            break;
-          case 'supervisorId':
-            query.supervisorId = value
-            break;
-          default:
-            break;
-        }
+const GET_CLASSES = gql(`
+  query GetClasses($where: ClassWhereInput) {
+    classes(where: $where) {
+      id
+      name
+      studentCount
+      capacity
+      supervisors {
+        name 
+        surname
+      }
+      grade {
+        name
       }
     }
   }
+`);
 
-  const [data, count] = await prisma.$transaction([
-    prisma.class.findMany({
-      orderBy: {
-        name: 'asc'
-      },
-      where: query,
-      include: {
-        supervisor: true
-      },
-      take: ITEMS_PER_PAGE,
-      skip: ITEMS_PER_PAGE * (p - 1),
-    }),
+const ClassesListPage = async ({ searchParams }: SearchParams) => {
+  const { supervisorId } = await searchParams;
 
-    prisma.class.count({ where: query }),
-  ])
+  const { accessLevel } = await getCurrentUser();
+
+  const { client } = await createServerClient();
+  const { data } = await client
+    .query<
+      GetClassesQuery,
+      GetClassesQueryVariables
+    >(GET_CLASSES, { where: { supervisorId } })
+    .toPromise();
+
+  const formattedData = data?.classes?.map((item) => ({
+    ...item,
+    supervisor: item.supervisors[0],
+  }));
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <ListHeader role={role!} title="All Classes" table="class" />
-      <Table columns={classesColumn} data={data} role={role!} />
-      <Pagination page={p} count={count} />
+    <div className="m-4 mt-0 flex-1 rounded-md bg-white p-4">
+      <DataTable
+        columns={classesColumn}
+        data={formattedData ?? []}
+        accessLevel={accessLevel!}
+        tableFor="class"
+        title="All Classes"
+        filters={{ selectCount: false }}
+      />
     </div>
   );
 };

@@ -135,6 +135,10 @@
   @apply flex items-center justify-center;
 }
 
+@utility flex-end {
+  @apply flex items-end justify-end;
+}
+
 .navbar-user_icons {
   @apply flex-center h-7 w-7 cursor-pointer rounded-full bg-white;
 }
@@ -144,7 +148,7 @@
 }
 
 .form-submit_btn {
-  @apply flex-center cursor-pointer rounded-md bg-blue-400 py-2 text-white capitalize;
+  @apply flex-center cursor-pointer rounded-md bg-blue-400 py-2 text-white capitalize disabled:bg-blue-400/40 disabled:text-neutral-800 disabled:cursor-not-allowed transition-colors ease-in-out duration-200;
 }
 
 .select-input {
@@ -285,4 +289,15 @@
 .rbc-event-label {
   color: black !important;
   margin-bottom: 5px;
+}
+
+@theme inline {
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }

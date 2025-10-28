@@ -1,82 +1,105 @@
 "use server";
 
-import { CurrentState } from "@/types";
-import { TeacherSchema } from "../validation";
+import { StaffSchema } from "../zod/validation";
 import prisma from "../prisma";
 import { clerkClient } from "@clerk/nextjs/server";
 import { extractImageId, handleServerErrors } from "../utils";
 import { deleteImage } from "../cloudinary";
+import { getCurrentUser, handleGraphqlServerErrors } from "@/lib/serverUtils";
+import { revalidatePath } from "next/cache";
+import {
+  createUser,
+  deleteUserAuthInfo,
+  updateUser,
+} from "@/lib/actions/school";
+import { NotFoundError } from "@/lib/pothos/errors";
 
-export const createTeacher = async (
-  currentState: CurrentState,
-  { password, ...data }: TeacherSchema,
-) => {
-  const client = await clerkClient();
-  let userId = "";
+export const createStaffAction = async ({
+  password,
+  id,
+  accessLevel,
+  grades,
+  subjects,
+  ...data
+}: StaffSchema) => {
+  const { schoolId } = await getCurrentUser();
+
+  // During create process, id is basically null or undefined, so this is fine
+  let clerkUserId = id;
+
+  delete data.gradeId;
+
   try {
-    const user = await client.users.createUser({
-      username: data.username,
-      password: password,
-      firstName: data.name,
-      lastName: data.surname,
-      publicMetadata: { role: "teacher" },
-    });
+    if (accessLevel !== "RESTRICTED" && password) {
+      const user = await createUser({
+        username: data.employeeId,
+        password: password,
+        firstName: data.name,
+        lastName: data.surname,
+        accessLevel: accessLevel.toLowerCase(),
+        schoolId,
+      });
 
-    userId = user.id;
+      clerkUserId = user.id;
+    }
 
-    await prisma.teacher.create({
-      data: {
-        ...data,
-        id: userId,
-        subjects: {
-          connect: data.subjects?.map((subjectId) => ({
-            id: parseInt(subjectId),
-          })),
+    return await prisma.$transaction(async (tx) => {
+      const staff = await tx.staff.create({
+        data: {
+          ...data,
+          schoolId: schoolId!,
+          accessLevel,
+          clerkUserId,
         },
-      },
+      });
+
+      if (
+        accessLevel === "TEACHER" &&
+        subjects &&
+        subjects?.length > 0 &&
+        grades
+      ) {
+        for (const grade of grades) {
+          await tx.teacherSubjectAssignment.createMany({
+            data: subjects.map((subject) => ({
+              schoolId: schoolId!,
+              teacherId: staff.id,
+              gradeId: grade,
+              subjectId: subject,
+            })),
+          });
+        }
+      }
+
+      return staff;
     });
-
-    return { success: true, error: false };
-  } catch (err: any) {
-    if (userId !== "") {
-      await client.users.deleteUser(userId);
+  } catch (e) {
+    if (clerkUserId) {
+      await deleteUserAuthInfo(clerkUserId);
     }
 
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-
-    return {
-      success: false,
-      error: "Something went wrong while creating the teacher",
-    };
+    handleGraphqlServerErrors(e);
   }
 };
 
-export const updateTeacher = async (
-  currentState: CurrentState,
-  data: TeacherSchema,
-) => {
+export const updateStaffAction = async ({
+  password,
+  accessLevel,
+  ...data
+}: StaffSchema) => {
+  if (!data?.id) throw new NotFoundError();
+
   try {
-    const client = await clerkClient();
+    const { schoolId } = await getCurrentUser();
 
-    if (!data.id) return { success: false, error: "Teacher doesn't exist" };
-
-    const user = await client.users.updateUser(data.id, {
-      username: data.username,
-      ...(data.password !== "" && { password: data.password }),
+    await updateUser({
+      username: data.employeeId,
       firstName: data.name,
       lastName: data.surname,
-      publicMetadata: { role: "teacher" },
+      accessLevel: accessLevel.toLowerCase(),
+      clerkId: data.clerkUserId!,
+      ...(password && password !== "" ? { password } : {}),
     });
-
-    if (!user) throw Error;
 
     if (data.img && data.oldImg) {
       const publicId = extractImageId(data.oldImg);
@@ -84,60 +107,38 @@ export const updateTeacher = async (
       await deleteImage(publicId.id as string);
     }
 
-    const resData = await prisma.teacher.update({
+    return await prisma.staff.update({
       where: {
-        id: data.id,
+        id: data.id!,
+        schoolId,
       },
       data: {
-        username: data.username,
-        name: data.name,
-        surname: data.surname,
-        email: data.email,
-        phone: data.phone,
-        address: data.address,
-        img: data.img,
-        bloodType: data.bloodType,
-        birthday: data.birthday,
-        sex: data.sex,
-        subjects: {
-          set: data.subjects?.map((subjectId) => ({
-            id: parseInt(subjectId),
-          })),
-        },
+        ...data,
+        id: data.id!,
+        // subjects: {
+        //   set: data.subjects?.map((subjectId) => ({
+        //     id: parseInt(subjectId),
+        //   })),
+        // },
       },
     });
-
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
   } catch (err: any) {
     console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-
-    return {
-      success: false,
-      error: "Something went wrong while updating the teacher",
-    };
+    handleGraphqlServerErrors(err);
   }
 };
 
-export const deleteTeacher = async (id: string) => {
+export const deleteStaffAction = async (id: string) => {
   try {
+    const { schoolId } = await getCurrentUser();
     const client = await clerkClient();
 
-    const user = await client.users.deleteUser(id);
+    await client.users.deleteUser(id);
 
-    if (!user) throw Error;
-    const teacherImg = await prisma.teacher.findUnique({
+    const teacherImg = await prisma.staff.findUnique({
       where: {
         id,
+        schoolId,
       },
       select: { img: true },
     });
@@ -147,13 +148,12 @@ export const deleteTeacher = async (id: string) => {
       await deleteImage(imageId.id as string);
     }
 
-    const resData = await prisma.teacher.delete({
+    await prisma.staff.delete({
       where: {
         id,
+        schoolId,
       },
     });
-
-    if (!resData) throw Error;
 
     return { success: true, error: false };
   } catch (err: any) {
@@ -168,5 +168,53 @@ export const deleteTeacher = async (id: string) => {
     }
 
     return { success: false, error: true };
+  }
+};
+
+export const deactivateStaff = async ({
+  clerkUserId,
+  staffId,
+  type,
+}: {
+  clerkUserId: string;
+  staffId: string;
+  type: "activate" | "deactivate";
+}) => {
+  try {
+    const { accessLevel, schoolId } = await getCurrentUser();
+    const client = await clerkClient();
+
+    if (accessLevel !== "manager" && accessLevel !== "administration") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    if (type === "activate") {
+      await client.users.unbanUser(clerkUserId);
+    } else {
+      await client.users.banUser(clerkUserId);
+    }
+
+    await prisma.staff.update({
+      where: { id: staffId, schoolId },
+      data: { isActive: type === "activate" },
+    });
+
+    revalidatePath("/list/staffs");
+
+    return { success: true };
+  } catch (err) {
+    const serverErrors = handleServerErrors(err);
+
+    if (serverErrors?.error) {
+      return {
+        success: false,
+        error: serverErrors.error,
+      };
+    }
+
+    return {
+      success: false,
+      error: "There seems to be an error. Please try again later",
+    };
   }
 };

@@ -1,85 +1,143 @@
-import { deleteAnnouncement, deleteAssignment, deleteClass, deleteEvent, deleteExam, deleteLesson, deleteParent, deleteResult, deleteStudent, deleteSubject, deleteTeacher, deleteFee } from "@/lib/actions";
+"use client";
+
+import {
+  deleteAnnouncementAction,
+  deleteAssignment,
+  deleteClassAction,
+  deleteEventAction,
+  deleteExam,
+  deleteFee,
+  deleteGradeAction,
+  deleteLesson,
+  deleteParent,
+  deleteResult,
+  deleteStaffAction,
+  deleteStudent,
+  deleteSubjectAction,
+} from "@/lib/actions";
 import { Table } from "@/types";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Dispatch, SetStateAction, useState } from "react";
+import { ReactNode, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "./ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 
 type DeleteModalProps = {
-    id: string | number
-    table: Table
-    open: boolean;
-    setOpen: Dispatch<SetStateAction<boolean>>
-}
-
-const deleteActionMap = {
-    subject: deleteSubject,
-    class: deleteClass,
-    teacher: deleteTeacher,
-    student: deleteStudent,
-    exam: deleteExam,
-    assignment: deleteAssignment,
-    lesson: deleteLesson,
-    parent: deleteParent,
-    result: deleteResult,
-    event: deleteEvent,
-    announcement: deleteAnnouncement,
-    attendance: deleteSubject,
-    fee: deleteFee,
-    // TRANSACTION DOESN'T HAVE A DELETE ACTION SINCE YOU SHOULDN'T DELETE A TRANSACTION HISTORY. THIS IS JUST TO AVOID TYPESCRIPT ERRORS, IT WON'T DO ANYTHING
-    transaction: deleteFee,
+  id: string;
+  table: Table;
+  triggerTitle?: string;
+  children?: ReactNode;
 };
 
-const DeleteModal = ({ id, table, open, setOpen }: DeleteModalProps) => {
-    const router = useRouter();
-    const [isDeleting, setIsDeleting] = useState(false)
+const deleteActionMap = {
+  subject: deleteSubjectAction,
+  grade: deleteGradeAction,
+  class: deleteClassAction,
+  staff: deleteStaffAction,
+  student: deleteStudent,
+  exam: deleteExam,
+  assignment: deleteAssignment,
+  lesson: deleteLesson,
+  parent: deleteParent,
+  result: deleteResult,
+  event: deleteEventAction,
+  announcement: deleteAnnouncementAction,
+  attendance: deleteSubjectAction,
+  fee: deleteFee,
+  program: deleteFee,
+  // TRANSACTION DOESN'T HAVE A DELETE ACTION SINCE YOU SHOULDN'T DELETE A TRANSACTION HISTORY. THIS IS JUST TO AVOID TYPESCRIPT ERRORS, IT WON'T DO ANYTHING
+  transaction: deleteFee,
+  timetable: deleteFee,
+};
 
-    const handleDelete = async () => {
-        setIsDeleting(true);
+const DeleteModal = ({
+  id,
+  table,
+  triggerTitle,
+  children,
+}: DeleteModalProps) => {
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-        try {
-            const result = await deleteActionMap[table](id.toString());
+  const handleDelete = async () => {
+    setError(null);
+    setIsDeleting(true);
 
-            if (result.success) {
-                toast.success(`${table} deleted successfully.`);
-                router.refresh();
+    try {
+      const result = await deleteActionMap[table](id.toString());
 
-                setOpen(false);
-            } else {
-                toast.error(typeof result.error == 'string' ? result.error : `Failed to delete ${table}`)
-            }
-        } catch {
-            toast.error(`An unexpected error occurred.`);
-        } finally {
-            setIsDeleting(false);
-        }
-    };
+      if (result?.success) {
+        toast.success(`${table} deleted successfully.`);
+        router.refresh();
 
-    return (
-        <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                        This action cannot be undone. This will permanently delete this {table} and remove all data from the servers.
-                    </DialogDescription>
-                </DialogHeader>
+        // setOpen(false);
+      } else {
+        setError(
+          typeof result?.error == "string"
+            ? result?.error
+            : `Failed to delete ${table}`,
+        );
+      }
+    } catch {
+      setError("An unexpected error occurred.");
+      toast.error(`An unexpected error occurred.`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
-                <DialogFooter>
-                    <Button
-                        type="button"
-                        disabled={isDeleting}
-                        onClick={handleDelete}
-                        className="bg-red-400 hover:bg-red-500 text-black px-4 py-2 rounded-md font-medium flex items-center justify-center gap-2"
-                    >
-                        {isDeleting ? <Loader2 className="animate-spin h-4 w-4" /> : "Delete"}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    )
-}
+  return (
+    <Dialog>
+      <DialogTrigger>
+        {children}
 
-export default DeleteModal
+        {triggerTitle && (
+          <span className="px-2 py-1 text-sm font-medium text-destructive">
+            {triggerTitle}
+          </span>
+        )}
+      </DialogTrigger>
+
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Are you absolutely sure?</DialogTitle>
+          <DialogDescription>
+            This action cannot be undone. This will permanently delete this{" "}
+            {table} and remove all data from the servers.
+          </DialogDescription>
+        </DialogHeader>
+
+        <DialogFooter>
+          {error && (
+            <div className="text-center text-sm text-red-500">{error}</div>
+          )}
+
+          <Button
+            type="button"
+            disabled={isDeleting}
+            onClick={handleDelete}
+            className="cursor-pointer bg-red-400 font-medium text-black hover:bg-red-500/75"
+          >
+            {isDeleting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              "Delete"
+            )}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default DeleteModal;

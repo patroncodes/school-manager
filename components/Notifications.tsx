@@ -1,30 +1,51 @@
-import prisma from '@/lib/prisma'
-import { UserRole } from '@/types';
-import { Prisma } from '@prisma/client';
-import moment from 'moment';
+import prisma from "@/lib/prisma";
+import { RoleAccessLevel } from "@/types";
+import { Prisma } from "@prisma/client";
+import { subDays } from "date-fns";
 
-const Notifications = async ({ role, userId }: { role: UserRole; userId: string }) => {
-    const sevenDaysAgo = moment().subtract(7, 'days').toDate();
-    const query: Prisma.AnnouncementWhereInput = {}
+const Notifications = async ({
+  accessLevel,
+  userId,
+}: {
+  accessLevel: RoleAccessLevel;
+  userId: string;
+}) => {
+  const sevenDaysAgo = subDays(new Date(), 7)
 
-    const roleConditions = {
-        teacher: { lessons: { some: { teacherId: userId } } },
-        student: { students: { some: { id: userId } } },
-        parent: { students: { some: { parentId: userId } } },
-    }
+  const query: Prisma.AnnouncementWhereInput = {};
 
-    query.OR = [
-        { classId: null },
-        { class: roleConditions[role as keyof typeof roleConditions] || {} },
-    ]
+  const roleConditions = {
+    teacher: {
+      OR: [
+        { class: { formTeacherId: userId } },
+        { class: { classTeacherId: userId } }
+      ]
+    },
+    student: { class: { students: { some: { id: userId } } } },
+    parent: {
+      class: {
+        students: { some: { parentStudents: { some: { parentId: userId } } } },
+      },
+    },
+  };
 
-    const announcements = await prisma.announcement.count({ where: { ...query, date: { gte: sevenDaysAgo } } })
+  query.OR = [
+    { classId: null },
+    roleConditions[accessLevel as keyof typeof roleConditions] || {},
+  ];
 
-    return (
-        <div className="absolute -top-3 -right-3 w-5 h-5 flex-center bg-purple-500 text-white rounded-full text-xs">
-            {announcements}
-        </div>
-    )
-}
+  const announcements = await prisma.announcement.count({
+    where: {
+      ...query,
+      draftedAt: { gte: sevenDaysAgo },
+    },
+  });
 
-export default Notifications
+  return (
+    <div className="absolute -top-3 -right-3 flex-center h-5 w-5 rounded-full bg-purple-500 text-xs text-white">
+      {announcements}
+    </div>
+  );
+};
+
+export default Notifications;

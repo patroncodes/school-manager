@@ -4,7 +4,7 @@ import { CurrentState } from "@/types";
 import prisma from "../prisma";
 import { getCurrentUser } from "../serverUtils";
 import { handleServerErrors } from "../utils";
-import { ExamSchema } from "../validation";
+import { ExamSchema } from "../zod/validation";
 
 export const createExam = async (
   currentState: CurrentState,

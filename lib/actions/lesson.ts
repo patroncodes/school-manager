@@ -1,7 +1,7 @@
 "use server";
 
 import { handleServerErrors } from "@/lib/utils";
-import { LessonSchema } from "@/lib/validation";
+import { LessonSchema } from "@/lib/zod/validation";
 import { CurrentState } from "@/types";
 import prisma from "../prisma";
 import { getCurrentUser } from "../serverUtils";

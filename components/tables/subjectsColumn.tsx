@@ -1,34 +1,75 @@
-import { UserRole } from "@/types"
-import { Subject, Teacher } from "@prisma/client"
-import FormContainer from "../FormContainer"
+"use client";
 
-type SubjectsList = Subject & { teachers: Teacher[] }
+import { ColumnDef } from "@tanstack/react-table";
+import DeleteModal from "@/components/DeleteModal";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { ArrowUpDown } from "lucide-react";
+import DropdownOptions from "@/components/DropdownOptions";
+import FormModal from "@/components/FormModal";
 
-export const subjectsColumn = (role: UserRole) => [
-    {
-        accessor: "name",
-        header: 'Subject',
-        cell: (item: SubjectsList) => <span>{item.name}</span>
+type SubjectsList = {
+  id: string;
+  name: string;
+  teachers: {
+    teacher: { id: string; name: string; surname: string };
+  }[];
+};
+
+export const subjectsColumn: ColumnDef<SubjectsList>[] = [
+  {
+    header: ({ column }) => (
+      <Button
+        variant="ghost"
+        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        className="hover:bg-transparent"
+      >
+        Subject
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      </Button>
+    ),
+    accessorKey: "name",
+    cell: ({ row: { original } }) => <span>{original.name}</span>,
+  },
+  {
+    header: "Teachers",
+    accessorKey: "teachers",
+    cell: ({ row: { original } }) => {
+      const teacherNames = original.teachers.map(
+        (t) => t.teacher.name + " " + t.teacher.surname,
+      );
+      return (
+        <span>{teacherNames.length > 0 ? teacherNames.join(", ") : "-"}</span>
+      );
     },
-    {
-        accessor: "teachers",
-        header: "Teachers",
-        cell: (item: SubjectsList) => <span>{item.teachers.map(teacher => teacher.name).join(',')}</span>
+  },
+  {
+    id: "actions",
+    cell: ({ row: { original } }) => {
+      return (
+        <DropdownOptions>
+          <DropdownMenuItem asChild>
+            <FormModal
+              table="subject"
+              type="update"
+              data={original}
+              triggerTitle="Update"
+            />
+          </DropdownMenuItem>
+
+          <DropdownMenuItem asChild>
+            <DeleteModal id={original.id} table="subject">
+              <span className="px-2 py-1 text-sm font-medium text-destructive">
+                Delete
+              </span>
+            </DeleteModal>
+          </DropdownMenuItem>
+        </DropdownOptions>
+      );
     },
-    ...(role === "admin"
-        ? [
-            {
-                header: "Actions",
-                accessor: "action",
-                cell: (item: SubjectsList) => (
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <FormContainer table="subject" type="update" data={item} />
-                            <FormContainer table="subject" type="delete" id={item?.id} />
-                        </div>
-                    </div>
-                )
-            },
-        ]
-        : []),
-]
+    enableSorting: false,
+    enableGlobalFilter: false,
+    enableHiding: false,
+    meta: { visibility: ["manager", "administration"] },
+  },
+];

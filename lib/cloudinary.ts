@@ -10,8 +10,7 @@ cloudinary.config({
 
 export async function deleteImage(publicId: string) {
   try {
-    const result = await cloudinary.uploader.destroy(publicId);
-    return result;
+    return await cloudinary.uploader.destroy(publicId);
   } catch (error) {
     console.error("Failed to delete image:", error);
     return null;

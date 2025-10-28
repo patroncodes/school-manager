@@ -1,0 +1,534 @@
+type AcademicYear {
+  endDate: DateTime
+  id: ID!
+  isCurrent: Boolean!
+  startDate: DateTime!
+  terms: [Term!]!
+  year: String!
+}
+
+input AcademicYearInput {
+  endDate: DateTime
+  id: ID
+  isCurrent: Boolean!
+  startDate: DateTime!
+  year: String!
+}
+
+enum AccessLevel {
+  ACADEMICS
+  ADMINISTRATION
+  FINANCE
+  RESTRICTED
+  TEACHER
+}
+
+type Announcement {
+  content: String!
+  draftedAt: DateTime
+  id: ID!
+  isPublished: Boolean!
+  publishedAt: DateTime
+  title: String!
+}
+
+input AnnouncementInput {
+  classId: String
+  content: String!
+  gradeId: String
+  isPublished: Boolean!
+  title: String!
+}
+
+interface AppError implements Error {
+  code: String
+  message: String
+}
+
+type BaseAppError implements AppError & Error {
+  code: String
+  message: String
+}
+
+type BaseError implements Error {
+  message: String
+}
+
+type Class {
+  capacity: Int!
+  grade: Grade!
+  id: ID!
+  name: String!
+  studentCount: Int!
+  students: [Student!]!
+  supervisors: [Staff!]!
+}
+
+input ClassInput {
+  capacity: Int!
+  gradeId: String!
+  id: ID
+  name: String!
+  supervisors: [String!]
+}
+
+input ClassWhereInput {
+  gradeId: ID
+  name: String
+  programId: ID
+  supervisorId: String
+}
+
+enum ContractType {
+  CONTRACT
+  PART_TIME
+  PERMANENT
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+interface Error {
+  message: String
+}
+
+type Event {
+  description: String!
+  endTime: DateTime!
+  grade: Grade
+  group: EventGroupEnum!
+  id: ID!
+  startTime: DateTime!
+  title: String!
+  updatedAt: DateTime
+}
+
+enum EventGroupEnum {
+  PUBLIC
+  STAFF
+}
+
+input EventInput {
+  description: String!
+  endTime: DateTime!
+  gradeId: String
+  id: ID
+  startTime: DateTime!
+  title: String!
+}
+
+type ForeignKeyError implements AppError & Error {
+  code: String
+  message: String
+}
+
+type Grade {
+  classes: [Class!]!
+  id: ID!
+  name: String!
+  program: Program!
+}
+
+input GradeInput {
+  id: ID
+  name: String!
+  programId: String!
+}
+
+input GradeWhereInput {
+  name: String
+  programId: ID
+  supervisorId: String
+}
+
+type IdentifierExistsError implements AppError & Error {
+  code: String
+  message: String
+}
+
+input ManagerInput {
+  birthday: DateTime!
+  email: String!
+  img: String
+  name: String!
+  password: String!
+  phone: String!
+  surname: String!
+  username: String!
+}
+
+type Mutation {
+  createClass(input: ClassInput!): MutationCreateClassResult
+  createEvent(input: EventInput!): MutationCreateEventResult
+  createGrade(input: GradeInput!): MutationCreateGradeResult
+  createProgram(input: ProgramInput!): MutationCreateProgramResult
+  createSchool(input: SchoolInput!): MutationCreateSchoolResult
+  createStaff(input: StaffInput!): MutationCreateStaffResult
+  createStudent(input: StudentInput!): MutationCreateStudentResult
+  createSubject(input: SubjectInput!): MutationCreateSubjectResult
+  mutateAcademicYear(input: AcademicYearInput!): MutationMutateAcademicYearResult
+  mutateTerm(input: TermInput!): MutationMutateTermResult
+  saveAnnouncementAsDraft(input: AnnouncementInput!): Announcement
+  updateClass(input: ClassInput!): MutationUpdateClassResult
+  updateEvent(input: EventInput!): MutationUpdateEventResult
+  updateGrade(input: GradeInput!): MutationUpdateGradeResult
+  updatePeriodSlot(input: TimetablePeriodInput!): MutationUpdatePeriodSlotResult
+  updateSubject(input: SubjectInput!): MutationUpdateSubjectResult
+  updateTimetableAssignment(input: TimetableAssignmentInput!): MutationUpdateTimetableAssignmentResult
+}
+
+union MutationCreateClassResult = BaseAppError | BaseError | MutationCreateClassSuccess | UniqueConstraintError
+
+type MutationCreateClassSuccess {
+  data: Class!
+}
+
+union MutationCreateEventResult = BaseAppError | BaseError | MutationCreateEventSuccess | UniqueConstraintError
+
+type MutationCreateEventSuccess {
+  data: Event!
+}
+
+union MutationCreateGradeResult = BaseAppError | BaseError | MutationCreateGradeSuccess | UniqueConstraintError
+
+type MutationCreateGradeSuccess {
+  data: Grade!
+}
+
+union MutationCreateProgramResult = BaseAppError | BaseError | MutationCreateProgramSuccess
+
+type MutationCreateProgramSuccess {
+  data: Program!
+}
+
+union MutationCreateSchoolResult = BaseAppError | BaseError | MutationCreateSchoolSuccess | UniqueConstraintError
+
+type MutationCreateSchoolSuccess {
+  data: School!
+}
+
+union MutationCreateStaffResult = BaseAppError | BaseError | MutationCreateStaffSuccess | UniqueConstraintError
+
+type MutationCreateStaffSuccess {
+  data: Staff!
+}
+
+union MutationCreateStudentResult = BaseAppError | BaseError | ForeignKeyError | MutationCreateStudentSuccess | UniqueConstraintError
+
+type MutationCreateStudentSuccess {
+  data: Student!
+}
+
+union MutationCreateSubjectResult = BaseAppError | BaseError | MutationCreateSubjectSuccess | UniqueConstraintError
+
+type MutationCreateSubjectSuccess {
+  data: Subject!
+}
+
+union MutationMutateAcademicYearResult = BaseAppError | BaseError | MutationMutateAcademicYearSuccess | UniqueConstraintError
+
+type MutationMutateAcademicYearSuccess {
+  data: AcademicYear!
+}
+
+union MutationMutateTermResult = BaseAppError | BaseError | MutationMutateTermSuccess | UniqueConstraintError
+
+type MutationMutateTermSuccess {
+  data: Term!
+}
+
+union MutationUpdateClassResult = BaseAppError | BaseError | ForeignKeyError | MutationUpdateClassSuccess | UniqueConstraintError
+
+type MutationUpdateClassSuccess {
+  data: Class!
+}
+
+union MutationUpdateEventResult = BaseAppError | BaseError | MutationUpdateEventSuccess | NotFoundError | UniqueConstraintError
+
+type MutationUpdateEventSuccess {
+  data: Event!
+}
+
+union MutationUpdateGradeResult = BaseAppError | BaseError | MutationUpdateGradeSuccess | UniqueConstraintError
+
+type MutationUpdateGradeSuccess {
+  data: Grade!
+}
+
+union MutationUpdatePeriodSlotResult = BaseAppError | BaseError | MutationUpdatePeriodSlotSuccess | UniqueConstraintError
+
+type MutationUpdatePeriodSlotSuccess {
+  data: TimetablePeriod!
+}
+
+union MutationUpdateSubjectResult = BaseAppError | BaseError | MutationUpdateSubjectSuccess | UniqueConstraintError
+
+type MutationUpdateSubjectSuccess {
+  data: Subject!
+}
+
+union MutationUpdateTimetableAssignmentResult = BaseAppError | BaseError | MutationUpdateTimetableAssignmentSuccess | UniqueConstraintError
+
+type MutationUpdateTimetableAssignmentSuccess {
+  data: TimetableAssignment!
+}
+
+type NotFoundError implements AppError & Error {
+  code: String
+  message: String
+}
+
+type Parent {
+  clerkUserId: String
+  id: ID!
+  name: String!
+  phone: String!
+  primaryId: String
+  surname: String!
+}
+
+type PasswordPwnedError implements AppError & Error {
+  code: String
+  message: String
+}
+
+type PasswordTooShortError implements AppError & Error {
+  code: String
+  message: String
+}
+
+type PeriodSlot {
+  dayOfWeek: Int!
+  id: ID!
+  timetableAssignments(classId: ID!): [TimetableAssignment!]!
+}
+
+type Program {
+  grades: [Grade!]!
+  id: ID!
+  name: ProgramName!
+}
+
+input ProgramInput {
+  grades: [String!]!
+  name: String!
+}
+
+enum ProgramName {
+  CRECHE
+  NURSERY
+  PRIMARY
+  SECONDARY
+}
+
+type Query {
+  academicYears: [AcademicYear!]
+  announcements(id: ID!): [Announcement!]
+  class(id: ID!): Class
+  classes(where: ClassWhereInput): [Class!]
+  events(classId: ID): [Event!]
+  grade(id: ID!): Grade
+  grades(where: GradeWhereInput): [Grade!]
+  parent(id: ID!): Parent
+  parents(searchTerm: String): [Parent!]
+  programs: [Program!]
+  school(id: ID!): School
+  schools: [School!]
+  staff(clerkUserId: String, id: ID): Staff
+  staffs(filter: StaffFilterInput): [Staff!]
+  students(searchTerm: String): [Student!]
+  subjects(teacherId: ID): [Subject!]
+  terms: [Term!]
+  timetable(classId: ID!): [TimetablePeriod!]
+}
+
+type School {
+  email: String!
+  id: ID!
+  logo: String
+  motto: String
+  name: String!
+  phone: String!
+  programs: [Program!]
+  slug: String!
+}
+
+input SchoolGradeInput {
+  gradeName: String!
+  programName: String!
+}
+
+input SchoolInput {
+  address: String!
+  email: String!
+  grades: [SchoolGradeInput!]!
+  logo: String
+  manager: ManagerInput!
+  motto: String
+  name: String!
+  phone: String!
+  programs: [ProgramName!]!
+  slug: String!
+}
+
+enum Sex {
+  FEMALE
+  MALE
+  OTHER
+}
+
+enum SexEnum {
+  FEMALE
+  MALE
+  OTHER
+}
+
+type Staff {
+  accessLevel: String!
+  address: String!
+  class: Class
+  clerkUserId: String
+  email: String
+  employeeId: String!
+  id: ID!
+  img: String
+  name: String!
+  phone: String!
+  role: String!
+  subjects: [TeacherSubjectAssignment!]
+  surname: String!
+}
+
+input StaffFilterInput {
+  accessLevel: AccessLevel
+  classId: String
+  isActive: Boolean!
+  isFormTeacher: Boolean
+}
+
+input StaffInput {
+  accessLevel: AccessLevel!
+  address: String!
+  birthday: DateTime!
+  classId: String
+  clerkUserId: String
+  contractType: ContractType!
+  email: String
+  employeeId: String!
+  grades: [String!]
+  hireDate: DateTime
+  id: String
+  img: String
+  isActive: Boolean! = true
+  name: String!
+  oldImg: String
+  password: String
+  phone: String!
+  position: String
+  role: String!
+  sex: Sex!
+  subjects: [String!]
+  surname: String!
+}
+
+type Student {
+  activeState: String!
+  id: ID!
+  img: String
+  name: String!
+  registrationNumber: String!
+  sex: String!
+  surname: String!
+}
+
+input StudentInput {
+  address: String!
+  birthday: DateTime!
+  classId: String!
+  gradeId: String
+  img: String
+  medicalCondition: String
+  name: String!
+  oldImg: String
+  password: String
+  primaryGuardian: String!
+  primaryGuardianRelationship: String!
+  programId: String
+  registrationNumber: String!
+  secondaryGuardian: String
+  secondaryGuardianRelationship: String
+  sex: SexEnum!
+  surname: String!
+}
+
+type Subject {
+  id: ID!
+  name: String!
+  teachers: [TeacherSubjectAssignment!]!
+}
+
+input SubjectInput {
+  id: String
+  name: String!
+  relationId: String
+  teachers: [String!]!
+}
+
+type TeacherSubjectAssignment {
+  id: ID!
+  subject: Subject!
+  teacher: Staff!
+}
+
+type Term {
+  academicYear: AcademicYear!
+  endDate: DateTime
+  id: ID!
+  isCurrent: Boolean!
+  startDate: DateTime!
+  term: Int!
+}
+
+input TermInput {
+  academicYearId: ID!
+  endDate: DateTime
+  id: ID
+  isCurrent: Boolean!
+  startDate: DateTime!
+  term: String!
+}
+
+type TimetableAssignment {
+  class: Class!
+  id: ID!
+  periodSlot: PeriodSlot!
+  subject: Subject
+  teacher: Staff
+}
+
+input TimetableAssignmentInput {
+  classId: ID!
+  periodSlotId: ID!
+  subjectId: ID
+  teacherId: ID
+}
+
+type TimetablePeriod {
+  endTime: String!
+  id: ID!
+  periodSlots: [PeriodSlot!]!
+  startTime: String!
+}
+
+input TimetablePeriodInput {
+  daysOfWeek: [String!]!
+  endTime: String!
+  startTime: String!
+}
+
+type UniqueConstraintError implements AppError & Error {
+  code: String
+  message: String
+}

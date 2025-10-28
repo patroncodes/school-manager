@@ -1,29 +1,107 @@
-import { listCreationAccess } from '@/lib/settings';
-import { Table, UserRole } from '@/types';
-import Image from 'next/image';
-import FormContainer from './FormContainer';
-import TableSearch from './TableSearch';
+import Image from "next/image";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { type Table } from "@tanstack/table-core";
+import DropdownOptions from "@/components/DropdownOptions";
+import { DataTableProps } from "@/types";
+import TermSelector from "@/components/TermSelector";
+import FormModal from "@/components/FormModal";
+import { listCreationAccess } from "@/lib/settings";
 
-const ListHeader = ({ role, table, title }: { role: UserRole; table: Table; title: string; }) => {
-    return (
-        <div className="flex items-center justify-between">
-            <h1 className="hidden md:block text-lg font-semibold">{title}</h1>
-            <div className="flex flex-col md:flex-row items-center gap-4 w-full md:w-auto">
-                <TableSearch />
-                <div className="flex items-center gap-4 self-end">
-                    <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                        <Image src="/filter.svg" alt="" width={14} height={14} />
-                    </button>
-                    <button className="w-8 h-8 flex items-center justify-center rounded-full bg-lamaYellow">
-                        <Image src="/sort.svg" alt="" width={14} height={14} />
-                    </button>
-                    {listCreationAccess[role].includes(table) && (
-                        <FormContainer table={table} type="create" />
-                    )}
-                </div>
-            </div>
-        </div>
-    )
+interface ListHeaderProps extends Omit<DataTableProps, "columns" | "data"> {
+  table: Table<any>;
+  globalFilter: any;
 }
 
-export default ListHeader
+const ListHeader = ({
+  table,
+  tableFor,
+  title,
+  globalFilter,
+  accessLevel,
+  termFilter,
+  filters,
+  relatedData,
+}: ListHeaderProps) => {
+  const { termFilter: showTermFilter = false, listCreation = true } =
+    filters ?? {};
+
+  return (
+    <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+      {title && (
+        <h1 className="text-center text-lg font-semibold capitalize">
+          {title}
+        </h1>
+      )}
+
+      <div className="flex w-full flex-col gap-2 md:w-[32%] md:flex-row md:items-center">
+        <div className="relative flex flex-1 items-center rounded-full px-2 py-1 text-xs ring-[1.5px] ring-gray-300">
+          <Search size={16} />
+          <Input
+            placeholder="Search..."
+            value={globalFilter ?? ""}
+            onChange={(e) => table.setGlobalFilter(String(e.target.value))}
+            className="h-full flex-1 rounded-full border-none bg-transparent shadow-none outline-none focus-visible:border-0 focus-visible:ring-0"
+          />
+        </div>
+
+        <div className="flex items-end justify-end gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              asChild
+              className="flex h-8 w-8 items-center justify-center rounded-full border-0 bg-lamaYellow p-2"
+            >
+              <Image src="/sort.svg" alt="sort" width={12} height={12} />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {listCreation &&
+            listCreationAccess[accessLevel]?.includes(tableFor) && (
+              <FormModal
+                table={tableFor}
+                type="create"
+                relatedData={relatedData}
+              />
+            )}
+
+          {showTermFilter && termFilter && <TermSelector {...termFilter} />}
+
+          {table.getFilteredSelectedRowModel().rows.length > 0 &&
+            (accessLevel === "manager" || accessLevel === "administration") && (
+              <DropdownOptions triggerClassName="bg-lamaYellow">
+                <DropdownMenuItem>Edit</DropdownMenuItem>
+              </DropdownOptions>
+            )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ListHeader;

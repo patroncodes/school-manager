@@ -1,9 +1,9 @@
 import { cn } from "@/lib/utils";
-import { UserRole } from "@/types";
+import { RoleAccessLevel } from "@/types";
 import React from "react";
 
 type TableProps = {
-    columns: (role: UserRole) => ({
+    columns: (role: RoleAccessLevel) => ({
         header: string;
         accessor: string;
         cell: (item: any) => React.JSX.Element;
@@ -17,7 +17,7 @@ type TableProps = {
 
     data: any[];
 
-    role: UserRole;
+    role: RoleAccessLevel;
 }
 const Table = ({
     columns,

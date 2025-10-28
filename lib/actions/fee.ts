@@ -3,7 +3,7 @@
 import { CurrentState } from "@/types";
 import prisma from "../prisma";
 import { handleServerErrors } from "../utils";
-import { FeeSchema } from "../validation";
+import { FeeSchema } from "../zod/validation";
 
 export const createFee = async (
   currentState: CurrentState,

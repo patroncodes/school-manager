@@ -1,142 +1,154 @@
 "use client";
 
-import { classSchema, ClassSchema } from "@/lib/validation";
+import { classSchema, ClassSchema } from "@/lib/zod/validation";
 import { FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import InputField from "../InputField";
-import { startTransition, useActionState, useEffect } from "react";
+import InputField, { FormFieldType } from "../InputField";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { createClass, updateClass } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
+import { SelectContent, SelectItem } from "@/components/ui/select";
+import { Form } from "@/components/ui/form";
+import { classDefaultValues } from "@/lib/zod/defaultValues";
+import {
+  AccessLevel,
+  CreateClassMutation,
+  UpdateClassMutation,
+  useCreateClassMutation,
+  useGetGradesQuery,
+  useGetStaffsQuery,
+  useUpdateClassMutation,
+} from "@/lib/generated/graphql/client";
+import { handleGraphqlClientErrors } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
-const ClassForm = ({ type, data, setOpen, relatedData }: FormProps) => {
-  const router = useRouter()
+const ClassForm = ({ type, data, setOpen }: FormProps) => {
+  const router = useRouter();
 
-  const { teachers, grades } = relatedData
+  const [gradesResult] = useGetGradesQuery();
+  const [teachersResult] = useGetStaffsQuery({
+    variables: { filter: { isActive: true, accessLevel: AccessLevel.Teacher } },
+  });
+  const [createResult, createClass] = useCreateClassMutation();
+  const [updateResult, updateClass] = useUpdateClassMutation();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ClassSchema>({
-    resolver: zodResolver(classSchema)
+  const grades = gradesResult?.data?.grades;
+  const teachers = teachersResult?.data?.staffs;
+
+  const form = useForm<ClassSchema>({
+    resolver: zodResolver(classSchema),
+    defaultValues: classDefaultValues(data),
   });
 
-  const [state, formAction, pending] = useActionState(
-    type === 'create' ? createClass : updateClass,
-    { success: false, error: false }
-  )
-
-  useEffect(() => {
-    if (state.success) {
-      toast.success(`Class has been ${type}d`)
-      setOpen(false)
-
-      router.refresh()
-    } else if (state.error) {
-      if (typeof state.error === 'string') {
-        toast.error(state.error)
-      } else {
-        toast.error(`Failed to ${type} class`)
-      }
-    }
-  }, [state, type, router, setOpen])
-
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = form.handleSubmit(async (values) => {
     const formData = {
-      ...(type === 'update' && { id: data.id }),
+      ...(type === "update" && { id: data.id }),
       ...values,
+    };
+
+    const res =
+      type === "create"
+        ? await createClass({ input: formData })
+        : await updateClass({ input: formData });
+
+    const mutationResult =
+      type === "create"
+        ? (res.data as CreateClassMutation)?.createClass
+        : (res.data as UpdateClassMutation)?.updateClass;
+
+    if (!mutationResult) {
+      toast.error("Something went wrong");
+      return;
     }
 
-    startTransition(() => {
-      formAction(formData)
-    })
-  })
+    if (
+      mutationResult.__typename === "MutationCreateClassSuccess" ||
+      mutationResult.__typename === "MutationUpdateClassSuccess"
+    ) {
+      toast.success(`Class ${type}d successfully!`);
+      setOpen(false);
+      router.refresh();
+    } else {
+      const error = handleGraphqlClientErrors(mutationResult);
+      toast.error(error ?? "Something went wrong");
+    }
+  });
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <span className="text-xs text-gray-400 font-medium">
-        Class Information
-      </span>
+    <Form {...form}>
+      <form className="flex flex-col gap-4" onSubmit={onSubmit}>
+        <span className="text-xs font-medium text-gray-500">
+          Class Information
+        </span>
 
-      <div className="flex justify-between gap-4 flex-wrap">
-        <InputField
-          label="Class Name"
-          name="name"
-          defaultValue={data?.name}
-          register={register}
-          error={errors.name}
-        />
-        <InputField
-          label="Capacity"
-          name="capacity"
-          type="number"
-          defaultValue={data?.capacity}
-          register={register}
-          error={errors.capacity}
-        />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <InputField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            label="Name"
+            name="name"
+            placeholder="A B or Gold"
+          />
 
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label htmlFor="gradeId" className="text-xs text-gray-500">
-            Grade
-          </label>
-          <select
-            {...register("gradeId")}
-            id="gradeId"
-            className="select-input"
-            defaultValue={data?.gradeId}
+          <InputField
+            label="Grade"
+            control={form.control}
+            name="gradeId"
+            placeholder="Select grade"
+            fieldType={FormFieldType.SELECT}
           >
-            {grades.map((grade: { id: number; level: number }) => (
-              <option
-                key={grade.id}
-                value={grade.id}
-                className="py-1"
-              >
-                {grade.level}
-              </option>
-            ))}
-          </select>
-          {errors.gradeId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.gradeId.message.toString()}
-            </p>
-          )}
+            <SelectContent>
+              <SelectItem value="0" disabled={true}>
+                {gradesResult.fetching
+                  ? "Loading"
+                  : grades?.length === 0
+                    ? "No grade was found"
+                    : "Select grade"}
+              </SelectItem>
+              {grades?.map(({ id, name }) => (
+                <SelectItem key={id} value={id!}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </InputField>
+
+          <InputField
+            label="Capacity"
+            name="capacity"
+            type="number"
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            placeholder="100"
+          />
+
+          <InputField
+            label="Supervisors"
+            control={form.control}
+            name="supervisors"
+            placeholder={
+              teachers?.length === 0
+                ? "No teacher was found"
+                : "Select supervisors"
+            }
+            fieldType={FormFieldType.MULTI_SELECT}
+            options={teachers ?? []}
+          />
         </div>
 
-        <div className="flex flex-col gap-2 w-full md:w-1/2">
-          <label htmlFor="supervisorId" className="text-xs text-gray-500">
-            Supervisor
-          </label>
-          <select
-            {...register("supervisorId")}
-            id="supervisorId"
-            className="select-input"
-            defaultValue={data?.supervisorId}
-          >
-            {teachers.map((teacher: { id: string; name: string; surname: string }) => (
-              <option key={teacher.id} value={teacher.id} className="py-1">
-                {teacher.name + " " + teacher.surname}
-              </option>
-            ))}
-          </select>
-          {errors.supervisorId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.supervisorId.message.toString()}
-            </p>
+        <button
+          type="submit"
+          disabled={createResult.fetching || updateResult.fetching}
+          className="form-submit_btn"
+        >
+          {createResult.fetching || updateResult.fetching ? (
+            <Loader2 className="animate-spin text-lamaYellow" />
+          ) : (
+            type
           )}
-        </div>
-      </div>
-
-      <button
-        type="submit"
-        disabled={pending}
-        className="form-submit_btn"
-      >
-        {!pending ? type : <Loader2 className="animate-spin text-lamaYellow" />}
-      </button>
-    </form>
+        </button>
+      </form>
+    </Form>
   );
 };
 

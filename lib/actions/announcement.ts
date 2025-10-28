@@ -1,86 +1,63 @@
 "use server";
 
-import { CurrentState } from "@/types";
+import { AnnouncementSchema } from "../zod/validation";
+import { getCurrentUser } from "@/lib/serverUtils";
+import { handleServerErrors } from "@/lib/utils";
 import prisma from "../prisma";
-import { handleServerErrors } from "../utils";
-import { AnnouncementSchema } from "../validation";
+import { AppError } from "@/lib/pothos/errors";
 
-export const createAnnouncement = async (
-  currentState: CurrentState,
-  data: AnnouncementSchema,
-) => {
+export const createAnnouncementAction = async (data: AnnouncementSchema) => {
   try {
-    const resData = await prisma.announcement.create({
-      data,
+    const { schoolId, accessLevel } = await getCurrentUser();
+
+    if (!schoolId || !accessLevel)
+      throw new AppError("Invalid user", "UNAUTHORIZED");
+
+    return await prisma.announcement.create({
+      data: {
+        title: data.title,
+        content: data.content,
+        schoolId: schoolId!,
+        termId: "3",
+        publishedAt: new Date(),
+      },
     });
-
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
   } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
+    const error = handleServerErrors(err);
+    console.log(error);
   }
 };
 
-export const updateAnnouncement = async (
-  currentState: CurrentState,
-  data: AnnouncementSchema,
-) => {
+export const updateAnnouncementAction = async (data: AnnouncementSchema) => {
   try {
-    const resData = await prisma.announcement.update({
+    const { schoolId } = await getCurrentUser();
+
+    return await prisma.announcement.update({
       where: {
         id: data.id,
+        schoolId,
       },
       data,
     });
-
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
   } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
+    await handleServerErrors(err);
   }
 };
 
-export const deleteAnnouncement = async (id: string) => {
+export const deleteAnnouncementAction = async (id: string) => {
   try {
-    const resData = await prisma.announcement.delete({
+    const { schoolId } = await getCurrentUser();
+
+    await prisma.announcement.delete({
       where: {
-        id: parseInt(id),
+        id,
+        schoolId,
       },
     });
 
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
+    return { success: true, error: null };
   } catch (err: any) {
     console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
+    return { success: false, error: err.message };
   }
 };

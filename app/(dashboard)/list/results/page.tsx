@@ -46,7 +46,7 @@ const ResultsListPage = async ({ searchParams }: SearchParams) => {
       break;
     case 'teacher':
       query.OR = [
-        { exam: { lesson: { teacherId: currentUserId! } } },
+        { exam: { subject: { teacherId: currentUserId! } } },
         { assignment: { lesson: { teacherId: currentUserId! } } }
       ]
       break;

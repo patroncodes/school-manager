@@ -1,57 +1,81 @@
-import Image from 'next/image'
-import prisma from '@/lib/prisma'
+import Image from "next/image";
+import prisma from "@/lib/prisma";
+import { startOfYear, endOfYear, getMonth, format } from "date-fns"
 
-import moment from "moment";
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
-const FinanceChart = dynamic(() => import('./FinanceChart'), {
-    loading: () => <h1>Loading...</h1>,
+const FinanceChart = dynamic(() => import("./FinanceChart"), {
+  loading: () => <h1>Loading...</h1>,
 });
 
-const FinanceChartContainer = async () => {
-    const startOfYear = moment().startOf("year").toDate();
-    const endOfYear = moment().endOf("year").toDate();
+const FinanceChartContainer = async ({ schoolId }: { schoolId: string }) => {
+  const startOfYearDate = startOfYear(new Date())
+  const endOfYearDate = endOfYear(new Date())
 
-    const transactions = await prisma.transaction.findMany({
-        where: {
-            date: {
-                gte: startOfYear,
-                lte: endOfYear,
-            },
+  const [salary, invoice] = await prisma.$transaction([
+    prisma.invoicePayment.findMany({
+      where: {
+        schoolId,
+        paymentDate: {
+          gte: startOfYearDate,
+          lte: endOfYearDate,
         },
-        select: {
-            amount: true,
-            date: true,
-            type: true
+      },
+      select: {
+        amountPaid: true,
+        paymentDate: true,
+      },
+    }),
+
+    prisma.salaryPayment.findMany({
+      where: {
+        schoolId,
+        paymentDate: {
+          gte: startOfYearDate,
+          lte: endOfYearDate,
         },
-    });
+      },
+      select: {
+        amountPaid: true,
+        paymentDate: true,
+      },
+    })
+  ])
 
-    const months = moment.monthsShort();
-    const data = months.map(name => ({
-        name,
-        income: 0,
-        expense: 0
-    }))
 
-    for (const tx of transactions) {
-        const monthIndex = moment(tx.date).month()
-        if (tx.type === 'INCOME') {
-            data[monthIndex].income += tx.amount;
-        } else if (tx.type === 'EXPENSE') {
-            data[monthIndex].expense += tx.amount
-        }
-    }
+  const months = Array.from({ length: 12 }, (_, i) =>
+    format(new Date(2000, i, 1), "MMM")
+  )
+  const data = months.map((name) => ({
+    name,
+    income: 0,
+    expense: 0,
+  }));
 
-    return (
-        <div className="bg-white rounded-xl w-full h-full p-4">
-            <div className="flex justify-between items-center">
-                <h1 className="text-lg font-semibold">Finance</h1>
-                <Image src="/moreDark.svg" alt="more" width={20} height={20} />
-            </div>
-
-            <FinanceChart data={data} />
-        </div>
+  for (const tx of salary) {
+    const monthIndex = getMonth(tx.paymentDate)
+    data[monthIndex].expense += parseInt(
+      tx.amountPaid.toString().replace(/,/g, "")
     )
-}
+  }
 
-export default FinanceChartContainer
+  for (const tx of invoice) {
+    const monthIndex = getMonth(tx.paymentDate)
+    data[monthIndex].income += parseInt(
+      tx.amountPaid.toString().replace(/,/g, ""),
+    );
+  }
+
+  return (
+    <div className="h-full w-full rounded-xl bg-white p-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-lg font-semibold">Finance</h1>
+        <Image src="/moreDark.svg" alt="more" width={20} height={20} />
+      </div>
+
+      <FinanceChart data={data} />
+    </div>
+  );
+};
+
+export default FinanceChartContainer;

@@ -1,13 +1,22 @@
 "use client";
 
-import { FormContainerProps } from "@/types";
+import { FormModalProps } from "@/types";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import React, { Dispatch, SetStateAction, useState } from "react";
-import DeleteModal from "./DeleteModal";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dispatch, JSX, SetStateAction, useEffect, useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
-const TeacherForm = dynamic(() => import("./forms/TeacherForm"), {
+const StaffForm = dynamic(() => import("./forms/StaffForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const StudentForm = dynamic(() => import("./forms/StudentForm"), {
@@ -17,6 +26,12 @@ const SubjectForm = dynamic(() => import("./forms/SubjectForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ClassForm = dynamic(() => import("./forms/ClassForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const GradeForm = dynamic(() => import("./forms/GradeForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const ProgramForm = dynamic(() => import("./forms/ProgramForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ExamForm = dynamic(() => import("./forms/ExamForm"), {
@@ -46,38 +61,54 @@ const TransactionForm = dynamic(() => import("./forms/TransactionForm"), {
 const FeeForm = dynamic(() => import("./forms/FeeForm"), {
   loading: () => <h1>Loading...</h1>,
 });
+const TimetableForm = dynamic(() => import("./forms/TimetableForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
+const TermForm = dynamic(() => import("./forms/TermForm"), {
+  loading: () => <h1>Loading...</h1>,
+});
 
 const forms: {
   [key: string]: (
     setOpen: Dispatch<SetStateAction<boolean>>,
     type: "create" | "update",
     data?: any,
-    relatedData?: any
-  ) => React.JSX.Element;
+    relatedData?: any,
+  ) => JSX.Element;
 } = {
-  subject: (setOpen, type, data, relatedData) => (
-    <SubjectForm
+  subject: (setOpen, type, data) => (
+    <SubjectForm type={type} data={data} setOpen={setOpen} />
+  ),
+  term: (setOpen, type, data, relatedData) => (
+    <TermForm
       type={type}
       data={data}
       setOpen={setOpen}
       relatedData={relatedData}
     />
   ),
-  class: (setOpen, type, data, relatedData) => (
-    <ClassForm
+  "academic-year": (setOpen, type, data, relatedData) => (
+    <TermForm
       type={type}
       data={data}
       setOpen={setOpen}
       relatedData={relatedData}
     />
   ),
-  teacher: (setOpen, type, data, relatedData) => (
-    <TeacherForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  grade: (setOpen, type, data) => (
+    <GradeForm type={type} data={data} setOpen={setOpen} />
+  ),
+  program: (setOpen, type, data) => (
+    <ProgramForm type={type} data={data} setOpen={setOpen} />
+  ),
+  timetable: (setOpen, type, data) => (
+    <TimetableForm type={type} data={data} setOpen={setOpen} />
+  ),
+  class: (setOpen, type, data) => (
+    <ClassForm type={type} data={data} setOpen={setOpen} />
+  ),
+  staff: (setOpen, type, data) => (
+    <StaffForm type={type} data={data} setOpen={setOpen} />
   ),
   student: (setOpen, type, data, relatedData) => (
     <StudentForm
@@ -87,85 +118,48 @@ const forms: {
       relatedData={relatedData}
     />
   ),
-  exam: (setOpen, type, data, relatedData) => (
-    <ExamForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  exam: (setOpen, type, data) => (
+    <ExamForm type={type} data={data} setOpen={setOpen} />
   ),
-  assignment: (setOpen, type, data, relatedData) => (
-    <AssignmentForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  assignment: (setOpen, type, data) => (
+    <AssignmentForm type={type} data={data} setOpen={setOpen} />
   ),
-  lesson: (setOpen, type, data, relatedData) => (
-    <LessonForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  lesson: (setOpen, type, data) => (
+    <LessonForm type={type} data={data} setOpen={setOpen} />
   ),
-  parent: (setOpen, type, data, relatedData) => (
-    <ParentForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  parent: (setOpen, type, data) => (
+    <ParentForm type={type} data={data} setOpen={setOpen} />
   ),
-  event: (setOpen, type, data, relatedData) => (
-    <EventForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  event: (setOpen, type, data) => (
+    <EventForm type={type} data={data} setOpen={setOpen} />
   ),
-  result: (setOpen, type, data, relatedData) => (
-    <ResultForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  result: (setOpen, type, data) => (
+    <ResultForm type={type} data={data} setOpen={setOpen} />
   ),
-  announcement: (setOpen, type, data, relatedData) => (
-    <AnnouncementForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  announcement: (setOpen, type, data) => (
+    <AnnouncementForm type={type} data={data} setOpen={setOpen} />
   ),
-  fee: (setOpen, type, data, relatedData) => (
-    <FeeForm
-      type={type}
-      data={data}
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
+  fee: (setOpen, type, data) => (
+    <FeeForm type={type} data={data} setOpen={setOpen} />
   ),
-  transaction: (setOpen, type, data, relatedData) => (
-    <TransactionForm
-      setOpen={setOpen}
-      relatedData={relatedData}
-    />
-  ),
+  transaction: (setOpen) => <TransactionForm setOpen={setOpen} />,
 };
 
 const FormModal = ({
   table,
   type,
   data,
-  id,
+  triggerTitle,
   relatedData,
-}: FormContainerProps & { relatedData?: any }) => {
+  children,
+}: FormModalProps) => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  const formOpen = searchParams.get("form-open");
+  const [open, setOpen] = useState(!!formOpen);
+
   const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
   const bgColor =
     type === "create"
@@ -174,39 +168,52 @@ const FormModal = ({
         ? "bg-lamaPurple"
         : "bg-lamaPurple";
 
-  const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (!open && formOpen) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.delete("form-open");
+
+      router.replace(`${pathname}?${params.toString()}`);
+    }
+  }, [formOpen, open, pathname, router, searchParams]);
 
   return (
-    <>
-      <button
-        className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
-        onClick={() => setOpen(true)}
-      >
-        {(table === 'transaction' && type === 'create') ? (
-          <Image src={`/fee.svg`} alt="" width={16} height={16} title="Pay fee" />
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>
+        {children ? (
+          children
         ) : (
-          <Image src={`/${type}.svg`} alt="" width={16} height={16} />
+          <button className="flex cursor-pointer items-center gap-1">
+            <div
+              className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
+            >
+              <Image src={`/${type}.svg`} alt="" width={16} height={16} />
+            </div>
+
+            {triggerTitle && (
+              <span className="text-sm font-medium">{triggerTitle}</span>
+            )}
+          </button>
         )}
-      </button>
+      </AlertDialogTrigger>
 
-      {open && type === 'delete' && id && (
-        <DeleteModal id={id} open={open} setOpen={setOpen} table={table} />
-      )}
+      <AlertDialogContent className="custom-scrollbar max-h-[90vh] overflow-y-scroll sm:max-w-3xl">
+        <AlertDialogCancel className="absolute top-5 right-5 h-8 w-8 rounded-full">
+          <X />
+        </AlertDialogCancel>
 
-      {open && (type === 'create' || type === 'update') && (
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogContent className="max-h-[90vh] sm:w-[75vw] overflow-y-scroll custom-scrollbar">
-            <DialogHeader>
-              <DialogTitle>
-                {type === 'create' ? `Create a new ${table}` : `Update ${table} information`}
-              </DialogTitle>
-              <DialogDescription>Fill out the form below</DialogDescription>
-            </DialogHeader>
-            {forms[table](setOpen, type, data, relatedData)}
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+        <AlertDialogHeader>
+          <AlertDialogTitle className="capitalize">
+            {type} {table}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            Fill out the form below
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+
+        {forms[table](setOpen, type, data, relatedData)}
+      </AlertDialogContent>
+    </AlertDialog>
   );
 };
 

@@ -7,8 +7,9 @@ const CountChart = dynamic(() => import('./CountChart'), {
     loading: () => <h1>Loading...</h1>,
 });
 
-const CountChartContainer = async () => {
+const CountChartContainer = async ({ schoolId }: { schoolId: string }) => {
     const data = await prisma.student.groupBy({
+        where: { schoolId },
         by: ['sex'],
         _count: true
     }) as { _count: number; sex: UserSex }[]

@@ -1,35 +1,32 @@
 import { getCurrentUser } from "@/lib/serverUtils";
-import ListHeader from "@/components/ListHeader";
-import Pagination from "@/components/Pagination";
-import Table from "@/components/Table";
 import { assignmentsColumn } from "@/components/tables/assignmentsColumn";
 import prisma from "@/lib/prisma";
-import { ITEMS_PER_PAGE } from "@/lib/settings";
 import { SearchParams } from "@/types";
 import { Prisma } from "@prisma/client";
+import { DataTable } from "@/components/tables/data-table";
+import { getTerms } from "@/lib/actions/general";
 
 const AssignmentsListPage = async ({ searchParams }: SearchParams) => {
-  const { page, ...queryParams } = await searchParams
-  const p = page ? parseInt(page) : 1;
+  const { term, ...queryParams } = await searchParams;
 
-  const query: Prisma.AssignmentWhereInput = {}
-  query.lesson = {}
+  const query: Prisma.AssignmentWhereInput = {};
 
-  const { role, currentUserId } = await getCurrentUser()
+  const terms = await getTerms();
+
+  const { accessLevel, currentUserId, schoolId } = await getCurrentUser();
 
   // URL PARAMS CONDITION
   if (queryParams) {
     for (const [key, value] of Object.entries(queryParams)) {
       if (value !== undefined) {
         switch (key) {
-          case 'classId':
-            query.lesson.classId = parseInt(value)
+          case "classId":
+            query.classId = value;
             break;
-          case 'teacherId':
-            query.lesson.teacherId = value
-            break;
-          case 'search':
-            query.lesson.subject = { name: { contains: value, mode: 'insensitive' } }
+          case "teacherId":
+            query.class = {
+              OR: [{ formTeacherId: value }, { classTeacherId: value }],
+            };
             break;
           default:
             break;
@@ -39,46 +36,69 @@ const AssignmentsListPage = async ({ searchParams }: SearchParams) => {
   }
 
   // ROLE CONDITION
-  switch (role) {
-    case 'admin':
+  switch (accessLevel) {
+    case "manager":
       break;
-    case 'teacher':
-      query.lesson.teacherId = currentUserId!;
+    case "teacher":
+      query.class = {
+        OR: [
+          { formTeacherId: currentUserId! },
+          { classTeacherId: currentUserId! },
+        ],
+      };
       break;
-    case 'student':
-      query.lesson.class = { students: { some: { id: currentUserId! } } };
+    case "student":
+      query.class = { students: { some: { id: currentUserId! } } };
       break;
-    case 'parent':
-      query.lesson.class = { students: { some: { parentId: currentUserId! } } };
+    case "parent":
+      query.class = {
+        students: {
+          some: { parentStudents: { some: { parentId: currentUserId! } } },
+        },
+      };
       break;
     default:
       break;
   }
 
-  const [data, count] = await prisma.$transaction([
-    prisma.assignment.findMany({
-      where: query,
-      include: {
-        lesson: {
-          select: {
-            subject: { select: { name: true } },
-            teacher: { select: { name: true, surname: true } },
-            class: { select: { name: true } }
-          }
-        }
+  const data = await prisma.assignment.findMany({
+    where: {
+      schoolId,
+      ...(term
+        ? { termId: term }
+        : {
+            term: {
+              isCurrent: true,
+            },
+          }),
+      ...query,
+    },
+    include: {
+      subject: {
+        select: {
+          name: true,
+        },
       },
-      take: ITEMS_PER_PAGE,
-      skip: ITEMS_PER_PAGE * (p - 1),
-    }),
-
-    prisma.assignment.count({ where: query }),
-  ])
+      class: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <ListHeader title="All Assignments" role={role!} table="assignment" />
-      <Table columns={assignmentsColumn} data={data} role={role!} />
-      <Pagination page={p} count={count} />
+    <div className="m-4 mt-0 flex-1 rounded-md bg-white p-4">
+      <DataTable
+        columns={assignmentsColumn}
+        data={data}
+        accessLevel={accessLevel!}
+        title="All Assignments"
+        termFilter={{
+          terms,
+          selectedTermId: term,
+        }}
+      />
     </div>
   );
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { createAssignment, updateAssignment } from "@/lib/actions";
-import { assignmentSchema, AssignmentSchema } from "@/lib/validation";
+import { assignmentSchema, AssignmentSchema } from "@/lib/zod/validation";
 import { FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
@@ -15,51 +15,50 @@ import { toDatetimeLocal } from "@/lib/utils";
 const AssignmentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
   const router = useRouter();
 
-  const { lessons } = relatedData
+  const { lessons } = relatedData;
 
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm<AssignmentSchema>({
-    resolver: zodResolver(assignmentSchema)
+    resolver: zodResolver(assignmentSchema),
   });
 
   const [state, formAction, pending] = useActionState(
-    type === 'create' ? createAssignment : updateAssignment,
-    { success: false, error: false }
-  )
+    type === "create" ? createAssignment : updateAssignment,
+    { success: false, error: false },
+  );
 
   useEffect(() => {
     if (state.success) {
-      toast.success(`Assignment has been ${type}d`)
-      setOpen(false)
+      toast.success(`Assignment has been ${type}d`);
+      setOpen(false);
 
-      router.refresh()
+      router.refresh();
     } else if (state.error) {
-      if (typeof state.error === 'string') {
-        toast.error(state.error)
+      if (typeof state.error === "string") {
+        toast.error(state.error);
       } else {
-        toast.error(`Failed to ${type} assignment`)
+        toast.error(`Failed to ${type} assignment`);
       }
     }
-  }, [state, type, router, setOpen])
+  }, [state, type, router, setOpen]);
 
   const onSubmit = handleSubmit((values) => {
     const formData = {
-      ...(type === 'update' && { id: data.id }),
-      ...values
-    }
+      ...(type === "update" && { id: data.id }),
+      ...values,
+    };
 
     startTransition(() => {
-      formAction(formData)
-    })
-  })
-
+      formAction(formData);
+    });
+  });
 
   return (
     <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <div className="flex justify-between gap-4 flex-wrap">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <InputField
           label="Title"
           name="title"
@@ -71,33 +70,37 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
           label="Start Date"
           name="startDate"
           type="datetime-local"
-          defaultValue={data?.startDate ? toDatetimeLocal(data?.startDate) : undefined}
+          defaultValue={
+            data?.startDate ? toDatetimeLocal(data?.startDate) : undefined
+          }
           register={register}
           error={errors.startDate}
           inputProps={{
-            min: new Date().toISOString().slice(0, 16)
+            min: new Date().toISOString().slice(0, 16),
           }}
         />
         <InputField
           label="Due Date"
           name="dueDate"
           type="datetime-local"
-          defaultValue={data?.dueDate ? toDatetimeLocal(data?.dueDate) : undefined}
+          defaultValue={
+            data?.dueDate ? toDatetimeLocal(data?.dueDate) : undefined
+          }
           register={register}
           error={errors.dueDate}
           inputProps={{
-            min: new Date().toISOString().slice(0, 16)
+            min: new Date().toISOString().slice(0, 16),
           }}
         />
 
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
+        <div className="flex w-full flex-col gap-2 md:w-1/4">
           <label htmlFor="gradeId" className="text-xs text-gray-500">
             Lesson
           </label>
           <select
             {...register("lessonId")}
             id="lessonId"
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
+            className="w-full rounded-md p-2 text-sm ring-[1.5px] ring-gray-300"
             defaultValue={data?.lessonId}
           >
             {lessons.map((lesson: { id: number; name: string }) => (
@@ -114,12 +117,10 @@ const AssignmentForm = ({ type, data, setOpen, relatedData }: FormProps) => {
         </div>
       </div>
 
-      {state.error && <span className="text-red-500">Something went wrong</span>}
-      <button
-        type="submit"
-        disabled={pending}
-        className="form-submit_btn"
-      >
+      {state.error && (
+        <span className="text-red-500">Something went wrong</span>
+      )}
+      <button type="submit" disabled={pending} className="form-submit_btn">
         {!pending ? type : <Loader2 className="animate-spin text-lamaYellow" />}
       </button>
     </form>

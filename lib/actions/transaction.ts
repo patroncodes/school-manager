@@ -1,7 +1,7 @@
 "use server";
 
 import { CurrentState, UserRole } from "@/types";
-import { TransactionSchema } from "../validation";
+import { TransactionSchema } from "../zod/validation";
 import { TransactionType } from "@prisma/client";
 
 interface TransactionState extends TransactionSchema {

@@ -1,33 +1,65 @@
-import prisma from '@/lib/prisma';
-import moment from 'moment';
+import prisma from "@/lib/prisma";
+import { endOfDay, format, startOfDay } from "date-fns";
 
-const EventList = async ({ dateParam }: { dateParam: string }) => {
-    const date = dateParam ? new Date(dateParam) : new Date()
-
-    const data = await prisma.event.findMany({
-        where: {
-            startTime: {
-                gte: new Date(date.setHours(0, 0, 0, 0)),
-                lte: new Date(date.setHours(23, 59, 59, 999))
-            }
-        }
-    })
-    return (
-        <div className="flex flex-col gap-4">
-            {data.map((event) => (
-                <div
-                    key={event.id}
-                    className="p-5 rounded-md border-2 border-gray-100 border-t-4 odd:border-t-lamaSky even:border-t-lamaPurple"
-                >
-                    <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-gray-900 line-clamp-1 w-[60%]">{event.title}</h3>
-                        <span className="text-gray-600 text-xs">{moment(event.startTime).format("h:mmA")} - {moment(event.endTime).format("h:mmA")}</span>
-                    </div>
-                    <p className="mt-2 text-gray-700 text-sm">{event.description}</p>
-                </div>
-            ))}
-        </div>
-    )
+interface EventListProps {
+  dateParam?: string;
+  schoolId: string;
+  gradeId?: string;
+  classId?: string;
 }
 
-export default EventList
+const EventList = async ({
+  dateParam,
+  schoolId,
+  gradeId,
+  classId,
+}: EventListProps) => {
+  const targetDate = dateParam
+    ? new Date(`${dateParam}T08:12:00Z`)
+    : new Date();
+
+  const start = startOfDay(targetDate);
+  const end = endOfDay(targetDate);
+
+  const data = await prisma.event.findMany({
+    where: {
+      schoolId,
+      startTime: {
+        gte: start,
+        lte: end,
+      },
+      ...(gradeId && { gradeId }),
+      ...(classId && { classId }),
+    },
+  });
+
+  return (
+    <div className="flex flex-col gap-4">
+      {data.map((event) => (
+        <div
+          key={event.id}
+          className="rounded-md border-2 border-t-4 border-gray-100 p-5 odd:border-t-lamaSky even:border-t-lamaPurple"
+        >
+          <div className="flex items-center justify-between">
+            <h3 className="line-clamp-1 w-[60%] font-semibold text-gray-900">
+              {event.title}
+            </h3>
+            <span className="text-xs text-gray-600">
+              {format(event.startTime, "h:mmA")} -{" "}
+              {format(event.endTime, "h:mmA")}
+            </span>
+          </div>
+          <p className="mt-2 text-sm text-gray-700">{event.description}</p>
+        </div>
+      ))}
+
+      {data.length === 0 && (
+        <div className="flex-center h-16 text-sm font-light text-gray-600">
+          No events found
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EventList;

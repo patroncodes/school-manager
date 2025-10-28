@@ -1,131 +1,86 @@
 "use client";
 
-import { createAnnouncement, updateAnnouncement } from "@/lib/actions";
-import { announcementSchema, AnnouncementSchema } from "@/lib/validation";
+import { announcementSchema, AnnouncementSchema } from "@/lib/zod/validation";
 import { FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import InputField from "../InputField";
-import { Label } from "../ui/label";
+import InputField, { FormFieldType } from "../InputField";
+import { Form } from "@/components/ui/form";
+import { useGetClassesQuery } from "@/lib/generated/graphql/client";
+import { SelectContent, SelectItem } from "@/components/ui/select";
 
-const AnnouncementForm = ({ type, data, setOpen, relatedData }: FormProps) => {
+const AnnouncementForm = ({ type, data, setOpen }: FormProps) => {
   const router = useRouter();
+  const [classesResult] = useGetClassesQuery();
+  const classes = classesResult?.data?.classes ?? [];
 
-  const { classes } = relatedData
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<AnnouncementSchema>({
-    resolver: zodResolver(announcementSchema)
+  const form = useForm<AnnouncementSchema>({
+    resolver: zodResolver(announcementSchema),
+    defaultValues: {
+      title: data?.title ?? "",
+      content: data?.content ?? "",
+      classId: data?.classId ?? "",
+      gradeId: data?.gradeId ?? "",
+    },
   });
 
-  const [state, formAction, pending] = useActionState(
-    type === 'create' ? createAnnouncement : updateAnnouncement,
-    { success: false, error: false }
-  )
-
-  useEffect(() => {
-    if (state.success) {
-      toast.success(`Announcement has been ${type}d`)
-      setOpen(false)
-
-      router.refresh()
-    } else if (state.error) {
-      if (typeof state.error === 'string') {
-        toast.error(state.error)
-      } else {
-        toast.error(`Failed to ${type} announcement`)
-      }
-    }
-  }, [state, type, router, setOpen])
-
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = form.handleSubmit(async (values) => {
     const formData = {
-      ...(type === 'update' && { id: data.id }),
+      ...(type === "update" && { id: data.id }),
       ...values,
-      classId: values.classId === 0 ? null : values.classId
-    }
+    };
 
-    startTransition(() => {
-      formAction(formData)
-    })
-  })
-
+    console.log(formData);
+  });
 
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <div className="flex justify-between gap-4 flex-wrap">
-        <InputField
-          label="Title"
-          name="title"
-          defaultValue={data?.title}
-          register={register}
-          error={errors.title}
-        />
+    <Form {...form}>
+      <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <InputField
+            label="Title"
+            name="title"
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+          />
 
-        <InputField
-          label="Date"
-          name="date"
-          type="date"
-          defaultValue={data?.date.toISOString().split("T")[0]}
-          register={register}
-          error={errors.date}
-        />
+          <InputField
+            label="Description"
+            name="description"
+            control={form.control}
+            fieldType={FormFieldType.TEXTAREA}
+          />
 
-        <div className="flex flex-col gap-2 w-full md:w-1/4">
-          <label htmlFor="classId" className="text-xs text-gray-500">
-            Class
-          </label>
-          <select
-            {...register("classId")}
-            id="classId"
-            className="ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            defaultValue={data?.classId ?? ""}
+          <InputField
+            label="Class"
+            name="classId"
+            control={form.control}
+            fieldType={FormFieldType.SELECT}
           >
-            <option value="">
+            <SelectContent>
+              {classes.map(({ id, name }) => (
+                <SelectItem key={id} value={id!} className="py-1">
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+            <option className="py-1" value={-1}>
               Select a class
             </option>
-            {classes.map((item: { id: number; name: string }) => (
-              <option key={item.id} value={item.id} className="py-1">
-                {item.name}
-              </option>
-            ))}
-          </select>
-          {errors.classId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.classId.message.toString()}
-            </p>
-          )}
+          </InputField>
         </div>
 
-        <div className="flex flex-col gap-2 w-full">
-          <Label htmlFor="description" className="text-xs text-gray-500">
-            Description
-          </Label>
-          <textarea
-            id="description"
-            {...register("description")}
-            className="custom-scrollbar ring-[1.5px] ring-gray-300 p-2 rounded-md text-sm w-full"
-            defaultValue={data?.description}
-          />
-        </div>
-      </div>
-
-      {state.error && <span className="text-red-500">Something went wrong</span>}
-      <button
-        type="submit"
-        disabled={pending}
-        className="form-submit_btn"
-      >
-        {!pending ? type : <Loader2 className="animate-spin text-lamaYellow" />}
-      </button>
-    </form>
+        {/*<button type="submit" disabled={false} className="form-submit_btn">*/}
+        {/*  {!pending ? (*/}
+        {/*    type*/}
+        {/*  ) : (*/}
+        {/*    <Loader2 className="animate-spin text-lamaYellow" />*/}
+        {/*  )}*/}
+        {/*</button>*/}
+      </form>
+    </Form>
   );
 };
 

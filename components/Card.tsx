@@ -1,72 +1,74 @@
-import { Calendar, Droplet, Mail, Phone, Users2 } from "lucide-react";
+import { Calendar, Droplet, Mail, MapPinHouse, Phone } from "lucide-react";
 import Image from "next/image";
-import FormContainer from "./FormContainer";
+import {
+  Parent,
+  ParentStudentRelationship,
+} from "@/lib/generated/prisma/client";
+import { type ReactElement } from "react";
+import FormModal from "@/components/FormModal";
 
 export const InfoCard = ({
   data,
   table,
 }: {
   data: any;
-  table: "teacher" | "student";
+  table: "staff" | "student";
 }) => {
-  const contentClassName = "w-full md:w-1/3 lg:w-full 2xl:w-1/3 flex items-center gap-2"
-
   const items = [
     {
-      icon: Droplet,
-      alt: 'blood type',
-      value: data.bloodType
-    },
-    {
       icon: Calendar,
-      alt: 'age',
-      value: new Intl.DateTimeFormat("en-NG").format(data.birthday)
-    },
-    {
-      icon: Mail,
-      alt: 'email',
-      value: data.email || "-"
+      alt: "age",
+      value: new Intl.DateTimeFormat("en-NG").format(data.birthday),
     },
     {
       icon: Phone,
-      alt: 'phone',
-      value: data.phone || "-"
+      alt: "phone",
+      value: data.phone || "-",
     },
-    ...(table === 'student' ? [{
-      icon: Users2,
-      alt: 'parents',
-      value: `${data.parent.name} ${data.parent.surname}`
-    }] : [])
-  ]
+    {
+      icon: Mail,
+      alt: "email",
+      value: data.email || "-",
+    },
+    {
+      icon: MapPinHouse,
+      alt: "address",
+      value: data.address || "-",
+    },
+  ];
 
   return (
-    <div className="bg-lamaSky py-6 px-4 rounded-md flex-1 flex gap-4">
-      <div className="w-32 h-32 rounded-full">
-        <Image
-          src={data.img || '/noAvatar.png'}
-          alt="teacher"
-          width={144}
-          height={144}
-          className="rounded-full object-cover object-center"
-        />
-      </div>
-      <div className="w-2/3 flex flex-col justify-between gap-4 max-w-96">
-        <div className="flex items-center justify-between w-full gap-4">
-          <h1 className="text-xl font-semibold">
-            {data.name} {data.surname}
-          </h1>
+    <div className="flex flex-1 gap-4 rounded-md bg-lamaSky px-4 py-6">
+      <Image
+        src={data.img || "/noAvatar.png"}
+        alt="teacher"
+        width={144}
+        height={144}
+        className="h-24 w-24 rounded-full object-center"
+      />
 
-          <FormContainer table={table} type="update" data={data} />
+      <div className="flex w-2/3 max-w-96 flex-col justify-between gap-4">
+        <div className="flex w-full items-center justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold">
+              {data.name} {data.surname}
+            </h1>
+
+            <p className="text-sm text-gray-500">
+              Joined on{" "}
+              {new Intl.DateTimeFormat("en-NG").format(data.createdAt)}
+            </p>
+          </div>
+
+          <FormModal table={table} type="update" data={data} />
         </div>
 
-        <p className="text-sm text-gray-500">
-          Joined on {new Intl.DateTimeFormat("en-NG").format(data.createdAt)}
-        </p>
-
-        <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-medium">
-
-          {items.map(item => (
-            <div key={item.alt} className={contentClassName}>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-medium">
+          {items.map((item) => (
+            <div
+              key={item.alt}
+              className="flex w-full items-center gap-2 md:w-1/3 lg:w-full 2xl:w-1/3"
+            >
               <item.icon size={14} />
               <span>{item.value}</span>
             </div>
@@ -78,31 +80,80 @@ export const InfoCard = ({
 };
 
 export const SmallCard = async ({
-  cards
+  cards,
 }: {
   cards: {
     value: string;
     desc: string;
-    img: string;
+    img?: string;
+    icon?: ReactElement;
   }[];
 }) => {
   return (
-    <div className="flex-1 flex gap-4 justify-between flex-wrap">
+    <div className="flex flex-1 flex-wrap justify-between gap-4">
       {cards.map((card, index) => (
         <div
           key={index}
-          className="bg-white p-4 rounded-md flex gap-4 w-full md:w-[45%] xl:w-[47%] 2xl:w-[48%]"
+          className="flex w-full gap-4 rounded-md bg-white p-6 shadow-xs md:w-[45%] xl:w-[47%] 2xl:w-[48%]"
         >
-          <Image
-            src={card.img}
-            alt="attendance"
-            width={24}
-            height={24}
-            className="w-6 h-6"
-          />
+          {card.img ? (
+            <Image
+              src={card.img}
+              height={32}
+              width={32}
+              alt="icon"
+              className="size-8 w-fit"
+            />
+          ) : (
+            card.icon
+          )}
           <div className="">
             <h2 className="text-xl font-semibold">{card.value}</h2>
             <span className="text-sm text-gray-400">{card.desc}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export const ParentInfoCard = ({
+  data,
+}: {
+  data: { relation: ParentStudentRelationship; parent: Parent }[];
+}) => {
+  const getParentColumns = (parent: Parent) => [
+    {
+      label: "Name",
+      value: `${parent.name} ${parent.surname}`,
+    },
+    {
+      label: "Email",
+      value: parent.email || "-",
+    },
+    {
+      label: "Phone",
+      value: parent.phone || "-",
+    },
+    {
+      label: "Address",
+      value: parent.address,
+    },
+  ];
+
+  return (
+    <div className="w-full rounded-md bg-lamaSky">
+      {data.map((item) => (
+        <div key={item.relation} className="flex flex-col gap-4 p-4">
+          <h3 className="text-lg font-semibold">{item.relation}</h3>
+
+          <div className="flex flex-col gap-2 text-sm font-medium">
+            {getParentColumns(item.parent).map((item) => (
+              <div key={item.label}>
+                <span className="">{item.label}: </span>
+                <span className="ml-5">{item.value}</span>
+              </div>
+            ))}
           </div>
         </div>
       ))}

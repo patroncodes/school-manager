@@ -1,20 +1,10 @@
-import { clsx, type ClassValue } from "clsx";
+import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { getYear, subYears } from "date-fns";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
-
-export const getLastWeekMonday = () => {
-  const today = new Date();
-  const day = today.getDay();
-
-  const daysSinceMonday = ((day + 6) % 7) + 7;
-
-  const lastMonday = new Date(today);
-  lastMonday.setDate(today.getDate() - daysSinceMonday);
-  return lastMonday;
-};
 
 export const adjustScheduleToCurrentWeek = (
   lessons: { title: string; start: Date; end: Date }[],
@@ -68,7 +58,7 @@ export const toDatetimeLocal = (date: Date) => {
 export const handleServerErrors = (error: any) => {
   // CLERK ERRORS
   if (error?.errors && Array.isArray(error.errors)) {
-    const primaryError = error.errors[0]; // Handle the first error for now
+    const primaryError = error.errors[0];
 
     switch (primaryError.code) {
       case "form_password_pwned":
@@ -123,7 +113,7 @@ export const handleServerErrors = (error: any) => {
       case "P2002":
         return {
           success: false,
-          error: `${meta?.target[0]} already exists. Please use another`,
+          error: `${meta?.target[meta?.target.length - 1]} already exists. Please use another`,
         };
 
       case "P2003":
@@ -135,8 +125,53 @@ export const handleServerErrors = (error: any) => {
   }
 };
 
+export const handleGraphqlClientErrors = (error: any) => {
+  let message = "";
+
+  switch (error?.__typename) {
+    case "BaseError":
+    case "BaseAppError":
+    case "AppError":
+    case "UniqueConstraintError":
+    case "ForeignKeyError":
+    case "NotFoundError":
+    case "IdentifierExistsError":
+    case "PasswordTooShortError":
+    case "PasswordPwnedError":
+      message = error?.message;
+      break;
+  }
+
+  return message;
+};
+
 export const extractImageId = (url: string) => {
   const publicId = url.split("/").pop()?.split(".")[0];
 
   return { id: publicId };
 };
+
+export const calculateAge = (dateString: Date | string) => {
+  const today = new Date();
+  const birth = new Date(dateString);
+
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
+
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+
+  return age;
+};
+
+export function generateAcademicYears(yearsBack = 3) {
+  const now = new Date();
+  const month = now.getMonth();
+  const currentStartYear = month >= 8 ? getYear(now) : getYear(now) - 1;
+
+  return Array.from({ length: yearsBack + 1 }, (_, i) => {
+    const from = getYear(subYears(new Date(currentStartYear, 0), i));
+    return `${from}/${from + 1}`;
+  });
+}

@@ -1,86 +1,82 @@
 "use server";
 
-import { CurrentState } from "@/types";
-import { handleServerErrors } from "../utils";
-import { ClassSchema } from "../validation";
+import { ClassSchema } from "../zod/validation";
+import { getCurrentUser, handleGraphqlServerErrors } from "@/lib/serverUtils";
 import prisma from "../prisma";
+import { Class } from "@/lib/generated/prisma/client";
 
-export const createClass = async (
-  currentState: CurrentState,
+export const createClassAction = async (
   data: ClassSchema,
-) => {
+): Promise<Class | undefined> => {
   try {
-    const resData = await prisma.class.create({
-      data,
+    const { schoolId } = await getCurrentUser();
+    const { id, supervisors, ...input } = data;
+
+    return await prisma.class.create({
+      data: {
+        schoolId: schoolId!,
+        ...input,
+        ...(id && { id }),
+        ...(supervisors && {
+          supervisors: {
+            connect: supervisors.map((supervisor) => ({
+              id: supervisor,
+            })),
+          },
+        }),
+      },
     });
-
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
-  } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
+  } catch (error: any) {
+    handleGraphqlServerErrors(error);
   }
 };
 
-export const updateClass = async (
-  currentState: CurrentState,
-  data: ClassSchema,
-) => {
+export const updateClassAction = async (data: ClassSchema) => {
   try {
-    const resData = await prisma.class.update({
+    const { schoolId } = await getCurrentUser();
+    const { supervisors, ...input } = data;
+
+    return await prisma.class.update({
       where: {
-        id: data.id,
+        id: input.id!,
+        schoolId,
       },
-      data,
+      data: {
+        ...input,
+        id: input.id!,
+        ...(supervisors && {
+          supervisors: {
+            set: supervisors.map((supervisor) => ({
+              id: supervisor,
+            })),
+          },
+        }),
+      },
     });
-
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
-  } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
+  } catch (error: any) {
+    handleGraphqlServerErrors(error);
   }
 };
 
-export const deleteClass = async (id: string) => {
+export const deleteClassAction = async (id: string) => {
   try {
-    const resData = await prisma.class.delete({
+    const { accessLevel, schoolId } = await getCurrentUser();
+
+    if (accessLevel !== "manager") {
+      return { success: false, error: "Unauthorized" };
+      // throw new AppError("Unauthorized", "UNAUTHORIZED");
+    }
+
+    await prisma.class.delete({
       where: {
-        id: parseInt(id),
+        id,
+        schoolId,
       },
     });
 
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
-  } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
+    return { success: true };
+  } catch (error: any) {
+    console.log(error);
+    return { success: false, error: error.message };
   }
 };

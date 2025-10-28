@@ -1,6 +1,6 @@
 import { type FeeWithRelations } from "@/app/(dashboard)/list/fees/page";
 import { cn } from "@/lib/utils";
-import { UserRole } from "@/types";
+import { RoleAccessLevel } from "@/types";
 import FormContainer from "../FormContainer";
 import { Badge } from "../ui/badge";
 
@@ -8,7 +8,7 @@ interface FeesList extends FeeWithRelations {
     hasPaid: boolean
 }
 
-export const feesColumn = (role: UserRole) => [
+export const feesColumn = (role: RoleAccessLevel) => [
     {
         accessor: "description",
         header: "Description",

@@ -1,44 +1,74 @@
-import { UserRole } from "@/types"
-import { Class, Teacher } from "@prisma/client"
-import FormContainer from "../FormContainer"
+"use client";
 
-type ClassesList = Class & { supervisor: Teacher | null }
+import { ColumnDef } from "@tanstack/react-table";
+import DropdownOptions from "@/components/DropdownOptions";
+import {
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
+import DeleteModal from "@/components/DeleteModal";
 
-export const classesColumn = (role: UserRole) => [
-    {
-        accessor: "name",
-        header: "Class",
-        cell: (item: ClassesList) => <span>{item.name}</span>
+type ClassesList = {
+  id: string;
+  name: string;
+  capacity: number;
+  supervisor: { name: string; surname: string } | null;
+  grade: { name: string };
+  studentCount: number;
+};
+
+export const classesColumn: ColumnDef<ClassesList>[] = [
+  {
+    accessorKey: "name",
+    header: "Class",
+    cell: ({ row: { original } }) => (
+      <span className="capitalize">{original.name}</span>
+    ),
+  },
+  {
+    accessorFn: (row) => row.grade.name,
+    header: "Grade",
+    cell: ({ row: { original } }) => <span>{original.grade.name}</span>,
+  },
+  {
+    accessorKey: "capacity",
+    header: "Capacity",
+    cell: ({ row: { original } }) => <span>{original.capacity}</span>,
+  },
+  {
+    accessorKey: "studentCount",
+    header: "Students",
+    cell: ({ row: { original } }) => <span>{original?.studentCount}</span>,
+  },
+  {
+    accessorKey: "supervisor",
+    header: "Supervisor",
+    cell: ({ row: { original } }) => (
+      <span>
+        {original?.supervisor?.name} {original?.supervisor?.surname}
+      </span>
+    ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      return (
+        <DropdownOptions>
+          <DropdownMenuItem asChild>
+            <Link href={`/list/classes/${row.original.id}`}>View</Link>
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+          <DropdownMenuItem asChild>
+            <DeleteModal id={row.original.id} table="class">
+              <span className="px-2 py-1 text-sm font-medium text-destructive">
+                Delete
+              </span>
+            </DeleteModal>
+          </DropdownMenuItem>
+        </DropdownOptions>
+      );
     },
-    {
-        accessor: "capacity",
-        header: "Capacity",
-        cell: (item: ClassesList) => <span>{item.capacity}</span>
-    },
-    {
-        accessor: "grade",
-        header: "Grade",
-        cell: (item: ClassesList) => <span>{item.name[0]}</span>
-    },
-    {
-        accessor: "supervisor",
-        header: "Supervisor",
-        cell: (item: ClassesList) => <span>{item?.supervisor?.name} {item?.supervisor?.surname}</span>
-    },
-    ...(role === "admin"
-        ? [
-            {
-                header: "Actions",
-                accessor: "action",
-                cell: (item: ClassesList) => (
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <FormContainer table="class" type="update" data={item} />
-                            <FormContainer table="class" type="delete" id={item.id} />
-                        </div>
-                    </div>
-                )
-            },
-        ]
-        : []),
-]
+  },
+];

@@ -2,14 +2,21 @@
 
 import { CurrentState } from "@/types";
 import { clerkClient } from "@clerk/nextjs/server";
-import prisma from "../prisma";
 import { handleServerErrors } from "../utils";
-import { ParentSchema } from "../validation";
+import { ParentSchema } from "../zod/validation";
+import { getCurrentUser } from "@/lib/serverUtils";
+import prisma from "../prisma";
 
 export const createParent = async (
   currentState: CurrentState,
   { password, ...data }: ParentSchema,
 ) => {
+  const { accessLevel, schoolId } = await getCurrentUser();
+
+  if (accessLevel !== "manager") {
+    return { success: false, error: "Unauthorized" };
+  }
+
   const client = await clerkClient();
   let userId = "";
 
@@ -19,15 +26,16 @@ export const createParent = async (
       password: password,
       firstName: data.name,
       lastName: data.surname,
-      publicMetadata: { role: "parent" },
+      publicMetadata: { accessLevel: "parent" },
     });
 
     userId = user.id;
 
     await prisma.parent.create({
       data: {
-        id: userId,
         ...data,
+        clerkUserId: userId,
+        schoolId,
       },
     });
 
@@ -61,20 +69,25 @@ export const updateParent = async (
   try {
     if (!data.id) return { success: false, error: "Parent doesn't exist" };
 
+    const { accessLevel, schoolId } = await getCurrentUser();
+
+    if (accessLevel !== "manager") {
+      return { success: false, error: "Unauthorized" };
+    }
+
     const client = await clerkClient();
 
-    const user = await client.users.updateUser(data.id, {
+    await client.users.updateUser(data.id, {
       username: data.username,
       ...(password !== "" && { password: password }),
       firstName: data.name,
       lastName: data.surname,
     });
 
-    if (!user) throw Error;
-
     const resData = await prisma.parent.update({
       where: {
         id: data.id,
+        schoolId,
       },
       data,
     });
@@ -100,22 +113,25 @@ export const updateParent = async (
   }
 };
 
-export const deleteParent = async (id: string) => {
+export const deleteParent = async (parentId: string) => {
   try {
     const client = await clerkClient();
+    const { accessLevel, schoolId } = await getCurrentUser();
 
-    const user = await client.users.deleteUser(id);
+    if (accessLevel !== "manager") {
+      return { success: false, error: "Unauthorized" };
+    }
 
-    if (!user) throw Error;
-    const resData = await prisma.parent.delete({
+    await prisma.parent.delete({
       where: {
-        id,
+        id: parentId,
+        schoolId,
       },
     });
 
-    if (!resData) throw Error;
+    await client.users.deleteUser(parentId);
 
-    return { success: true, error: false };
+    return { success: true, error: "" };
   } catch (err: any) {
     console.log(err);
     const serverErrors = handleServerErrors(err);
@@ -139,9 +155,12 @@ export const getParents = async (
   searchTerm: string,
 ) => {
   try {
+    const { schoolId } = await getCurrentUser();
+
     const parents: { id: string; name: string; surname: string }[] =
       await prisma.parent.findMany({
         where: {
+          schoolId,
           OR: [
             { name: { contains: searchTerm, mode: "insensitive" } },
             { surname: { contains: searchTerm, mode: "insensitive" } },
@@ -154,21 +173,5 @@ export const getParents = async (
   } catch (error) {
     console.log(error);
     return { data: undefined, error: true };
-  }
-};
-
-export const getParent = async (query: string) => {
-  try {
-    const parent = await prisma.parent.findFirst({
-      where: {
-        OR: [{ id: query }, { email: query }],
-      },
-      select: { id: true, name: true, surname: true },
-    });
-
-    return { data: parent, error: false };
-  } catch (error) {
-    console.log(error);
-    return { error: true };
   }
 };

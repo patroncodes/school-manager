@@ -1,42 +1,73 @@
 import Menu from "@/components/Menu";
 import Navbar from "@/components/Navbar";
-import { getCurrentUser } from "@/lib/serverUtils";
-import Image from "next/image";
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { getCurrentUser, getSchool } from "@/lib/serverUtils";
+import { Metadata } from "next";
+import { notFound, redirect } from "next/navigation";
+import { ReactNode } from "react";
+import { cookies } from "next/headers";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { schoolId } = await getCurrentUser();
+  const school = await getSchool(schoolId || "");
+
+  if (!school)
+    return {
+      title: "Schoolkit",
+      description: "Manage your school efficiently with advanced analytics",
+    };
+
+  return {
+    title: school.name,
+    description: school.motto,
+    icons: school.logo
+      ? [{ url: school.logo, rel: "icon" }]
+      : [{ url: "/logo.svg", rel: "icon" }],
+    openGraph: {
+      title: school.name,
+      description: school.motto || "",
+      images: school.logo ? [school.logo] : [],
+    },
+    twitter: {
+      card: "summary",
+      title: school.name,
+      description: school.motto || "",
+      images: school.logo ? [school.logo] : [],
+    },
+  };
+}
 
 export default async function DashboardLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
-  const { role, currentUserId } = await getCurrentUser()
+  const { accessLevel, currentUserId, schoolId } = await getCurrentUser();
+  if (!accessLevel || !currentUserId) redirect("/sign-in");
 
-  if (!role || !currentUserId) redirect('/')
+  const school = await getSchool(schoolId!);
+  if (!school) notFound();
+
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   return (
-    <div className="flex">
-      {/* LEFT */}
-      <div className="w-[14%] md:w-[8%] lg:w-[16%] xl:w-[14%]">
-        <div className="fixed left-0 h-screen overflow-scroll">
-          <Link
-            href="/"
-            className="flex items-center justify-center lg:justify-start gap-2 p-4"
-          >
-            <Image src="/logo.svg" alt="logo" width={32} height={32} />
-            <span className="hidden lg:block font-bold">School Lama</span>
-          </Link>
+    <SidebarProvider defaultOpen={defaultOpen}>
+      <main className="flex w-full">
+        <Menu accessLevel={accessLevel} school={school} />
 
-          <Menu role={role} />
+        <div className="flex w-full flex-col overflow-x-hidden bg-[#F7F8FA]">
+          <Navbar
+            accessLevel={accessLevel}
+            userId={currentUserId}
+            school={school}
+          />
+
+          <div className="flex-1 p-4">{children}</div>
+          {/*<TermProvider currentTerm={currentTerm}>*/}
+          {/*</TermProvider>*/}
         </div>
-      </div>
-
-      {/* RIGHT */}
-      <div className="w-[86%] md:w-[92%] lg:w-[84%] xl:w-[86%] bg-[#F7F8FA] flex flex-col overflow-x-hidden">
-        <Navbar role={role} userId={currentUserId} />
-
-        {children}
-      </div>
-    </div>
+      </main>
+    </SidebarProvider>
   );
 }

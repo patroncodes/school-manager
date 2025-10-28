@@ -1,71 +1,40 @@
-import ListHeader from '@/components/ListHeader';
-import Pagination from '@/components/Pagination';
-import Table from '@/components/Table';
-import { eventsColumn } from '@/components/tables/eventsColumn';
-import prisma from '@/lib/prisma';
-import { getCurrentUser } from '@/lib/serverUtils';
-import { ITEMS_PER_PAGE } from '@/lib/settings';
-import { SearchParams } from '@/types';
-import { Prisma } from '@prisma/client';
+import { eventsColumn } from "@/components/tables/eventsColumn";
+import { createServerClient, getCurrentUser } from "@/lib/serverUtils";
+import { DataTable } from "@/components/tables/data-table";
+import { gql } from "@urql/core";
 
-
-const EventsListPage = async ({ searchParams }: SearchParams) => {
-  const { page, ...queryParams } = await searchParams
-  const p = page ? parseInt(page) : 1;
-
-  const { role, currentUserId } = await getCurrentUser()
-
-  const query: Prisma.EventWhereInput = {}
-
-  // URL PARAMS CONDITION
-  if (queryParams) {
-    for (const [key, value] of Object.entries(queryParams)) {
-      if (value !== undefined) {
-        switch (key) {
-          case 'search':
-            query.title = { contains: value, mode: 'insensitive' }
-            break;
-          default:
-            break;
+const GET_EVENTS = gql(`
+    query GetEvents {
+        events {
+          id
+          title
+          description
+          startTime
+          endTime
+          updatedAt
+          grade {
+            name
+          }
         }
-      }
     }
-  }
+`);
 
-  const roleConditions = {
-    teacher: { lessons: { some: { teacherId: currentUserId! } } },
-    student: { students: { some: { id: currentUserId! } } },
-    parent: { students: { some: { parentId: currentUserId! } } },
-  };
+const EventsListPage = async () => {
+  const { accessLevel } = await getCurrentUser();
 
-  if (role !== "admin") {
-    query.OR = [
-      { classId: null },
-      {
-        class: roleConditions[role as keyof typeof roleConditions],
-      },
-    ];
-  }
+  const { client } = await createServerClient();
 
-
-  const [data, count] = await prisma.$transaction([
-    prisma.event.findMany({
-      where: query,
-      include: {
-        class: { select: { name: true } }
-      },
-      take: ITEMS_PER_PAGE,
-      skip: ITEMS_PER_PAGE * (p - 1),
-    }),
-
-    prisma.event.count({ where: query }),
-  ]);
+  const { data } = await client.query<any, any>(GET_EVENTS, {}).toPromise();
 
   return (
-    <div className="bg-white p-4 rounded-md flex-1 m-4 mt-0">
-      <ListHeader title="All Events" role={role!} table='event' />
-      <Table columns={eventsColumn} data={data} role={role!} />
-      <Pagination page={p} count={count} />
+    <div className="m-4 mt-0 flex-1 rounded-md bg-white p-4">
+      <DataTable
+        columns={eventsColumn}
+        data={data?.events ?? []}
+        accessLevel={accessLevel!}
+        tableFor="event"
+        title="Events"
+      />
     </div>
   );
 };

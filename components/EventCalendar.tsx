@@ -12,15 +12,16 @@ type Value = ValuePiece | [ValuePiece, ValuePiece];
 const EventCalendar = () => {
   const [value, onChange] = useState<Value>(new Date());
 
-  const router = useRouter()
+  const router = useRouter();
 
   useEffect(() => {
     if (value instanceof Date) {
-      router.push(`?date=${value}`)
+      const isoDate = value.toLocaleDateString("en-CA");
+      router.push(`?date=${isoDate}`);
     }
-  }, [value, router])
+  }, [value, router]);
 
-  return <Calendar onChange={onChange} value={value} />
+  return <Calendar onChange={onChange} value={value} view="month" />;
 };
 
 export default EventCalendar;

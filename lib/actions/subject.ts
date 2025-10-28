@@ -1,88 +1,93 @@
 "use server";
 
-import { CurrentState } from "@/types";
-import prisma from "../prisma";
 import { handleServerErrors } from "../utils";
-import { SubjectSchema } from "../validation";
+import { SubjectSchema } from "../zod/validation";
+import { getCurrentUser, handleGraphqlServerErrors } from "@/lib/serverUtils";
+import prisma from "../prisma";
+import { AppError } from "@/lib/pothos/errors";
 
-export const createSubject = async (
-  currentState: CurrentState,
-  data: SubjectSchema,
-) => {
+export const createSubjectAction = async ({
+  name,
+  teachers,
+}: SubjectSchema) => {
   try {
-    const resData = await prisma.subject.create({
-      data: {
-        name: data.name,
-        teachers: {
-          connect: data.teachers.map((teacherId) => ({ id: teacherId })),
-        },
-      },
+    const { accessLevel, schoolId } = await getCurrentUser();
+
+    if (accessLevel !== "manager")
+      throw new AppError("Unauthorized", "UNAUTHORIZED");
+
+    return await prisma.$transaction(async (tx) => {
+      const subject = await tx.subject.create({
+        data: { schoolId: schoolId!, name },
+      });
+
+      if (teachers.length > 0) {
+        await tx.teacherSubjectAssignment.createMany({
+          data: teachers.map((teacherId) => ({
+            schoolId: schoolId!,
+            subjectId: subject.id,
+            teacherId,
+          })),
+        });
+      }
+
+      return subject;
     });
-
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
   } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
+    handleGraphqlServerErrors(err);
   }
 };
 
-export const updateSubject = async (
-  currentState: CurrentState,
-  data: SubjectSchema,
-) => {
+export const updateSubjectAction = async (data: SubjectSchema) => {
   try {
-    const resData = await prisma.subject.update({
+    const { accessLevel, schoolId } = await getCurrentUser();
+
+    if (accessLevel !== "manager")
+      throw new AppError("Unauthorized", "UNAUTHORIZED");
+
+    return await prisma.subject.update({
       where: {
-        id: data.id,
+        id: data.id!,
+        schoolId,
       },
       data: {
         name: data.name,
-        teachers: {
-          set: data.teachers.map((teacherId) => ({ id: teacherId })),
-        },
+        ...(data.teachers.length > 0 && {
+          teacherSubjectAssignments: {
+            connectOrCreate: data.teachers.map((teacherId) => ({
+              where: { id: data.relationId! },
+              create: {
+                schoolId: schoolId!,
+                subjectId: data.id!,
+                teacherId,
+              },
+            })),
+          },
+        }),
       },
     });
-
-    if (!resData) throw Error;
-
-    return { success: true, error: false };
   } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
+    handleGraphqlServerErrors(err);
   }
 };
 
-export const deleteSubject = async (id: string) => {
+export const deleteSubjectAction = async (id: string) => {
   try {
-    const resData = await prisma.subject.delete({
+    const { accessLevel, schoolId } = await getCurrentUser();
+
+    if (accessLevel !== "manager") {
+      return { success: false, error: "Unauthorized" };
+    }
+
+    await prisma.subject.delete({
       where: {
-        id: parseInt(id),
+        id,
+        schoolId,
       },
     });
 
-    if (!resData) throw Error;
-
     return { success: true, error: false };
   } catch (err: any) {
-    console.log(err);
     const serverErrors = handleServerErrors(err);
 
     if (serverErrors?.error) {

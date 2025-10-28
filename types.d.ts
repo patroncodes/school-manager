@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
-import { FieldError } from "react-hook-form";
+import { ColumnDef } from "@tanstack/react-table";
+import { ProgramType } from "@/lib/generated/prisma/enums";
 
 type SearchParams = {
   searchParams: Promise<{ [key: string]: string }>;
@@ -13,7 +14,7 @@ type CurrentState = {
 };
 
 type Table =
-  | "teacher"
+  | "staff"
   | "student"
   | "parent"
   | "subject"
@@ -26,40 +27,51 @@ type Table =
   | "event"
   | "announcement"
   | "fee"
-  | "transaction";
+  | "transaction"
+  | "grade"
+  | "program"
+  | "timetable"
+  | "term"
+  | "academic-year";
 
-type UserRole = "admin" | "teacher" | "student" | "parent";
+type RoleAccessLevel =
+  | "student"
+  | "parent"
+  | "academics"
+  | "finance"
+  | "administration"
+  | "teacher"
+  | "manager";
 
 enum Sex {
   MALE = "male",
   FEMALE = "female",
 }
 
-declare type FormContainerProps = {
+declare type ErrorTypes =
+  | "AppError"
+  | "BaseAppError"
+  | "UniqueConstraintError"
+  | "ForeignKeyError"
+  | "NotFoundError"
+  | "IdentifierExistsError"
+  | "PasswordTooShortError"
+  | "PasswordPwnedError";
+
+declare type FormModalProps = {
   table: Table;
-  type: "create" | "update" | "delete";
-  data?: any;
-  id?: number | string;
-  studentId?: string;
-};
-
-declare type FormProps = {
   type: "create" | "update";
-  data: any;
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  relatedData: any;
+  data?: any;
+  studentId?: string;
+  triggerTitle?: string;
+  relatedData?: any;
+  children?: React.ReactNode;
 };
 
-declare type InputFieldProps = {
-  label: string;
-  type?: string;
-  register: any;
-  name: string;
-  containerClassName?: string;
-  defaultValue?: Date | string | number;
-  error?: FieldError;
-  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
-};
+declare interface FormProps
+  extends Pick<FormModalProps, "type" | "data" | "relatedData"> {
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 declare type AttendanceSchema = {
   id?: number;
@@ -180,4 +192,65 @@ declare interface PaystackVerifyResponse {
     source: any;
     fees_breakdown: any;
   };
+}
+
+declare interface DataTableProps {
+  columns: ColumnDef<any, any>[];
+  data: any[];
+  accessLevel: RoleAccessLevel;
+  title?: string;
+  termFilter?: TermSelectorProps;
+  tableFor: Table;
+  filters?: {
+    listCreation?: boolean;
+    termFilter?: boolean;
+    selectCount?: boolean;
+  };
+  relatedData?: any;
+}
+
+declare interface TermSelectorProps {
+  terms: {
+    id: string;
+    term: number;
+    isCurrent: boolean;
+    academicYear: {
+      year: string;
+    };
+  }[];
+  selectedTermId: string;
+}
+
+declare interface CreateSchoolInput {
+  programs: ProgramType[];
+  grades: {
+    gradeName: string;
+    programName: string;
+  }[];
+  manager: {
+    username: string;
+    password: string;
+    name: string;
+    surname: string;
+    birthday: Date;
+    email: string;
+    phone: string;
+    img?: string | null;
+  };
+  slug: string;
+  name: string;
+  address: string;
+  email: string;
+  phone: string;
+  logo?: string | null;
+  motto?: string | null;
+}
+
+declare interface UserAuthInput {
+  username: string;
+  password?: string;
+  firstName: string;
+  lastName: string;
+  accessLevel: string;
+  schoolId?: string;
 }
