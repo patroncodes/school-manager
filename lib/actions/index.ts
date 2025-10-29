@@ -3,11 +3,7 @@ export {
   deleteAnnouncementAction,
   updateAnnouncementAction,
 } from "./announcement";
-export {
-  createAssignment,
-  deleteAssignment,
-  updateAssignment,
-} from "./assignment";
+export { deleteAssignmentAction } from "./assignment";
 export {
   createGradeAction,
   deleteGradeAction,
@@ -23,8 +19,8 @@ export {
   deleteEventAction,
   updateEventAction,
 } from "./event";
-export { createExam, deleteExam, updateExam } from "./exam";
-export { createLesson, deleteLesson, updateLesson } from "./lesson";
+export { deleteExamAction } from "./exam";
+export { deleteClubAction } from "./club";
 export { createParent, deleteParent, updateParent } from "./parent";
 export { createResult, deleteResult, updateResult } from "./result";
 export { createStudentAction, deleteStudent } from "./student";

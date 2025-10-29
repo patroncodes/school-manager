@@ -74,6 +74,8 @@ const ClassForm = ({ type, data, setOpen }: FormProps) => {
     }
   });
 
+  const isLoading = createResult.fetching || updateResult.fetching;
+
   return (
     <Form {...form}>
       <form className="flex flex-col gap-4" onSubmit={onSubmit}>
@@ -138,10 +140,10 @@ const ClassForm = ({ type, data, setOpen }: FormProps) => {
 
         <button
           type="submit"
-          disabled={createResult.fetching || updateResult.fetching}
+          disabled={!form.formState.isDirty || isLoading}
           className="form-submit_btn"
         >
-          {createResult.fetching || updateResult.fetching ? (
+          {isLoading ? (
             <Loader2 className="animate-spin text-lamaYellow" />
           ) : (
             type

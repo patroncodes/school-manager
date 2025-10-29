@@ -218,33 +218,39 @@ export const classSchema = z.object({
 
 export type ClassSchema = z.infer<typeof classSchema>;
 
-export const examSchema = z
-  .object({
-    id: z.coerce.number().optional(),
-    title: z.string().min(2, { message: "Title is required" }),
-    startTime: z.coerce.date({ message: "Start time is required" }),
-    endTime: z.coerce.date({ message: "End Time is required" }),
-    lessonId: z.coerce.number(),
-  })
-  .refine((data) => data.endTime >= data.startTime, {
-    path: ["endTime"],
-    message: "End Time cannot be before Start Time",
-  });
+export const examSchema = z.object({
+  id: z.string().optional().nullable(),
+  date: z.coerce.date({ message: "Date is required" }),
+  startTime: z.string(),
+  endTime: z.string().optional().nullable(),
+  type: z.enum(["FINAL", "TEST", "MIDTERM", "QUIZ", "PRACTICAL"]),
+  maxScore: z.coerce.number().min(1),
+  files: z.array(z.string()).optional().nullable(),
+  subjectId: z.string().min(1, { message: "What subject is this exam for?" }),
+  gradeId: z.string().min(1, { message: "Which grade is this exam for?" }),
+  termId: z.string().min(1, { message: "Term is required" }),
+});
 
 export type ExamSchema = z.infer<typeof examSchema>;
 
 export const assignmentSchema = z
   .object({
-    id: z.string().optional(),
-    title: z.string().min(2, { message: "Title is required" }),
+    id: z.string().optional().nullable(),
     startDate: z.coerce.date({ message: "Start Date is required" }),
     dueDate: z.coerce.date({ message: "When's the due date?" }),
-    maxScore: z.coerce.number({
-      message: "How many points is this assignment worth?",
-    }),
-    subjectId: z.string({ message: "What subject is this assignment for?" }),
-    classId: z.string({ message: "Which class is this assignment for?" }),
-    termId: z.string().optional(),
+    maxScore: z.coerce.number().min(1),
+    files: z.array(z.string()).optional().nullable(),
+    subjectId: z
+      .string()
+      .min(1, { message: "What subject is this assignment for?" }),
+    classId: z
+      .string()
+      .min(1, { message: "Which class is this assignment for?" }),
+    termId: z.string().min(1, { message: "Term is required" }),
+    gradeId: z
+      .string({ message: "Which class is this assignment for?" })
+      .optional()
+      .nullable(),
   })
   .refine((data) => data.dueDate >= data.startDate, {
     path: ["dueDate"],
@@ -253,26 +259,17 @@ export const assignmentSchema = z
 
 export type AssignmentSchema = z.infer<typeof assignmentSchema>;
 
-export const lessonSchema = z
-  .object({
-    id: z.coerce.number().optional(),
-    name: z.string().min(2, { message: "Lesson Name is required" }),
-    description: z.string().optional(),
-    startTime: z.coerce.date({ message: "Start Time is required" }),
-    endTime: z.coerce.date({ message: "End Time is required" }),
-    teacherId: z.string(),
-    subjectId: z.coerce.number(),
-    classId: z.coerce.number(),
+export const clubSchema = z.object({
+  id: z.string().optional().nullable(),
+  name: z.string().min(2, { message: "Name is required" }),
+  description: z.string().min(2, { message: "Description is required" }),
+  foundedAt: z.coerce
+    .date({ message: "Start Time is required" })
+    .optional()
+    .nullable(),
+});
 
-    materials: z.string().optional(),
-    objectives: z.string().optional(),
-  })
-  .refine((data) => data.endTime >= data.startTime, {
-    path: ["endTime"],
-    message: "End time cannot be before start time",
-  });
-
-export type LessonSchema = z.infer<typeof lessonSchema>;
+export type ClubSchema = z.infer<typeof clubSchema>;
 
 export const timetableAssignmentSchema = z
   .object({

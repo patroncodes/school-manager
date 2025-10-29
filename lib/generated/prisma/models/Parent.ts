@@ -185,7 +185,7 @@ export type ParentGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type ParentGroupByOutputType = {
   id: string
   clerkUserId: string | null
-  primaryId: string
+  primaryId: string | null
   name: string
   surname: string
   email: string | null
@@ -220,7 +220,7 @@ export type ParentWhereInput = {
   NOT?: Prisma.ParentWhereInput | Prisma.ParentWhereInput[]
   id?: Prisma.StringFilter<"Parent"> | string
   clerkUserId?: Prisma.StringNullableFilter<"Parent"> | string | null
-  primaryId?: Prisma.StringFilter<"Parent"> | string
+  primaryId?: Prisma.StringNullableFilter<"Parent"> | string | null
   name?: Prisma.StringFilter<"Parent"> | string
   surname?: Prisma.StringFilter<"Parent"> | string
   email?: Prisma.StringNullableFilter<"Parent"> | string | null
@@ -236,7 +236,7 @@ export type ParentWhereInput = {
 export type ParentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   clerkUserId?: Prisma.SortOrderInput | Prisma.SortOrder
-  primaryId?: Prisma.SortOrder
+  primaryId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   surname?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -273,7 +273,7 @@ export type ParentWhereUniqueInput = Prisma.AtLeast<{
 export type ParentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   clerkUserId?: Prisma.SortOrderInput | Prisma.SortOrder
-  primaryId?: Prisma.SortOrder
+  primaryId?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   surname?: Prisma.SortOrder
   email?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -293,7 +293,7 @@ export type ParentScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ParentScalarWhereWithAggregatesInput | Prisma.ParentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Parent"> | string
   clerkUserId?: Prisma.StringNullableWithAggregatesFilter<"Parent"> | string | null
-  primaryId?: Prisma.StringWithAggregatesFilter<"Parent"> | string
+  primaryId?: Prisma.StringNullableWithAggregatesFilter<"Parent"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"Parent"> | string
   surname?: Prisma.StringWithAggregatesFilter<"Parent"> | string
   email?: Prisma.StringNullableWithAggregatesFilter<"Parent"> | string | null
@@ -307,7 +307,7 @@ export type ParentScalarWhereWithAggregatesInput = {
 export type ParentCreateInput = {
   id?: string
   clerkUserId?: string | null
-  primaryId: string
+  primaryId?: string | null
   name: string
   surname: string
   email?: string | null
@@ -322,7 +322,7 @@ export type ParentCreateInput = {
 export type ParentUncheckedCreateInput = {
   id?: string
   clerkUserId?: string | null
-  primaryId: string
+  primaryId?: string | null
   name: string
   surname: string
   email?: string | null
@@ -337,7 +337,7 @@ export type ParentUncheckedCreateInput = {
 export type ParentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -352,7 +352,7 @@ export type ParentUpdateInput = {
 export type ParentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -367,7 +367,7 @@ export type ParentUncheckedUpdateInput = {
 export type ParentCreateManyInput = {
   id?: string
   clerkUserId?: string | null
-  primaryId: string
+  primaryId?: string | null
   name: string
   surname: string
   email?: string | null
@@ -381,7 +381,7 @@ export type ParentCreateManyInput = {
 export type ParentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -394,7 +394,7 @@ export type ParentUpdateManyMutationInput = {
 export type ParentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -531,7 +531,7 @@ export type ParentUpdateOneRequiredWithoutParentStudentsNestedInput = {
 export type ParentCreateWithoutSchoolInput = {
   id?: string
   clerkUserId?: string | null
-  primaryId: string
+  primaryId?: string | null
   name: string
   surname: string
   email?: string | null
@@ -545,7 +545,7 @@ export type ParentCreateWithoutSchoolInput = {
 export type ParentUncheckedCreateWithoutSchoolInput = {
   id?: string
   clerkUserId?: string | null
-  primaryId: string
+  primaryId?: string | null
   name: string
   surname: string
   email?: string | null
@@ -588,7 +588,7 @@ export type ParentScalarWhereInput = {
   NOT?: Prisma.ParentScalarWhereInput | Prisma.ParentScalarWhereInput[]
   id?: Prisma.StringFilter<"Parent"> | string
   clerkUserId?: Prisma.StringNullableFilter<"Parent"> | string | null
-  primaryId?: Prisma.StringFilter<"Parent"> | string
+  primaryId?: Prisma.StringNullableFilter<"Parent"> | string | null
   name?: Prisma.StringFilter<"Parent"> | string
   surname?: Prisma.StringFilter<"Parent"> | string
   email?: Prisma.StringNullableFilter<"Parent"> | string | null
@@ -602,7 +602,7 @@ export type ParentScalarWhereInput = {
 export type ParentCreateWithoutParentStudentsInput = {
   id?: string
   clerkUserId?: string | null
-  primaryId: string
+  primaryId?: string | null
   name: string
   surname: string
   email?: string | null
@@ -616,7 +616,7 @@ export type ParentCreateWithoutParentStudentsInput = {
 export type ParentUncheckedCreateWithoutParentStudentsInput = {
   id?: string
   clerkUserId?: string | null
-  primaryId: string
+  primaryId?: string | null
   name: string
   surname: string
   email?: string | null
@@ -646,7 +646,7 @@ export type ParentUpdateToOneWithWhereWithoutParentStudentsInput = {
 export type ParentUpdateWithoutParentStudentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -660,7 +660,7 @@ export type ParentUpdateWithoutParentStudentsInput = {
 export type ParentUncheckedUpdateWithoutParentStudentsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -674,7 +674,7 @@ export type ParentUncheckedUpdateWithoutParentStudentsInput = {
 export type ParentCreateManySchoolInput = {
   id?: string
   clerkUserId?: string | null
-  primaryId: string
+  primaryId?: string | null
   name: string
   surname: string
   email?: string | null
@@ -687,7 +687,7 @@ export type ParentCreateManySchoolInput = {
 export type ParentUpdateWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -701,7 +701,7 @@ export type ParentUpdateWithoutSchoolInput = {
 export type ParentUncheckedUpdateWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -715,7 +715,7 @@ export type ParentUncheckedUpdateWithoutSchoolInput = {
 export type ParentUncheckedUpdateManyWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   clerkUserId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  primaryId?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   surname?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -839,7 +839,7 @@ export type $ParentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     clerkUserId: string | null
-    primaryId: string
+    primaryId: string | null
     name: string
     surname: string
     email: string | null

@@ -97,10 +97,10 @@ export type Parent = Prisma.ParentModel
  */
 export type ParentStudent = Prisma.ParentStudentModel
 /**
- * Model Lesson
+ * Model Club
  * 
  */
-export type Lesson = Prisma.LessonModel
+export type Club = Prisma.ClubModel
 /**
  * Model Exam
  * 

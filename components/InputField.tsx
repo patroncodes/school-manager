@@ -22,12 +22,14 @@ import * as React from "react";
 import { Calendar } from "./ui/calendar";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export enum FormFieldType {
   INPUT = "input",
   TEXTAREA = "textarea",
   PHONE_INPUT = "phoneInput",
   CHECKBOX = "checkbox",
+  RADIO = "radio",
   DATE_PICKER = "datePicker",
   SELECT = "select",
   MULTI_SELECT = "multiSelect",
@@ -240,10 +242,33 @@ const InputField = ({
             </div>
           </FormControl>
         );
+      case FormFieldType.RADIO:
+        return (
+          <FormControl>
+            <RadioGroup
+              value={field.value ?? ""}
+              defaultValue={field.value}
+              onValueChange={(val) => field.onChange(val || "")}
+              disabled={disabled}
+            >
+              {options?.map((opt) => (
+                <div key={opt.id} className="flex items-center space-x-2">
+                  <RadioGroupItem value={opt.id} id={opt.id} />
+                  <Label htmlFor={opt.id} className="capitalize">
+                    {opt.name}
+                  </Label>
+                </div>
+              ))}
+              {children}
+            </RadioGroup>
+          </FormControl>
+        );
       default:
         return null;
     }
   };
+
+  const fieldsWithoutLabels = [FormFieldType.CHECKBOX];
 
   return (
     <FormField
@@ -253,7 +278,7 @@ const InputField = ({
         <FormItem
           className={cn("flex w-full flex-col gap-2", containerClassName)}
         >
-          {fieldType !== FormFieldType.CHECKBOX && (
+          {!fieldsWithoutLabels.includes(fieldType) && (
             <FormLabel htmlFor={name} className="text-sm text-gray-700">
               {label}
             </FormLabel>

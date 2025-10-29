@@ -5,10 +5,10 @@ import {
   UniqueConstraintError,
 } from "@/lib/pothos/errors";
 import {
+  assignPeriodSlotAction,
   assignTimetableAction,
   createClassAction,
   createGradeAction,
-  assignPeriodSlotAction,
   updateClassAction,
   updateGradeAction,
 } from "@/lib/actions";

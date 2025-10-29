@@ -35,6 +35,8 @@ const AnnouncementForm = ({ type, data, setOpen }: FormProps) => {
     console.log(formData);
   });
 
+  const isLoading = false;
+
   return (
     <Form {...form}>
       <form className="flex flex-col gap-8" onSubmit={onSubmit}>
@@ -72,13 +74,17 @@ const AnnouncementForm = ({ type, data, setOpen }: FormProps) => {
           </InputField>
         </div>
 
-        {/*<button type="submit" disabled={false} className="form-submit_btn">*/}
-        {/*  {!pending ? (*/}
-        {/*    type*/}
-        {/*  ) : (*/}
-        {/*    <Loader2 className="animate-spin text-lamaYellow" />*/}
-        {/*  )}*/}
-        {/*</button>*/}
+        <button
+          type="submit"
+          disabled={!form.formState.isDirty || isLoading}
+          className="form-submit_btn"
+        >
+          {!isLoading ? (
+            type
+          ) : (
+            <Loader2 className="animate-spin text-lamaYellow" />
+          )}
+        </button>
       </form>
     </Form>
   );

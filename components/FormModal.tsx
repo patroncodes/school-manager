@@ -2,7 +2,6 @@
 
 import { FormModalProps } from "@/types";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { Dispatch, JSX, SetStateAction, useEffect, useState } from "react";
 import {
   AlertDialog,
@@ -40,7 +39,7 @@ const ExamForm = dynamic(() => import("./forms/ExamForm"), {
 const AssignmentForm = dynamic(() => import("./forms/AssignmentForm"), {
   loading: () => <h1>Loading...</h1>,
 });
-const LessonForm = dynamic(() => import("./forms/LessonForm"), {
+const ClubForm = dynamic(() => import("./forms/./ClubForm"), {
   loading: () => <h1>Loading...</h1>,
 });
 const ParentForm = dynamic(() => import("./forms/ParentForm"), {
@@ -124,8 +123,8 @@ const forms: {
   assignment: (setOpen, type, data) => (
     <AssignmentForm type={type} data={data} setOpen={setOpen} />
   ),
-  lesson: (setOpen, type, data) => (
-    <LessonForm type={type} data={data} setOpen={setOpen} />
+  club: (setOpen, type, data) => (
+    <ClubForm type={type} data={data} setOpen={setOpen} />
   ),
   parent: (setOpen, type, data) => (
     <ParentForm type={type} data={data} setOpen={setOpen} />
@@ -160,14 +159,6 @@ const FormModal = ({
   const formOpen = searchParams.get("form-open");
   const [open, setOpen] = useState(!!formOpen);
 
-  const size = type === "create" ? "w-8 h-8" : "w-7 h-7";
-  const bgColor =
-    type === "create"
-      ? "bg-lamaYellow"
-      : type === "update"
-        ? "bg-lamaPurple"
-        : "bg-lamaPurple";
-
   useEffect(() => {
     if (!open && formOpen) {
       const params = new URLSearchParams(searchParams.toString());
@@ -183,16 +174,11 @@ const FormModal = ({
         {children ? (
           children
         ) : (
-          <button className="flex cursor-pointer items-center gap-1">
-            <div
-              className={`${size} flex items-center justify-center rounded-full ${bgColor}`}
-            >
-              <Image src={`/${type}.svg`} alt="" width={16} height={16} />
-            </div>
-
-            {triggerTitle && (
-              <span className="text-sm font-medium">{triggerTitle}</span>
-            )}
+          <button
+            className="flex cursor-pointer items-center gap-1 px-2 text-sm font-medium capitalize"
+            aria-describedby={type}
+          >
+            {triggerTitle || type}
           </button>
         )}
       </AlertDialogTrigger>

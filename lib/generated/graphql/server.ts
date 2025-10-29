@@ -65,6 +65,33 @@ export type AppError = {
   message?: Maybe<Scalars['String']['output']>;
 };
 
+export type Assignment = {
+  __typename?: 'Assignment';
+  class: Class;
+  dueDate: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  maxScore?: Maybe<Scalars['Int']['output']>;
+  startDate: Scalars['DateTime']['output'];
+  subject: Subject;
+  term: Term;
+};
+
+export type AssignmentFilter = {
+  classId?: InputMaybe<Scalars['ID']['input']>;
+  teacherId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type AssignmentInput = {
+  classId: Scalars['String']['input'];
+  dueDate: Scalars['DateTime']['input'];
+  files?: InputMaybe<Array<Scalars['String']['input']>>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  maxScore: Scalars['Int']['input'];
+  startDate: Scalars['DateTime']['input'];
+  subjectId: Scalars['String']['input'];
+  termId: Scalars['String']['input'];
+};
+
 export type BaseAppError = AppError & Error & {
   __typename?: 'BaseAppError';
   code?: Maybe<Scalars['String']['output']>;
@@ -102,6 +129,29 @@ export type ClassWhereInput = {
   supervisorId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Club = {
+  __typename?: 'Club';
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  foundedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  members: Array<Student>;
+  name: Scalars['String']['output'];
+  supervisors: Array<Staff>;
+};
+
+export type ClubFilter = {
+  staffId?: InputMaybe<Scalars['ID']['input']>;
+  studentId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type ClubInput = {
+  description: Scalars['String']['input'];
+  foundedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+};
+
 export enum ContractType {
   Contract = 'CONTRACT',
   PartTime = 'PART_TIME',
@@ -137,6 +187,45 @@ export type EventInput = {
   startTime: Scalars['DateTime']['input'];
   title: Scalars['String']['input'];
 };
+
+export type Exam = {
+  __typename?: 'Exam';
+  date: Scalars['DateTime']['output'];
+  endTime?: Maybe<Scalars['String']['output']>;
+  grade: Grade;
+  id: Scalars['ID']['output'];
+  maxScore?: Maybe<Scalars['Int']['output']>;
+  startTime: Scalars['String']['output'];
+  subject: Subject;
+  term: Term;
+  type: ExamType;
+};
+
+export type ExamFilter = {
+  classId?: InputMaybe<Scalars['ID']['input']>;
+  teacherId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type ExamInput = {
+  date: Scalars['DateTime']['input'];
+  endTime?: InputMaybe<Scalars['String']['input']>;
+  files?: InputMaybe<Array<Scalars['String']['input']>>;
+  gradeId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  maxScore: Scalars['Int']['input'];
+  startTime: Scalars['String']['input'];
+  subjectId: Scalars['String']['input'];
+  termId: Scalars['String']['input'];
+  type: ExamType;
+};
+
+export enum ExamType {
+  Final = 'FINAL',
+  Midterm = 'MIDTERM',
+  Practical = 'PRACTICAL',
+  Quiz = 'QUIZ',
+  Test = 'TEST'
+}
 
 export type ForeignKeyError = AppError & Error & {
   __typename?: 'ForeignKeyError';
@@ -183,8 +272,11 @@ export type ManagerInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createAssignment?: Maybe<MutationCreateAssignmentResult>;
   createClass?: Maybe<MutationCreateClassResult>;
+  createClub?: Maybe<MutationCreateClubResult>;
   createEvent?: Maybe<MutationCreateEventResult>;
+  createExam?: Maybe<MutationCreateExamResult>;
   createGrade?: Maybe<MutationCreateGradeResult>;
   createProgram?: Maybe<MutationCreateProgramResult>;
   createSchool?: Maybe<MutationCreateSchoolResult>;
@@ -194,12 +286,20 @@ export type Mutation = {
   mutateAcademicYear?: Maybe<MutationMutateAcademicYearResult>;
   mutateTerm?: Maybe<MutationMutateTermResult>;
   saveAnnouncementAsDraft?: Maybe<Announcement>;
+  updateAssignment?: Maybe<MutationUpdateAssignmentResult>;
   updateClass?: Maybe<MutationUpdateClassResult>;
+  updateClub?: Maybe<MutationUpdateClubResult>;
   updateEvent?: Maybe<MutationUpdateEventResult>;
+  updateExam?: Maybe<MutationUpdateExamResult>;
   updateGrade?: Maybe<MutationUpdateGradeResult>;
   updatePeriodSlot?: Maybe<MutationUpdatePeriodSlotResult>;
   updateSubject?: Maybe<MutationUpdateSubjectResult>;
   updateTimetableAssignment?: Maybe<MutationUpdateTimetableAssignmentResult>;
+};
+
+
+export type MutationCreateAssignmentArgs = {
+  input: AssignmentInput;
 };
 
 
@@ -208,8 +308,18 @@ export type MutationCreateClassArgs = {
 };
 
 
+export type MutationCreateClubArgs = {
+  input: ClubInput;
+};
+
+
 export type MutationCreateEventArgs = {
   input: EventInput;
+};
+
+
+export type MutationCreateExamArgs = {
+  input: ExamInput;
 };
 
 
@@ -258,13 +368,28 @@ export type MutationSaveAnnouncementAsDraftArgs = {
 };
 
 
+export type MutationUpdateAssignmentArgs = {
+  input: AssignmentInput;
+};
+
+
 export type MutationUpdateClassArgs = {
   input: ClassInput;
 };
 
 
+export type MutationUpdateClubArgs = {
+  input: ClubInput;
+};
+
+
 export type MutationUpdateEventArgs = {
   input: EventInput;
+};
+
+
+export type MutationUpdateExamArgs = {
+  input: ExamInput;
 };
 
 
@@ -287,6 +412,13 @@ export type MutationUpdateTimetableAssignmentArgs = {
   input: TimetableAssignmentInput;
 };
 
+export type MutationCreateAssignmentResult = BaseAppError | BaseError | MutationCreateAssignmentSuccess | UniqueConstraintError;
+
+export type MutationCreateAssignmentSuccess = {
+  __typename?: 'MutationCreateAssignmentSuccess';
+  data: Assignment;
+};
+
 export type MutationCreateClassResult = BaseAppError | BaseError | MutationCreateClassSuccess | UniqueConstraintError;
 
 export type MutationCreateClassSuccess = {
@@ -294,11 +426,25 @@ export type MutationCreateClassSuccess = {
   data: Class;
 };
 
+export type MutationCreateClubResult = BaseAppError | BaseError | MutationCreateClubSuccess | UniqueConstraintError;
+
+export type MutationCreateClubSuccess = {
+  __typename?: 'MutationCreateClubSuccess';
+  data: Club;
+};
+
 export type MutationCreateEventResult = BaseAppError | BaseError | MutationCreateEventSuccess | UniqueConstraintError;
 
 export type MutationCreateEventSuccess = {
   __typename?: 'MutationCreateEventSuccess';
   data: Event;
+};
+
+export type MutationCreateExamResult = BaseAppError | BaseError | MutationCreateExamSuccess | UniqueConstraintError;
+
+export type MutationCreateExamSuccess = {
+  __typename?: 'MutationCreateExamSuccess';
+  data: Exam;
 };
 
 export type MutationCreateGradeResult = BaseAppError | BaseError | MutationCreateGradeSuccess | UniqueConstraintError;
@@ -357,6 +503,13 @@ export type MutationMutateTermSuccess = {
   data: Term;
 };
 
+export type MutationUpdateAssignmentResult = BaseAppError | BaseError | MutationUpdateAssignmentSuccess | NotFoundError | UniqueConstraintError;
+
+export type MutationUpdateAssignmentSuccess = {
+  __typename?: 'MutationUpdateAssignmentSuccess';
+  data: Assignment;
+};
+
 export type MutationUpdateClassResult = BaseAppError | BaseError | ForeignKeyError | MutationUpdateClassSuccess | UniqueConstraintError;
 
 export type MutationUpdateClassSuccess = {
@@ -364,11 +517,25 @@ export type MutationUpdateClassSuccess = {
   data: Class;
 };
 
+export type MutationUpdateClubResult = BaseAppError | BaseError | MutationUpdateClubSuccess | UniqueConstraintError;
+
+export type MutationUpdateClubSuccess = {
+  __typename?: 'MutationUpdateClubSuccess';
+  data: Club;
+};
+
 export type MutationUpdateEventResult = BaseAppError | BaseError | MutationUpdateEventSuccess | NotFoundError | UniqueConstraintError;
 
 export type MutationUpdateEventSuccess = {
   __typename?: 'MutationUpdateEventSuccess';
   data: Event;
+};
+
+export type MutationUpdateExamResult = BaseAppError | BaseError | MutationUpdateExamSuccess | NotFoundError | UniqueConstraintError;
+
+export type MutationUpdateExamSuccess = {
+  __typename?: 'MutationUpdateExamSuccess';
+  data: Exam;
 };
 
 export type MutationUpdateGradeResult = BaseAppError | BaseError | MutationUpdateGradeSuccess | UniqueConstraintError;
@@ -462,9 +629,12 @@ export type Query = {
   __typename?: 'Query';
   academicYears?: Maybe<Array<AcademicYear>>;
   announcements?: Maybe<Array<Announcement>>;
+  assignments?: Maybe<Array<Assignment>>;
   class?: Maybe<Class>;
   classes?: Maybe<Array<Class>>;
+  clubs?: Maybe<Array<Club>>;
   events?: Maybe<Array<Event>>;
+  exams?: Maybe<Array<Exam>>;
   grade?: Maybe<Grade>;
   grades?: Maybe<Array<Grade>>;
   parent?: Maybe<Parent>;
@@ -486,6 +656,11 @@ export type QueryAnnouncementsArgs = {
 };
 
 
+export type QueryAssignmentsArgs = {
+  filter?: InputMaybe<AssignmentFilter>;
+};
+
+
 export type QueryClassArgs = {
   id: Scalars['ID']['input'];
 };
@@ -496,8 +671,18 @@ export type QueryClassesArgs = {
 };
 
 
+export type QueryClubsArgs = {
+  filter?: InputMaybe<ClubFilter>;
+};
+
+
 export type QueryEventsArgs = {
   classId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryExamsArgs = {
+  filter?: InputMaybe<ExamFilter>;
 };
 
 
@@ -547,6 +732,11 @@ export type QuerySubjectsArgs = {
 };
 
 
+export type QueryTermsArgs = {
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryTimetableArgs = {
   classId: Scalars['ID']['input'];
 };
@@ -582,12 +772,6 @@ export type SchoolInput = {
 };
 
 export enum Sex {
-  Female = 'FEMALE',
-  Male = 'MALE',
-  Other = 'OTHER'
-}
-
-export enum SexEnum {
   Female = 'FEMALE',
   Male = 'MALE',
   Other = 'OTHER'
@@ -669,7 +853,7 @@ export type StudentInput = {
   registrationNumber: Scalars['String']['input'];
   secondaryGuardian?: InputMaybe<Scalars['String']['input']>;
   secondaryGuardianRelationship?: InputMaybe<Scalars['String']['input']>;
-  sex: SexEnum;
+  sex: Sex;
   surname: Scalars['String']['input'];
 };
 
@@ -754,6 +938,13 @@ export type GetAcademicYearsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAcademicYearsQuery = { __typename?: 'Query', academicYears?: Array<{ __typename?: 'AcademicYear', id: string, year: string, startDate: any, endDate?: any | null, isCurrent: boolean }> | null };
 
+export type GetAssignmentsQueryVariables = Exact<{
+  filter?: InputMaybe<AssignmentFilter>;
+}>;
+
+
+export type GetAssignmentsQuery = { __typename?: 'Query', assignments?: Array<{ __typename?: 'Assignment', id: string, startDate: any, dueDate: any, maxScore?: number | null, term: { __typename?: 'Term', id: string, term: number }, class: { __typename?: 'Class', id: string, name: string, grade: { __typename?: 'Grade', id: string, name: string } }, subject: { __typename?: 'Subject', id: string, name: string } }> | null };
+
 export type GetClassQueryVariables = Exact<{
   id: Scalars['ID']['input'];
 }>;
@@ -768,10 +959,24 @@ export type GetClassesQueryVariables = Exact<{
 
 export type GetClassesQuery = { __typename?: 'Query', classes?: Array<{ __typename?: 'Class', id: string, name: string, studentCount: number, capacity: number, supervisors: Array<{ __typename?: 'Staff', name: string, surname: string }>, grade: { __typename?: 'Grade', name: string } }> | null };
 
+export type GetClubsQueryVariables = Exact<{
+  filter?: InputMaybe<ClubFilter>;
+}>;
+
+
+export type GetClubsQuery = { __typename?: 'Query', clubs?: Array<{ __typename?: 'Club', id: string, name: string, description?: string | null, foundedAt?: any | null }> | null };
+
 export type GetEventsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type GetEventsQuery = { __typename?: 'Query', events?: Array<{ __typename?: 'Event', id: string, title: string, description: string, startTime: any, endTime: any, updatedAt?: any | null, grade?: { __typename?: 'Grade', name: string } | null }> | null };
+
+export type GetExamsQueryVariables = Exact<{
+  filter?: InputMaybe<ExamFilter>;
+}>;
+
+
+export type GetExamsQuery = { __typename?: 'Query', exams?: Array<{ __typename?: 'Exam', id: string, date: any, startTime: string, endTime?: string | null, type: ExamType, maxScore?: number | null, term: { __typename?: 'Term', id: string, term: number }, grade: { __typename?: 'Grade', id: string, name: string }, subject: { __typename?: 'Subject', id: string, name: string } }> | null };
 
 export type GetGradesQueryVariables = Exact<{
   where?: InputMaybe<GradeWhereInput>;

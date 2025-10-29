@@ -68,6 +68,33 @@ export type AppError = {
   message?: Maybe<Scalars['String']['output']>;
 };
 
+export type Assignment = {
+  __typename?: 'Assignment';
+  class: Class;
+  dueDate: Scalars['DateTime']['output'];
+  id: Scalars['ID']['output'];
+  maxScore?: Maybe<Scalars['Int']['output']>;
+  startDate: Scalars['DateTime']['output'];
+  subject: Subject;
+  term: Term;
+};
+
+export type AssignmentFilter = {
+  classId?: InputMaybe<Scalars['ID']['input']>;
+  teacherId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type AssignmentInput = {
+  classId: Scalars['String']['input'];
+  dueDate: Scalars['DateTime']['input'];
+  files?: InputMaybe<Array<Scalars['String']['input']>>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  maxScore: Scalars['Int']['input'];
+  startDate: Scalars['DateTime']['input'];
+  subjectId: Scalars['String']['input'];
+  termId: Scalars['String']['input'];
+};
+
 export type BaseAppError = AppError & Error & {
   __typename?: 'BaseAppError';
   code?: Maybe<Scalars['String']['output']>;
@@ -105,6 +132,29 @@ export type ClassWhereInput = {
   supervisorId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type Club = {
+  __typename?: 'Club';
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  foundedAt?: Maybe<Scalars['DateTime']['output']>;
+  id: Scalars['ID']['output'];
+  members: Array<Student>;
+  name: Scalars['String']['output'];
+  supervisors: Array<Staff>;
+};
+
+export type ClubFilter = {
+  staffId?: InputMaybe<Scalars['ID']['input']>;
+  studentId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type ClubInput = {
+  description: Scalars['String']['input'];
+  foundedAt?: InputMaybe<Scalars['DateTime']['input']>;
+  id?: InputMaybe<Scalars['ID']['input']>;
+  name: Scalars['String']['input'];
+};
+
 export enum ContractType {
   Contract = 'CONTRACT',
   PartTime = 'PART_TIME',
@@ -140,6 +190,45 @@ export type EventInput = {
   startTime: Scalars['DateTime']['input'];
   title: Scalars['String']['input'];
 };
+
+export type Exam = {
+  __typename?: 'Exam';
+  date: Scalars['DateTime']['output'];
+  endTime?: Maybe<Scalars['String']['output']>;
+  grade: Grade;
+  id: Scalars['ID']['output'];
+  maxScore?: Maybe<Scalars['Int']['output']>;
+  startTime: Scalars['String']['output'];
+  subject: Subject;
+  term: Term;
+  type: ExamType;
+};
+
+export type ExamFilter = {
+  classId?: InputMaybe<Scalars['ID']['input']>;
+  teacherId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+export type ExamInput = {
+  date: Scalars['DateTime']['input'];
+  endTime?: InputMaybe<Scalars['String']['input']>;
+  files?: InputMaybe<Array<Scalars['String']['input']>>;
+  gradeId: Scalars['String']['input'];
+  id?: InputMaybe<Scalars['ID']['input']>;
+  maxScore: Scalars['Int']['input'];
+  startTime: Scalars['String']['input'];
+  subjectId: Scalars['String']['input'];
+  termId: Scalars['String']['input'];
+  type: ExamType;
+};
+
+export enum ExamType {
+  Final = 'FINAL',
+  Midterm = 'MIDTERM',
+  Practical = 'PRACTICAL',
+  Quiz = 'QUIZ',
+  Test = 'TEST'
+}
 
 export type ForeignKeyError = AppError & Error & {
   __typename?: 'ForeignKeyError';
@@ -186,8 +275,11 @@ export type ManagerInput = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  createAssignment?: Maybe<MutationCreateAssignmentResult>;
   createClass?: Maybe<MutationCreateClassResult>;
+  createClub?: Maybe<MutationCreateClubResult>;
   createEvent?: Maybe<MutationCreateEventResult>;
+  createExam?: Maybe<MutationCreateExamResult>;
   createGrade?: Maybe<MutationCreateGradeResult>;
   createProgram?: Maybe<MutationCreateProgramResult>;
   createSchool?: Maybe<MutationCreateSchoolResult>;
@@ -197,12 +289,20 @@ export type Mutation = {
   mutateAcademicYear?: Maybe<MutationMutateAcademicYearResult>;
   mutateTerm?: Maybe<MutationMutateTermResult>;
   saveAnnouncementAsDraft?: Maybe<Announcement>;
+  updateAssignment?: Maybe<MutationUpdateAssignmentResult>;
   updateClass?: Maybe<MutationUpdateClassResult>;
+  updateClub?: Maybe<MutationUpdateClubResult>;
   updateEvent?: Maybe<MutationUpdateEventResult>;
+  updateExam?: Maybe<MutationUpdateExamResult>;
   updateGrade?: Maybe<MutationUpdateGradeResult>;
   updatePeriodSlot?: Maybe<MutationUpdatePeriodSlotResult>;
   updateSubject?: Maybe<MutationUpdateSubjectResult>;
   updateTimetableAssignment?: Maybe<MutationUpdateTimetableAssignmentResult>;
+};
+
+
+export type MutationCreateAssignmentArgs = {
+  input: AssignmentInput;
 };
 
 
@@ -211,8 +311,18 @@ export type MutationCreateClassArgs = {
 };
 
 
+export type MutationCreateClubArgs = {
+  input: ClubInput;
+};
+
+
 export type MutationCreateEventArgs = {
   input: EventInput;
+};
+
+
+export type MutationCreateExamArgs = {
+  input: ExamInput;
 };
 
 
@@ -261,13 +371,28 @@ export type MutationSaveAnnouncementAsDraftArgs = {
 };
 
 
+export type MutationUpdateAssignmentArgs = {
+  input: AssignmentInput;
+};
+
+
 export type MutationUpdateClassArgs = {
   input: ClassInput;
 };
 
 
+export type MutationUpdateClubArgs = {
+  input: ClubInput;
+};
+
+
 export type MutationUpdateEventArgs = {
   input: EventInput;
+};
+
+
+export type MutationUpdateExamArgs = {
+  input: ExamInput;
 };
 
 
@@ -290,6 +415,13 @@ export type MutationUpdateTimetableAssignmentArgs = {
   input: TimetableAssignmentInput;
 };
 
+export type MutationCreateAssignmentResult = BaseAppError | BaseError | MutationCreateAssignmentSuccess | UniqueConstraintError;
+
+export type MutationCreateAssignmentSuccess = {
+  __typename?: 'MutationCreateAssignmentSuccess';
+  data: Assignment;
+};
+
 export type MutationCreateClassResult = BaseAppError | BaseError | MutationCreateClassSuccess | UniqueConstraintError;
 
 export type MutationCreateClassSuccess = {
@@ -297,11 +429,25 @@ export type MutationCreateClassSuccess = {
   data: Class;
 };
 
+export type MutationCreateClubResult = BaseAppError | BaseError | MutationCreateClubSuccess | UniqueConstraintError;
+
+export type MutationCreateClubSuccess = {
+  __typename?: 'MutationCreateClubSuccess';
+  data: Club;
+};
+
 export type MutationCreateEventResult = BaseAppError | BaseError | MutationCreateEventSuccess | UniqueConstraintError;
 
 export type MutationCreateEventSuccess = {
   __typename?: 'MutationCreateEventSuccess';
   data: Event;
+};
+
+export type MutationCreateExamResult = BaseAppError | BaseError | MutationCreateExamSuccess | UniqueConstraintError;
+
+export type MutationCreateExamSuccess = {
+  __typename?: 'MutationCreateExamSuccess';
+  data: Exam;
 };
 
 export type MutationCreateGradeResult = BaseAppError | BaseError | MutationCreateGradeSuccess | UniqueConstraintError;
@@ -360,6 +506,13 @@ export type MutationMutateTermSuccess = {
   data: Term;
 };
 
+export type MutationUpdateAssignmentResult = BaseAppError | BaseError | MutationUpdateAssignmentSuccess | NotFoundError | UniqueConstraintError;
+
+export type MutationUpdateAssignmentSuccess = {
+  __typename?: 'MutationUpdateAssignmentSuccess';
+  data: Assignment;
+};
+
 export type MutationUpdateClassResult = BaseAppError | BaseError | ForeignKeyError | MutationUpdateClassSuccess | UniqueConstraintError;
 
 export type MutationUpdateClassSuccess = {
@@ -367,11 +520,25 @@ export type MutationUpdateClassSuccess = {
   data: Class;
 };
 
+export type MutationUpdateClubResult = BaseAppError | BaseError | MutationUpdateClubSuccess | UniqueConstraintError;
+
+export type MutationUpdateClubSuccess = {
+  __typename?: 'MutationUpdateClubSuccess';
+  data: Club;
+};
+
 export type MutationUpdateEventResult = BaseAppError | BaseError | MutationUpdateEventSuccess | NotFoundError | UniqueConstraintError;
 
 export type MutationUpdateEventSuccess = {
   __typename?: 'MutationUpdateEventSuccess';
   data: Event;
+};
+
+export type MutationUpdateExamResult = BaseAppError | BaseError | MutationUpdateExamSuccess | NotFoundError | UniqueConstraintError;
+
+export type MutationUpdateExamSuccess = {
+  __typename?: 'MutationUpdateExamSuccess';
+  data: Exam;
 };
 
 export type MutationUpdateGradeResult = BaseAppError | BaseError | MutationUpdateGradeSuccess | UniqueConstraintError;
@@ -465,9 +632,12 @@ export type Query = {
   __typename?: 'Query';
   academicYears?: Maybe<Array<AcademicYear>>;
   announcements?: Maybe<Array<Announcement>>;
+  assignments?: Maybe<Array<Assignment>>;
   class?: Maybe<Class>;
   classes?: Maybe<Array<Class>>;
+  clubs?: Maybe<Array<Club>>;
   events?: Maybe<Array<Event>>;
+  exams?: Maybe<Array<Exam>>;
   grade?: Maybe<Grade>;
   grades?: Maybe<Array<Grade>>;
   parent?: Maybe<Parent>;
@@ -489,6 +659,11 @@ export type QueryAnnouncementsArgs = {
 };
 
 
+export type QueryAssignmentsArgs = {
+  filter?: InputMaybe<AssignmentFilter>;
+};
+
+
 export type QueryClassArgs = {
   id: Scalars['ID']['input'];
 };
@@ -499,8 +674,18 @@ export type QueryClassesArgs = {
 };
 
 
+export type QueryClubsArgs = {
+  filter?: InputMaybe<ClubFilter>;
+};
+
+
 export type QueryEventsArgs = {
   classId?: InputMaybe<Scalars['ID']['input']>;
+};
+
+
+export type QueryExamsArgs = {
+  filter?: InputMaybe<ExamFilter>;
 };
 
 
@@ -550,6 +735,11 @@ export type QuerySubjectsArgs = {
 };
 
 
+export type QueryTermsArgs = {
+  take?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
 export type QueryTimetableArgs = {
   classId: Scalars['ID']['input'];
 };
@@ -585,12 +775,6 @@ export type SchoolInput = {
 };
 
 export enum Sex {
-  Female = 'FEMALE',
-  Male = 'MALE',
-  Other = 'OTHER'
-}
-
-export enum SexEnum {
   Female = 'FEMALE',
   Male = 'MALE',
   Other = 'OTHER'
@@ -672,7 +856,7 @@ export type StudentInput = {
   registrationNumber: Scalars['String']['input'];
   secondaryGuardian?: InputMaybe<Scalars['String']['input']>;
   secondaryGuardianRelationship?: InputMaybe<Scalars['String']['input']>;
-  sex: SexEnum;
+  sex: Sex;
   surname: Scalars['String']['input'];
 };
 
@@ -751,6 +935,80 @@ export type UniqueConstraintError = AppError & Error & {
   code?: Maybe<Scalars['String']['output']>;
   message?: Maybe<Scalars['String']['output']>;
 };
+
+export type CreateAssignmentMutationVariables = Exact<{
+  input: AssignmentInput;
+}>;
+
+
+export type CreateAssignmentMutation = { __typename?: 'Mutation', createAssignment?:
+    | { __typename: 'BaseAppError', message?: string | null }
+    | { __typename: 'BaseError' }
+    | { __typename: 'MutationCreateAssignmentSuccess', data: { __typename?: 'Assignment', id: string } }
+    | { __typename: 'UniqueConstraintError', message?: string | null }
+   | null };
+
+export type UpdateAssignmentMutationVariables = Exact<{
+  input: AssignmentInput;
+}>;
+
+
+export type UpdateAssignmentMutation = { __typename?: 'Mutation', updateAssignment?:
+    | { __typename: 'BaseAppError', message?: string | null }
+    | { __typename: 'BaseError' }
+    | { __typename: 'MutationUpdateAssignmentSuccess', data: { __typename?: 'Assignment', id: string } }
+    | { __typename: 'NotFoundError', message?: string | null }
+    | { __typename: 'UniqueConstraintError', message?: string | null }
+   | null };
+
+export type CreateClubMutationVariables = Exact<{
+  input: ClubInput;
+}>;
+
+
+export type CreateClubMutation = { __typename?: 'Mutation', createClub?:
+    | { __typename: 'BaseAppError', message?: string | null }
+    | { __typename: 'BaseError' }
+    | { __typename: 'MutationCreateClubSuccess', data: { __typename?: 'Club', id: string } }
+    | { __typename: 'UniqueConstraintError', message?: string | null }
+   | null };
+
+export type UpdateClubMutationVariables = Exact<{
+  input: ClubInput;
+}>;
+
+
+export type UpdateClubMutation = { __typename?: 'Mutation', updateClub?:
+    | { __typename: 'BaseAppError', message?: string | null }
+    | { __typename: 'BaseError' }
+    | { __typename: 'MutationUpdateClubSuccess', data: { __typename?: 'Club', id: string } }
+    | { __typename: 'UniqueConstraintError', message?: string | null }
+   | null };
+
+export type CreateExamMutationVariables = Exact<{
+  input: ExamInput;
+}>;
+
+
+export type CreateExamMutation = { __typename?: 'Mutation', createExam?:
+    | { __typename: 'BaseAppError', message?: string | null }
+    | { __typename: 'BaseError' }
+    | { __typename: 'MutationCreateExamSuccess', data: { __typename?: 'Exam', id: string } }
+    | { __typename: 'UniqueConstraintError', message?: string | null }
+   | null };
+
+export type UpdateExamMutationVariables = Exact<{
+  input: ExamInput;
+}>;
+
+
+export type UpdateExamMutation = { __typename?: 'Mutation', updateExam?:
+    | { __typename: 'BaseAppError', message?: string | null }
+    | { __typename: 'BaseError' }
+    | { __typename: 'MutationUpdateExamSuccess', data: { __typename?: 'Exam', id: string } }
+    | { __typename: 'NotFoundError', message?: string | null }
+    | { __typename: 'UniqueConstraintError', message?: string | null }
+   | null };
 
 export type CreateSchoolMutationVariables = Exact<{
   input: SchoolInput;
@@ -1005,7 +1263,142 @@ export type GetAcademicYearsQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type GetAcademicYearsQuery = { __typename?: 'Query', academicYears?: Array<{ __typename?: 'AcademicYear', id: string, year: string, isCurrent: boolean, terms: Array<{ __typename?: 'Term', term: number }> }> | null };
 
+export type GetTermsQueryVariables = Exact<{
+  take?: InputMaybe<Scalars['Int']['input']>;
+}>;
 
+
+export type GetTermsQuery = { __typename?: 'Query', terms?: Array<{ __typename?: 'Term', id: string, term: number, isCurrent: boolean, academicYear: { __typename?: 'AcademicYear', year: string } }> | null };
+
+
+export const CreateAssignmentDocument = gql`
+    mutation CreateAssignment($input: AssignmentInput!) {
+  createAssignment(input: $input) {
+    __typename
+    ... on MutationCreateAssignmentSuccess {
+      data {
+        id
+      }
+    }
+    ... on AppError {
+      __typename
+      message
+    }
+  }
+}
+    `;
+
+export function useCreateAssignmentMutation() {
+  return Urql.useMutation<CreateAssignmentMutation, CreateAssignmentMutationVariables>(CreateAssignmentDocument);
+};
+export const UpdateAssignmentDocument = gql`
+    mutation UpdateAssignment($input: AssignmentInput!) {
+  updateAssignment(input: $input) {
+    __typename
+    ... on MutationUpdateAssignmentSuccess {
+      data {
+        id
+      }
+    }
+    ... on AppError {
+      __typename
+      message
+    }
+    ... on NotFoundError {
+      __typename
+      message
+    }
+  }
+}
+    `;
+
+export function useUpdateAssignmentMutation() {
+  return Urql.useMutation<UpdateAssignmentMutation, UpdateAssignmentMutationVariables>(UpdateAssignmentDocument);
+};
+export const CreateClubDocument = gql`
+    mutation CreateClub($input: ClubInput!) {
+  createClub(input: $input) {
+    __typename
+    ... on MutationCreateClubSuccess {
+      data {
+        id
+      }
+    }
+    ... on AppError {
+      __typename
+      message
+    }
+  }
+}
+    `;
+
+export function useCreateClubMutation() {
+  return Urql.useMutation<CreateClubMutation, CreateClubMutationVariables>(CreateClubDocument);
+};
+export const UpdateClubDocument = gql`
+    mutation UpdateClub($input: ClubInput!) {
+  updateClub(input: $input) {
+    __typename
+    ... on MutationUpdateClubSuccess {
+      data {
+        id
+      }
+    }
+    ... on AppError {
+      __typename
+      message
+    }
+  }
+}
+    `;
+
+export function useUpdateClubMutation() {
+  return Urql.useMutation<UpdateClubMutation, UpdateClubMutationVariables>(UpdateClubDocument);
+};
+export const CreateExamDocument = gql`
+    mutation CreateExam($input: ExamInput!) {
+  createExam(input: $input) {
+    __typename
+    ... on MutationCreateExamSuccess {
+      data {
+        id
+      }
+    }
+    ... on AppError {
+      __typename
+      message
+    }
+  }
+}
+    `;
+
+export function useCreateExamMutation() {
+  return Urql.useMutation<CreateExamMutation, CreateExamMutationVariables>(CreateExamDocument);
+};
+export const UpdateExamDocument = gql`
+    mutation UpdateExam($input: ExamInput!) {
+  updateExam(input: $input) {
+    __typename
+    ... on MutationUpdateExamSuccess {
+      data {
+        id
+      }
+    }
+    ... on AppError {
+      __typename
+      message
+    }
+    ... on NotFoundError {
+      __typename
+      message
+    }
+  }
+}
+    `;
+
+export function useUpdateExamMutation() {
+  return Urql.useMutation<UpdateExamMutation, UpdateExamMutationVariables>(UpdateExamDocument);
+};
 export const CreateSchoolDocument = gql`
     mutation CreateSchool($input: SchoolInput!) {
   createSchool(input: $input) {
@@ -1479,4 +1872,20 @@ export const GetAcademicYearsDocument = gql`
 
 export function useGetAcademicYearsQuery(options?: Omit<Urql.UseQueryArgs<GetAcademicYearsQueryVariables>, 'query'>) {
   return Urql.useQuery<GetAcademicYearsQuery, GetAcademicYearsQueryVariables>({ query: GetAcademicYearsDocument, ...options });
+};
+export const GetTermsDocument = gql`
+    query GetTerms($take: Int) {
+  terms(take: $take) {
+    id
+    term
+    isCurrent
+    academicYear {
+      year
+    }
+  }
+}
+    `;
+
+export function useGetTermsQuery(options?: Omit<Urql.UseQueryArgs<GetTermsQueryVariables>, 'query'>) {
+  return Urql.useQuery<GetTermsQuery, GetTermsQueryVariables>({ query: GetTermsDocument, ...options });
 };

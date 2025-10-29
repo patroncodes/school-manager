@@ -656,6 +656,14 @@ export type ResultUncheckedUpdateManyWithoutAssignmentNestedInput = {
   deleteMany?: Prisma.ResultScalarWhereInput | Prisma.ResultScalarWhereInput[]
 }
 
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type ResultCreateWithoutSchoolInput = {
   id?: string
   score: number

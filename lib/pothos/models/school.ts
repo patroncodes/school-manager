@@ -5,22 +5,14 @@ import {
   createAcademicYearAction,
   createProgramAction,
   createSchoolAction,
-  createStudentAction,
   createTermAction,
 } from "@/lib/actions";
-import {
-  AppError,
-  ForeignKeyError,
-  UniqueConstraintError,
-} from "@/lib/pothos/errors";
+import { AppError, UniqueConstraintError } from "@/lib/pothos/errors";
 
 builder.addScalarType("DateTime", DateTimeResolver);
 
 const ProgramEnum = builder.enumType("ProgramName", {
   values: ["CRECHE", "NURSERY", "PRIMARY", "SECONDARY"] as const,
-});
-const SexEnum = builder.enumType("SexEnum", {
-  values: ["MALE", "FEMALE", "OTHER"] as const,
 });
 
 const ManagerInput = builder.inputType("ManagerInput", {
@@ -83,28 +75,6 @@ const SchoolInput = builder.inputType("SchoolInput", {
     programs: t.field({ type: [ProgramEnum], required: true }),
     grades: t.field({ type: [SchoolGradeInput], required: true }),
     manager: t.field({ type: ManagerInput, required: true }),
-  }),
-});
-
-const StudentInput = builder.inputType("StudentInput", {
-  fields: (t) => ({
-    surname: t.string({ required: true }),
-    name: t.string({ required: true }),
-    password: t.string(),
-    birthday: t.field({ type: "DateTime", required: true }),
-    address: t.string({ required: true }),
-    registrationNumber: t.string({ required: true }),
-    img: t.string(),
-    oldImg: t.string(),
-    sex: t.field({ type: SexEnum, required: true }),
-    primaryGuardian: t.string({ required: true }),
-    secondaryGuardian: t.string(),
-    primaryGuardianRelationship: t.string({ required: true }),
-    medicalCondition: t.string(),
-    secondaryGuardianRelationship: t.string(),
-    programId: t.string(),
-    gradeId: t.string(),
-    classId: t.string({ required: true }),
   }),
 });
 
@@ -189,23 +159,6 @@ builder.mutationType({
       },
     }),
 
-    createStudent: t.prismaField({
-      type: "Student",
-      args: {
-        input: t.arg({ type: StudentInput, required: true }),
-      },
-      errors: { types: [AppError, UniqueConstraintError, ForeignKeyError] },
-      resolve: async (_query, _parent, args) => {
-        const formattedInput = {
-          ...args.input,
-          primaryGuardian: { id: args.input.primaryGuardian, name: "" },
-          secondaryGuardian: { id: args.input.secondaryGuardian, name: "" },
-        };
-
-        return await createStudentAction(formattedInput);
-      },
-    }),
-
     mutateAcademicYear: t.prismaField({
       type: "AcademicYear",
       args: {
@@ -286,12 +239,16 @@ builder.queryType({
 
     terms: t.prismaField({
       type: ["Term"],
-      resolve: async (query, _parent, _args, ctx) =>
+      args: {
+        take: t.arg.int({ required: false }),
+      },
+      resolve: async (query, _parent, args, ctx) =>
         prisma.term.findMany({
           ...query,
           where: {
             schoolId: ctx.schoolId!,
           },
+          ...(args?.take && { take: args.take }),
         }),
     }),
   }),

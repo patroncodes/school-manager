@@ -59,8 +59,8 @@ model School {
   timetablePeriods          TimetablePeriod[]
   periodSlots               PeriodSlot[]
   timetableAssignments      TimetableAssignment[]
-  lessons                   Lesson[]
   exams                     Exam[]
+  clubs                     Club[]
   assignments               Assignment[]
   results                   Result[]
   termlyResults             TermlyResult[]
@@ -165,7 +165,6 @@ model Class {
   students             Student[]
   supervisors          Staff[]
   assignments          Assignment[]
-  lessons              Lesson[]
   attendances          StudentAttendance[]
   timetableAssignments TimetableAssignment[]
   announcements        Announcement[]
@@ -184,7 +183,6 @@ model Subject {
   schoolId String
   school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
 
-  lessons                   Lesson[]
   exams                     Exam[]
   assignments               Assignment[]
   timetableAssignments      TimetableAssignment[]
@@ -280,9 +278,11 @@ model Student {
   activeStateReason  String?
 
   schoolId String
-  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  school   School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
   classId  String
-  class    Class  @relation(fields: [classId], references: [id], onDelete: Restrict)
+  class    Class   @relation(fields: [classId], references: [id], onDelete: Restrict)
+  clubId   String?
+  club     Club?   @relation(fields: [clubId], references: [id], onDelete: SetNull)
 
   parentStudents      ParentStudent[]
   results             Result[]
@@ -326,9 +326,10 @@ model Staff {
 
   classId String?
   class   Class?  @relation(fields: [classId], references: [id], onDelete: SetNull)
+  clubId  String?
+  club    Club?   @relation(fields: [clubId], references: [id], onDelete: SetNull)
 
   timetableAssignments      TimetableAssignment[]
-  lessons                   Lesson[]
   attendances               StaffAttendance[]
   salaries                  SalaryPayment[]
   bankAccounts              StaffBankAccount[]
@@ -345,7 +346,7 @@ model Staff {
 model Parent {
   id          String  @id @default(uuid())
   clerkUserId String? @unique
-  primaryId   String  @unique
+  primaryId   String? @unique
   name        String
   surname     String
   email       String?
@@ -377,40 +378,30 @@ model ParentStudent {
   @@id([parentId, studentId])
 }
 
-model Lesson {
-  id          String     @id @default(uuid())
+model Club {
+  id          String    @id @default(uuid())
   name        String
-  description String?
-  type        LessonType @default(REGULAR)
-  startTime   DateTime
-  endTime     DateTime
+  description String
+  foundedAt   DateTime?
 
-  schoolId  String
-  school    School   @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  subjectId String?
-  subject   Subject? @relation(fields: [subjectId], references: [id], onDelete: SetNull)
-  classId   String
-  class     Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
-  teacherId String?
-  teacher   Staff?   @relation(fields: [teacherId], references: [id], onDelete: SetNull)
-
-  attendances StudentAttendance[]
+  schoolId    String
+  school      School    @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  supervisors Staff[]
+  members     Student[]
 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  @@index([schoolId, startTime, teacherId])
+  @@unique([schoolId, name])
 }
 
 model Exam {
-  id           String   @id @default(uuid())
-  title        String
-  startTime    DateTime
-  endTime      DateTime
-  maxScore     Float
-  type         ExamType
-  questions    String[]
-  attachedFile String[]
+  id            String   @id @default(uuid())
+  date          DateTime
+  startTime     String
+  endTime       String?
+  maxScore      Int
+  type          ExamType
+  attachedFiles String[]
 
   schoolId  String
   school    School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
@@ -426,16 +417,14 @@ model Exam {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([schoolId, startTime, subjectId])
+  @@unique([schoolId, date, type, subjectId, gradeId])
 }
 
 model Assignment {
   id           String   @id @default(uuid())
-  title        String
   startDate    DateTime
   dueDate      DateTime
-  maxScore     Float
-  questions    String[]
+  maxScore     Int
   attachedFile String[]
 
   schoolId  String
@@ -452,33 +441,28 @@ model Assignment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([schoolId, dueDate, subjectId, classId])
+  @@unique([schoolId, startDate, subjectId, classId])
 }
 
 model StudentAttendance {
-  id     String           @id @default(uuid())
-  date   DateTime         @db.Date
-  status AttendanceStatus
+  id      String   @id @default(uuid())
+  date    DateTime @db.Date
+  present Boolean
 
-  schoolId  String
-  school    School  @relation(fields: [schoolId], references: [id], onDelete: Cascade)
-  termId    String
-  term      Term    @relation(fields: [termId], references: [id], onDelete: Cascade)
+  schoolId String
+  school   School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  termId   String
+  term     Term   @relation(fields: [termId], references: [id], onDelete: Cascade)
+
   studentId String
   student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
-
-  // Class ID for daily attendance while Lesson ID for specific lessons
-  classId  String?
-  class    Class?  @relation(fields: [classId], references: [id], onDelete: SetNull)
-  lessonId String?
-  lesson   Lesson? @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+  classId   String
+  class     Class   @relation(fields: [classId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([schoolId, studentId, date, lessonId])
-  @@unique([schoolId, studentId, date, classId])
-  @@index([schoolId, termId, date, status])
+  @@unique([schoolId, classId, studentId, date])
   @@index([studentId, date])
 }
 
@@ -781,13 +765,6 @@ enum ExamType {
   FINAL
   MIDTERM
   PRACTICAL
-}
-
-enum LessonType {
-  REGULAR
-  REMEDIAL
-  HOLIDAY
-  MAKE_UP
 }
 
 enum InvoiceStatus {

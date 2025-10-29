@@ -2,13 +2,13 @@
 
 import {
   deleteAnnouncementAction,
-  deleteAssignment,
+  deleteAssignmentAction,
   deleteClassAction,
   deleteEventAction,
-  deleteExam,
+  deleteExamAction,
   deleteFee,
   deleteGradeAction,
-  deleteLesson,
+  deleteClubAction,
   deleteParent,
   deleteResult,
   deleteStaffAction,
@@ -44,9 +44,9 @@ const deleteActionMap = {
   class: deleteClassAction,
   staff: deleteStaffAction,
   student: deleteStudent,
-  exam: deleteExam,
-  assignment: deleteAssignment,
-  lesson: deleteLesson,
+  exam: deleteExamAction,
+  assignment: deleteAssignmentAction,
+  club: deleteClubAction,
   parent: deleteParent,
   result: deleteResult,
   event: deleteEventAction,
@@ -57,6 +57,8 @@ const deleteActionMap = {
   // TRANSACTION DOESN'T HAVE A DELETE ACTION SINCE YOU SHOULDN'T DELETE A TRANSACTION HISTORY. THIS IS JUST TO AVOID TYPESCRIPT ERRORS, IT WON'T DO ANYTHING
   transaction: deleteFee,
   timetable: deleteFee,
+  term: deleteFee,
+  "academic-year": deleteFee,
 };
 
 const DeleteModal = ({

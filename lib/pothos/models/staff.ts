@@ -2,10 +2,15 @@ import { builder } from "../builder";
 import prisma from "@/lib/prisma";
 import {
   createStaffAction,
+  createStudentAction,
   createSubjectAction,
   updateSubjectAction,
 } from "@/lib/actions";
-import { AppError, UniqueConstraintError } from "@/lib/pothos/errors";
+import {
+  AppError,
+  ForeignKeyError,
+  UniqueConstraintError,
+} from "@/lib/pothos/errors";
 
 const AccessLevel = builder.enumType("AccessLevel", {
   values: ["FINANCE", "ACADEMICS", "ADMINISTRATION", "TEACHER", "RESTRICTED"],
@@ -61,6 +66,28 @@ const StaffInput = builder.inputType("StaffInput", {
     classId: t.string(),
     subjects: t.stringList(),
     grades: t.stringList(),
+  }),
+});
+
+const StudentInput = builder.inputType("StudentInput", {
+  fields: (t) => ({
+    surname: t.string({ required: true }),
+    name: t.string({ required: true }),
+    password: t.string(),
+    birthday: t.field({ type: "DateTime", required: true }),
+    address: t.string({ required: true }),
+    registrationNumber: t.string({ required: true }),
+    img: t.string(),
+    oldImg: t.string(),
+    sex: t.field({ type: Sex, required: true }),
+    primaryGuardian: t.string({ required: true }),
+    secondaryGuardian: t.string(),
+    primaryGuardianRelationship: t.string({ required: true }),
+    medicalCondition: t.string(),
+    secondaryGuardianRelationship: t.string(),
+    programId: t.string(),
+    gradeId: t.string(),
+    classId: t.string({ required: true }),
   }),
 });
 
@@ -209,6 +236,23 @@ builder.mutationType({
       errors: { types: [AppError, UniqueConstraintError] },
       resolve: async (_query, _parent, args) => {
         return await createStaffAction(args.input);
+      },
+    }),
+
+    createStudent: t.prismaField({
+      type: "Student",
+      args: {
+        input: t.arg({ type: StudentInput, required: true }),
+      },
+      errors: { types: [AppError, UniqueConstraintError, ForeignKeyError] },
+      resolve: async (_query, _parent, args) => {
+        const formattedInput = {
+          ...args.input,
+          primaryGuardian: { id: args.input.primaryGuardian, name: "" },
+          secondaryGuardian: { id: args.input.secondaryGuardian, name: "" },
+        };
+
+        return await createStudentAction(formattedInput);
       },
     }),
 

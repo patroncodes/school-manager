@@ -405,7 +405,7 @@ export const ModelName = {
   Staff: 'Staff',
   Parent: 'Parent',
   ParentStudent: 'ParentStudent',
-  Lesson: 'Lesson',
+  Club: 'Club',
   Exam: 'Exam',
   Assignment: 'Assignment',
   StudentAttendance: 'StudentAttendance',
@@ -436,7 +436,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "auditLog" | "school" | "program" | "academicYear" | "term" | "grade" | "class" | "subject" | "timetablePeriod" | "periodSlot" | "timetableAssignment" | "manager" | "student" | "staff" | "parent" | "parentStudent" | "lesson" | "exam" | "assignment" | "studentAttendance" | "staffAttendance" | "result" | "termlyResult" | "invoice" | "invoiceLine" | "invoicePayment" | "salaryPayment" | "staffBankAccount" | "event" | "announcement" | "studentClassHistory" | "teacherSubjectAssignment"
+    modelProps: "auditLog" | "school" | "program" | "academicYear" | "term" | "grade" | "class" | "subject" | "timetablePeriod" | "periodSlot" | "timetableAssignment" | "manager" | "student" | "staff" | "parent" | "parentStudent" | "club" | "exam" | "assignment" | "studentAttendance" | "staffAttendance" | "result" | "termlyResult" | "invoice" | "invoiceLine" | "invoicePayment" | "salaryPayment" | "staffBankAccount" | "event" | "announcement" | "studentClassHistory" | "teacherSubjectAssignment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1624,77 +1624,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    Lesson: {
-      payload: Prisma.$LessonPayload<ExtArgs>
-      fields: Prisma.LessonFieldRefs
+    Club: {
+      payload: Prisma.$ClubPayload<ExtArgs>
+      fields: Prisma.ClubFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.LessonFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload> | null
+          args: Prisma.ClubFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.LessonFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>
+          args: Prisma.ClubFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>
         }
         findFirst: {
-          args: Prisma.LessonFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload> | null
+          args: Prisma.ClubFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.LessonFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>
+          args: Prisma.ClubFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>
         }
         findMany: {
-          args: Prisma.LessonFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>[]
+          args: Prisma.ClubFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>[]
         }
         create: {
-          args: Prisma.LessonCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>
+          args: Prisma.ClubCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>
         }
         createMany: {
-          args: Prisma.LessonCreateManyArgs<ExtArgs>
+          args: Prisma.ClubCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.LessonCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>[]
+          args: Prisma.ClubCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>[]
         }
         delete: {
-          args: Prisma.LessonDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>
+          args: Prisma.ClubDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>
         }
         update: {
-          args: Prisma.LessonUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>
+          args: Prisma.ClubUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>
         }
         deleteMany: {
-          args: Prisma.LessonDeleteManyArgs<ExtArgs>
+          args: Prisma.ClubDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.LessonUpdateManyArgs<ExtArgs>
+          args: Prisma.ClubUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.LessonUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>[]
+          args: Prisma.ClubUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>[]
         }
         upsert: {
-          args: Prisma.LessonUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$LessonPayload>
+          args: Prisma.ClubUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClubPayload>
         }
         aggregate: {
-          args: Prisma.LessonAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateLesson>
+          args: Prisma.ClubAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateClub>
         }
         groupBy: {
-          args: Prisma.LessonGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.LessonGroupByOutputType>[]
+          args: Prisma.ClubGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClubGroupByOutputType>[]
         }
         count: {
-          args: Prisma.LessonCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.LessonCountAggregateOutputType> | number
+          args: Prisma.ClubCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClubCountAggregateOutputType> | number
         }
       }
     }
@@ -3010,6 +3010,7 @@ export const StudentScalarFieldEnum = {
   activeStateReason: 'activeStateReason',
   schoolId: 'schoolId',
   classId: 'classId',
+  clubId: 'clubId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3039,6 +3040,7 @@ export const StaffScalarFieldEnum = {
   exitReason: 'exitReason',
   schoolId: 'schoolId',
   classId: 'classId',
+  clubId: 'clubId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3073,33 +3075,26 @@ export const ParentStudentScalarFieldEnum = {
 export type ParentStudentScalarFieldEnum = (typeof ParentStudentScalarFieldEnum)[keyof typeof ParentStudentScalarFieldEnum]
 
 
-export const LessonScalarFieldEnum = {
+export const ClubScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
-  type: 'type',
-  startTime: 'startTime',
-  endTime: 'endTime',
+  foundedAt: 'foundedAt',
   schoolId: 'schoolId',
-  subjectId: 'subjectId',
-  classId: 'classId',
-  teacherId: 'teacherId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  createdAt: 'createdAt'
 } as const
 
-export type LessonScalarFieldEnum = (typeof LessonScalarFieldEnum)[keyof typeof LessonScalarFieldEnum]
+export type ClubScalarFieldEnum = (typeof ClubScalarFieldEnum)[keyof typeof ClubScalarFieldEnum]
 
 
 export const ExamScalarFieldEnum = {
   id: 'id',
-  title: 'title',
+  date: 'date',
   startTime: 'startTime',
   endTime: 'endTime',
   maxScore: 'maxScore',
   type: 'type',
-  questions: 'questions',
-  attachedFile: 'attachedFile',
+  attachedFiles: 'attachedFiles',
   schoolId: 'schoolId',
   subjectId: 'subjectId',
   gradeId: 'gradeId',
@@ -3113,11 +3108,9 @@ export type ExamScalarFieldEnum = (typeof ExamScalarFieldEnum)[keyof typeof Exam
 
 export const AssignmentScalarFieldEnum = {
   id: 'id',
-  title: 'title',
   startDate: 'startDate',
   dueDate: 'dueDate',
   maxScore: 'maxScore',
-  questions: 'questions',
   attachedFile: 'attachedFile',
   schoolId: 'schoolId',
   subjectId: 'subjectId',
@@ -3133,12 +3126,11 @@ export type AssignmentScalarFieldEnum = (typeof AssignmentScalarFieldEnum)[keyof
 export const StudentAttendanceScalarFieldEnum = {
   id: 'id',
   date: 'date',
-  status: 'status',
+  present: 'present',
   schoolId: 'schoolId',
   termId: 'termId',
   studentId: 'studentId',
   classId: 'classId',
-  lessonId: 'lessonId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -3529,34 +3521,6 @@ export type ListEnumParentStudentRelationshipFieldRefInput<$PrismaModel> = Field
 
 
 /**
- * Reference to a field of type 'LessonType'
- */
-export type EnumLessonTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LessonType'>
-    
-
-
-/**
- * Reference to a field of type 'LessonType[]'
- */
-export type ListEnumLessonTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'LessonType[]'>
-    
-
-
-/**
- * Reference to a field of type 'Float'
- */
-export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
-    
-
-
-/**
- * Reference to a field of type 'Float[]'
- */
-export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
-    
-
-
-/**
  * Reference to a field of type 'ExamType'
  */
 export type EnumExamTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExamType'>
@@ -3571,16 +3535,16 @@ export type ListEnumExamTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pri
 
 
 /**
- * Reference to a field of type 'AttendanceStatus'
+ * Reference to a field of type 'Float'
  */
-export type EnumAttendanceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttendanceStatus'>
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
     
 
 
 /**
- * Reference to a field of type 'AttendanceStatus[]'
+ * Reference to a field of type 'Float[]'
  */
-export type ListEnumAttendanceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttendanceStatus[]'>
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 
@@ -3742,7 +3706,7 @@ export type GlobalOmitConfig = {
   staff?: Prisma.StaffOmit
   parent?: Prisma.ParentOmit
   parentStudent?: Prisma.ParentStudentOmit
-  lesson?: Prisma.LessonOmit
+  club?: Prisma.ClubOmit
   exam?: Prisma.ExamOmit
   assignment?: Prisma.AssignmentOmit
   studentAttendance?: Prisma.StudentAttendanceOmit

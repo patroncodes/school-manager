@@ -19,7 +19,7 @@ type Table =
   | "parent"
   | "subject"
   | "class"
-  | "lesson"
+  | "club"
   | "exam"
   | "assignment"
   | "result"

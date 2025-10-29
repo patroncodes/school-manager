@@ -4,120 +4,198 @@ import { examSchema, ExamSchema } from "@/lib/zod/validation";
 import { FormProps } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { startTransition, useActionState, useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import InputField from "../InputField";
-import { createExam, updateExam } from "@/lib/actions";
+import InputField, { FormFieldType } from "../InputField";
 import { Loader2 } from "lucide-react";
-import { toDatetimeLocal } from "@/lib/utils";
+import { Form } from "@/components/ui/form";
+import {
+  CreateExamMutation,
+  ExamType,
+  UpdateExamMutation,
+  useCreateExamMutation,
+  useGetGradesQuery,
+  useGetSubjectsQuery,
+  useGetTermsQuery,
+  useUpdateExamMutation,
+} from "@/lib/generated/graphql/client";
+import { SelectContent, SelectItem } from "@/components/ui/select";
+import { examTypes, schoolTerms } from "@/constants";
+import { toast } from "sonner";
+import { handleGraphqlClientErrors } from "@/lib/utils";
 
-const ExamForm = ({ type, data, setOpen, relatedData }: FormProps) => {
+const ExamForm = ({ type, data, setOpen }: FormProps) => {
   const router = useRouter();
 
-  const { lessons } = relatedData;
+  const [subjectsResult] = useGetSubjectsQuery();
+  const [gradesResult] = useGetGradesQuery();
+  const [termsResult] = useGetTermsQuery({ variables: { take: 3 } });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<ExamSchema>({
+  const subjects = subjectsResult?.data?.subjects ?? [];
+  const grades = gradesResult?.data?.grades ?? [];
+  const terms = termsResult?.data?.terms ?? [];
+
+  const form = useForm<ExamSchema>({
     resolver: zodResolver(examSchema),
+    defaultValues: {
+      ...data,
+      date: data?.date ? new Date(data.date) : undefined,
+      subjectId: data?.subject.id ?? "",
+      gradeId: data?.grade.id ?? "",
+      termId: data?.term.id ?? "",
+      files: data?.files ?? [],
+    },
   });
 
-  const [state, formAction, pending] = useActionState(
-    type === "create" ? createExam : updateExam,
-    { success: false, error: false },
-  );
+  const [createResult, createExam] = useCreateExamMutation();
+  const [updateResult, updateExam] = useUpdateExamMutation();
 
-  useEffect(() => {
-    if (state.success) {
-      toast.success(`Exam has been ${type}d`);
-      setOpen(false);
-
-      router.refresh();
-    } else if (state.error) {
-      if (typeof state.error === "string") {
-        toast.error(state.error);
-      } else {
-        toast.error(`Failed to ${type} exam`);
-      }
-    }
-  }, [state, type, router, setOpen]);
-
-  const onSubmit = handleSubmit((values) => {
+  const onSubmit = form.handleSubmit(async (values) => {
     const formData = {
       ...(type === "update" && { id: data.id }),
       ...values,
+      type: values.type as ExamType,
     };
 
-    startTransition(() => {
-      formAction(formData);
-    });
+    const response =
+      type === "create"
+        ? await createExam({ input: formData })
+        : await updateExam({ input: formData });
+
+    const mutationResult =
+      type === "create"
+        ? (response.data as CreateExamMutation)?.createExam
+        : (response.data as UpdateExamMutation)?.updateExam;
+
+    if (!mutationResult) {
+      toast.error("Something went wrong");
+      return;
+    }
+
+    if (
+      mutationResult.__typename === "MutationCreateExamSuccess" ||
+      mutationResult.__typename === "MutationUpdateExamSuccess"
+    ) {
+      toast.success(`Exam ${type}d successfully!`);
+      setOpen(false);
+      router.refresh();
+    } else {
+      const error = handleGraphqlClientErrors(mutationResult);
+      toast.error(error ?? "Something went wrong");
+    }
   });
 
+  const isLoading = createResult.fetching || updateResult.fetching;
+
   return (
-    <form className="flex flex-col gap-8" onSubmit={onSubmit}>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <InputField
-          label="Title"
-          name="title"
-          defaultValue={data?.title}
-          register={register}
-          error={errors.title}
-        />
-        <InputField
-          label="Start Time"
-          name="startTime"
-          type="datetime-local"
-          defaultValue={
-            data?.startTime ? toDatetimeLocal(data?.startTime) : undefined
-          }
-          register={register}
-          error={errors.startTime}
-        />
-        <InputField
-          label="End Time"
-          name="endTime"
-          type="datetime-local"
-          defaultValue={
-            data?.endTime ? toDatetimeLocal(data?.endTime) : undefined
-          }
-          register={register}
-          error={errors.endTime}
-        />
-
-        <div className="flex w-full flex-col gap-2 md:w-1/4">
-          <label htmlFor="gradeId" className="text-xs text-gray-500">
-            Lesson
-          </label>
-          <select
-            {...register("lessonId")}
-            id="lessonId"
-            className="w-full rounded-md p-2 text-sm ring-[1.5px] ring-gray-300"
-            defaultValue={data?.lessonId}
+    <Form {...form}>
+      <form className="flex flex-col gap-8" onSubmit={onSubmit}>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <InputField
+            control={form.control}
+            fieldType={FormFieldType.SELECT}
+            label="Subject"
+            name="subjectId"
           >
-            {lessons.map((lesson: { id: number; name: string }) => (
-              <option key={lesson.id} value={lesson.id} className="py-1">
-                {lesson.name}
-              </option>
-            ))}
-          </select>
-          {errors.lessonId?.message && (
-            <p className="text-xs text-red-400">
-              {errors.lessonId.message.toString()}
-            </p>
-          )}
-        </div>
-      </div>
+            <SelectContent>
+              {subjects?.map(({ id, name }) => (
+                <SelectItem key={id} value={id!}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </InputField>
 
-      {state.error && (
-        <span className="text-red-500">Something went wrong</span>
-      )}
-      <button type="submit" disabled={pending} className="form-submit_btn">
-        {!pending ? type : <Loader2 className="animate-spin text-lamaYellow" />}
-      </button>
-    </form>
+          <InputField
+            label="Date"
+            name="date"
+            control={form.control}
+            fieldType={FormFieldType.DATE_PICKER}
+          />
+
+          <InputField
+            label="Start Time"
+            name="startTime"
+            type="time"
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+          />
+
+          <InputField
+            label="End Time"
+            name="endTime"
+            type="time"
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+          />
+
+          <InputField
+            control={form.control}
+            fieldType={FormFieldType.SELECT}
+            label="Exam Type"
+            name="type"
+          >
+            <SelectContent>
+              {examTypes.map((type) => (
+                <SelectItem key={type} value={type.toUpperCase()}>
+                  {type}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </InputField>
+
+          <InputField
+            control={form.control}
+            fieldType={FormFieldType.INPUT}
+            label="Max Score"
+            name="maxScore"
+            type="number"
+          />
+
+          <InputField
+            control={form.control}
+            fieldType={FormFieldType.SELECT}
+            label="Grade"
+            name="gradeId"
+          >
+            <SelectContent>
+              {grades?.map(({ id, name }) => (
+                <SelectItem key={id} value={id!}>
+                  {name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </InputField>
+
+          <InputField
+            control={form.control}
+            fieldType={FormFieldType.SELECT}
+            label="Term"
+            name="termId"
+          >
+            <SelectContent>
+              {terms?.map(({ id, term, academicYear }) => (
+                <SelectItem key={id} value={id!}>
+                  {schoolTerms.find((t) => term === t.id)?.name} -{" "}
+                  {academicYear.year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </InputField>
+        </div>
+
+        <button
+          type="submit"
+          disabled={!form.formState.isDirty || isLoading}
+          className="form-submit_btn"
+        >
+          {!isLoading ? (
+            type
+          ) : (
+            <Loader2 className="animate-spin text-lamaYellow" />
+          )}
+        </button>
+      </form>
+    </Form>
   );
 };
 

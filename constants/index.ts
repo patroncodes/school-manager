@@ -82,8 +82,8 @@ export const menuItems = [
       },
       {
         icon: "/lesson.svg",
-        label: "Lessons",
-        href: "/list/lessons",
+        label: "Clubs",
+        href: "/list/clubs",
         visible: ["manager", "teacher", "student"],
       },
       {
@@ -220,6 +220,8 @@ export const dayOfWeek = [
   "THURSDAY",
   "FRIDAY",
 ];
+
+export const examTypes = ["Quiz", "Test", "Midterm", "Final", "Practical"];
 
 export const schoolTerms = [
   { id: 1, name: "First" },

@@ -87,7 +87,17 @@ const ListHeader = ({
                 table={tableFor}
                 type="create"
                 relatedData={relatedData}
-              />
+              >
+                <button className="flex-center size-8 rounded-full bg-lamaYellow">
+                  <Image
+                    src="/create.svg"
+                    alt="create"
+                    width={16}
+                    height={16}
+                    className="rounded-full"
+                  />
+                </button>
+              </FormModal>
             )}
 
           {showTermFilter && termFilter && <TermSelector {...termFilter} />}

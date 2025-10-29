@@ -82,16 +82,6 @@ export const ExamType = {
 export type ExamType = (typeof ExamType)[keyof typeof ExamType]
 
 
-export const LessonType = {
-  REGULAR: 'REGULAR',
-  REMEDIAL: 'REMEDIAL',
-  HOLIDAY: 'HOLIDAY',
-  MAKE_UP: 'MAKE_UP'
-} as const
-
-export type LessonType = (typeof LessonType)[keyof typeof LessonType]
-
-
 export const InvoiceStatus = {
   DRAFT: 'DRAFT',
   PUBLISHED: 'PUBLISHED',

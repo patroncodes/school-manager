@@ -1,126 +1,162 @@
 "use server";
 
-import { handleServerErrors } from "@/lib/utils";
-import { AssignmentSchema } from "@/lib/zod/validation";
-import { CurrentState } from "@/types";
-import { getCurrentUser } from "../serverUtils";
 import prisma from "../prisma";
+import { getCurrentUser, handleGraphqlServerErrors } from "../serverUtils";
+import { handleServerErrors } from "../utils";
+import { AssignmentSchema } from "../zod/validation";
+import { NotFoundError } from "@/lib/pothos/errors";
+import { Prisma } from "@/lib/generated/prisma/client";
 
-export const createAssignment = async (
-  currentState: CurrentState,
-  data: AssignmentSchema,
-) => {
-  try {
-    const { accessLevel, schoolId } = await getCurrentUser();
+export const getAssignmentsAction = async ({
+  classId,
+  teacherId,
+  query,
+}: {
+  classId?: string;
+  teacherId?: string;
+  query: any;
+}) => {
+  const { currentUserId, accessLevel, schoolId } = await getCurrentUser();
 
-    const permittedRoles = ["manager", "teacher", "administration"];
+  const baseWhere: Prisma.AssignmentWhereInput = {
+    schoolId: schoolId!,
+  };
 
-    if (!permittedRoles.includes(accessLevel!)) {
+  const roleWhere: Prisma.AssignmentWhereInput | undefined = (() => {
+    if (!currentUserId || !accessLevel) return undefined;
+
+    if (accessLevel === "teacher") {
       return {
-        success: false,
-        error: "You don't have permission to update this assignment",
-      };
-    }
-
-    await prisma.assignment.create({
-      data: {
-        schoolId,
-        termId: data.termId!,
-        ...data,
-      },
-    });
-
-    return { success: true, error: false };
-  } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
-      };
-    }
-    return { success: false, error: true };
-  }
-};
-
-export const updateAssignment = async (
-  currentState: CurrentState,
-  data: AssignmentSchema,
-) => {
-  try {
-    const { currentUserId, accessLevel, schoolId } = await getCurrentUser();
-
-    const permittedRoles = ["manager", "teacher", "administration"];
-
-    if (!permittedRoles.includes(accessLevel!)) {
-      return {
-        success: false,
-        error: "You don't have permission to update this assignment",
-      };
-    }
-
-    await prisma.assignment.update({
-      where: {
-        id: data.id,
-        schoolId,
-        ...(accessLevel === "teacher"
-          ? {
-              class: {
-                OR: [
-                  { formTeacherId: currentUserId },
-                  { classTeacherId: currentUserId },
-                ],
+        OR: [
+          {
+            classes: {
+              some: {
+                supervisors: { some: { clerkUserId: currentUserId } },
               },
-            }
-          : {}),
-      },
-      data,
-    });
-
-    return { success: true, error: false };
-  } catch (err: any) {
-    console.log(err);
-    const serverErrors = handleServerErrors(err);
-
-    if (serverErrors?.error) {
-      return {
-        success: false,
-        error: serverErrors.error,
+            },
+          },
+          {
+            subject: {
+              teacherSubjectAssignments: {
+                some: { teacher: { clerkUserId: currentUserId } },
+              },
+            },
+          },
+        ],
       };
     }
-    return { success: false, error: true };
+
+    if (accessLevel === "student") {
+      return {
+        class: {
+          students: { some: { clerkUserId: currentUserId } },
+        },
+      };
+    }
+
+    if (accessLevel === "parent") {
+      return {
+        class: {
+          students: {
+            some: {
+              parentStudents: {
+                some: { parent: { clerkUserId: currentUserId } },
+              },
+            },
+          },
+        },
+      };
+    }
+
+    return undefined;
+  })();
+
+  const where: Prisma.AssignmentWhereInput = {
+    ...baseWhere,
+    AND: [
+      roleWhere,
+      teacherId && {
+        OR: [
+          {
+            classes: {
+              some: {
+                supervisors: { some: { clerkUserId: currentUserId } },
+              },
+            },
+          },
+          {
+            subject: {
+              teacherSubjectAssignments: {
+                some: { teacher: { clerkUserId: currentUserId } },
+              },
+            },
+          },
+        ],
+      },
+      classId && { classId: classId },
+    ].filter(Boolean) as Prisma.AssignmentWhereInput[],
+  };
+
+  return await prisma.assignment.findMany({
+    where,
+    ...query,
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+};
+
+export const createAssignmentAction = async ({
+  files,
+  ...data
+}: Omit<AssignmentSchema, "id">) => {
+  try {
+    const { schoolId } = await getCurrentUser();
+
+    return await prisma.assignment.create({
+      data: {
+        schoolId: schoolId!,
+        ...data,
+        ...(files && files.length > 0 && { attachedFiles: files }),
+      },
+    });
+  } catch (err: any) {
+    handleGraphqlServerErrors(err);
   }
 };
 
-export const deleteAssignment = async (id: string) => {
+export const updateAssignmentAction = async ({
+  id,
+  files,
+  ...data
+}: AssignmentSchema) => {
+  if (!id) {
+    throw new NotFoundError("Assignment");
+  }
+
   try {
-    const { accessLevel, currentUserId, schoolId } = await getCurrentUser();
+    const { schoolId } = await getCurrentUser();
 
-    const permittedRoles = ["manager", "teacher", "administration"];
+    return await prisma.assignment.update({
+      where: {
+        id,
+        schoolId: schoolId!,
+      },
+      data: {
+        ...data,
+        ...(files && files.length > 0 && { attachedFiles: files }),
+      },
+    });
+  } catch (err: any) {
+    handleGraphqlServerErrors(err);
+  }
+};
 
-    if (!permittedRoles.includes(accessLevel!)) {
-      return {
-        success: false,
-        error: "You don't have permission to delete assignments",
-      };
-    }
-
+export const deleteAssignmentAction = async (id: string) => {
+  try {
     await prisma.assignment.delete({
       where: {
         id,
-        schoolId,
-        ...(accessLevel === "teacher"
-          ? {
-              class: {
-                OR: [
-                  { formTeacherId: currentUserId },
-                  { classTeacherId: currentUserId },
-                ],
-              },
-            }
-          : {}),
       },
     });
 

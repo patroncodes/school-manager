@@ -220,7 +220,6 @@ export type ClassWhereInput = {
   students?: Prisma.StudentListRelationFilter
   supervisors?: Prisma.StaffListRelationFilter
   assignments?: Prisma.AssignmentListRelationFilter
-  lessons?: Prisma.LessonListRelationFilter
   attendances?: Prisma.StudentAttendanceListRelationFilter
   timetableAssignments?: Prisma.TimetableAssignmentListRelationFilter
   announcements?: Prisma.AnnouncementListRelationFilter
@@ -240,7 +239,6 @@ export type ClassOrderByWithRelationInput = {
   students?: Prisma.StudentOrderByRelationAggregateInput
   supervisors?: Prisma.StaffOrderByRelationAggregateInput
   assignments?: Prisma.AssignmentOrderByRelationAggregateInput
-  lessons?: Prisma.LessonOrderByRelationAggregateInput
   attendances?: Prisma.StudentAttendanceOrderByRelationAggregateInput
   timetableAssignments?: Prisma.TimetableAssignmentOrderByRelationAggregateInput
   announcements?: Prisma.AnnouncementOrderByRelationAggregateInput
@@ -264,7 +262,6 @@ export type ClassWhereUniqueInput = Prisma.AtLeast<{
   students?: Prisma.StudentListRelationFilter
   supervisors?: Prisma.StaffListRelationFilter
   assignments?: Prisma.AssignmentListRelationFilter
-  lessons?: Prisma.LessonListRelationFilter
   attendances?: Prisma.StudentAttendanceListRelationFilter
   timetableAssignments?: Prisma.TimetableAssignmentListRelationFilter
   announcements?: Prisma.AnnouncementListRelationFilter
@@ -306,7 +303,6 @@ export type ClassCreateInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -324,7 +320,6 @@ export type ClassUncheckedCreateInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -342,7 +337,6 @@ export type ClassUpdateInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -360,7 +354,6 @@ export type ClassUncheckedUpdateInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
@@ -593,20 +586,6 @@ export type ClassUpdateOneWithoutSupervisorsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClassUpdateToOneWithWhereWithoutSupervisorsInput, Prisma.ClassUpdateWithoutSupervisorsInput>, Prisma.ClassUncheckedUpdateWithoutSupervisorsInput>
 }
 
-export type ClassCreateNestedOneWithoutLessonsInput = {
-  create?: Prisma.XOR<Prisma.ClassCreateWithoutLessonsInput, Prisma.ClassUncheckedCreateWithoutLessonsInput>
-  connectOrCreate?: Prisma.ClassCreateOrConnectWithoutLessonsInput
-  connect?: Prisma.ClassWhereUniqueInput
-}
-
-export type ClassUpdateOneRequiredWithoutLessonsNestedInput = {
-  create?: Prisma.XOR<Prisma.ClassCreateWithoutLessonsInput, Prisma.ClassUncheckedCreateWithoutLessonsInput>
-  connectOrCreate?: Prisma.ClassCreateOrConnectWithoutLessonsInput
-  upsert?: Prisma.ClassUpsertWithoutLessonsInput
-  connect?: Prisma.ClassWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.ClassUpdateToOneWithWhereWithoutLessonsInput, Prisma.ClassUpdateWithoutLessonsInput>, Prisma.ClassUncheckedUpdateWithoutLessonsInput>
-}
-
 export type ClassCreateNestedOneWithoutAssignmentsInput = {
   create?: Prisma.XOR<Prisma.ClassCreateWithoutAssignmentsInput, Prisma.ClassUncheckedCreateWithoutAssignmentsInput>
   connectOrCreate?: Prisma.ClassCreateOrConnectWithoutAssignmentsInput
@@ -627,12 +606,10 @@ export type ClassCreateNestedOneWithoutAttendancesInput = {
   connect?: Prisma.ClassWhereUniqueInput
 }
 
-export type ClassUpdateOneWithoutAttendancesNestedInput = {
+export type ClassUpdateOneRequiredWithoutAttendancesNestedInput = {
   create?: Prisma.XOR<Prisma.ClassCreateWithoutAttendancesInput, Prisma.ClassUncheckedCreateWithoutAttendancesInput>
   connectOrCreate?: Prisma.ClassCreateOrConnectWithoutAttendancesInput
   upsert?: Prisma.ClassUpsertWithoutAttendancesInput
-  disconnect?: Prisma.ClassWhereInput | boolean
-  delete?: Prisma.ClassWhereInput | boolean
   connect?: Prisma.ClassWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ClassUpdateToOneWithWhereWithoutAttendancesInput, Prisma.ClassUpdateWithoutAttendancesInput>, Prisma.ClassUncheckedUpdateWithoutAttendancesInput>
 }
@@ -691,7 +668,6 @@ export type ClassCreateWithoutSchoolInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -708,7 +684,6 @@ export type ClassUncheckedCreateWithoutSchoolInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -762,7 +737,6 @@ export type ClassCreateWithoutGradeInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -779,7 +753,6 @@ export type ClassUncheckedCreateWithoutGradeInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -823,7 +796,6 @@ export type ClassCreateWithoutTimetablePeriodsInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -840,7 +812,6 @@ export type ClassUncheckedCreateWithoutTimetablePeriodsInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -873,7 +844,6 @@ export type ClassUpdateWithoutTimetablePeriodsInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -890,7 +860,6 @@ export type ClassUncheckedUpdateWithoutTimetablePeriodsInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
@@ -907,7 +876,6 @@ export type ClassCreateWithoutTimetableAssignmentsInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutClassInput
@@ -924,7 +892,6 @@ export type ClassUncheckedCreateWithoutTimetableAssignmentsInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutClassInput
@@ -957,7 +924,6 @@ export type ClassUpdateWithoutTimetableAssignmentsInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutClassNestedInput
@@ -974,7 +940,6 @@ export type ClassUncheckedUpdateWithoutTimetableAssignmentsInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutClassNestedInput
@@ -990,7 +955,6 @@ export type ClassCreateWithoutStudentsInput = {
   grade: Prisma.GradeCreateNestedOneWithoutClassesInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -1007,7 +971,6 @@ export type ClassUncheckedCreateWithoutStudentsInput = {
   gradeId: string
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -1040,7 +1003,6 @@ export type ClassUpdateWithoutStudentsInput = {
   grade?: Prisma.GradeUpdateOneRequiredWithoutClassesNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -1057,7 +1019,6 @@ export type ClassUncheckedUpdateWithoutStudentsInput = {
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
@@ -1074,7 +1035,6 @@ export type ClassCreateWithoutSupervisorsInput = {
   grade: Prisma.GradeCreateNestedOneWithoutClassesInput
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -1091,7 +1051,6 @@ export type ClassUncheckedCreateWithoutSupervisorsInput = {
   gradeId: string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -1124,7 +1083,6 @@ export type ClassUpdateWithoutSupervisorsInput = {
   grade?: Prisma.GradeUpdateOneRequiredWithoutClassesNestedInput
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -1140,91 +1098,6 @@ export type ClassUncheckedUpdateWithoutSupervisorsInput = {
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
-  assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
-  attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
-  timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
-  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
-  invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutClassNestedInput
-  studentClassHistory?: Prisma.StudentClassHistoryUncheckedUpdateManyWithoutClassNestedInput
-  timetablePeriods?: Prisma.TimetablePeriodUncheckedUpdateManyWithoutClassNestedInput
-}
-
-export type ClassCreateWithoutLessonsInput = {
-  id?: string
-  name: string
-  capacity: number
-  school: Prisma.SchoolCreateNestedOneWithoutClassesInput
-  grade: Prisma.GradeCreateNestedOneWithoutClassesInput
-  students?: Prisma.StudentCreateNestedManyWithoutClassInput
-  supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
-  assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
-  timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
-  announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
-  invoices?: Prisma.InvoiceCreateNestedManyWithoutClassInput
-  studentClassHistory?: Prisma.StudentClassHistoryCreateNestedManyWithoutClassInput
-  timetablePeriods?: Prisma.TimetablePeriodCreateNestedManyWithoutClassInput
-}
-
-export type ClassUncheckedCreateWithoutLessonsInput = {
-  id?: string
-  name: string
-  capacity: number
-  schoolId: string
-  gradeId: string
-  students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
-  supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
-  assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
-  timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
-  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
-  invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutClassInput
-  studentClassHistory?: Prisma.StudentClassHistoryUncheckedCreateNestedManyWithoutClassInput
-  timetablePeriods?: Prisma.TimetablePeriodUncheckedCreateNestedManyWithoutClassInput
-}
-
-export type ClassCreateOrConnectWithoutLessonsInput = {
-  where: Prisma.ClassWhereUniqueInput
-  create: Prisma.XOR<Prisma.ClassCreateWithoutLessonsInput, Prisma.ClassUncheckedCreateWithoutLessonsInput>
-}
-
-export type ClassUpsertWithoutLessonsInput = {
-  update: Prisma.XOR<Prisma.ClassUpdateWithoutLessonsInput, Prisma.ClassUncheckedUpdateWithoutLessonsInput>
-  create: Prisma.XOR<Prisma.ClassCreateWithoutLessonsInput, Prisma.ClassUncheckedCreateWithoutLessonsInput>
-  where?: Prisma.ClassWhereInput
-}
-
-export type ClassUpdateToOneWithWhereWithoutLessonsInput = {
-  where?: Prisma.ClassWhereInput
-  data: Prisma.XOR<Prisma.ClassUpdateWithoutLessonsInput, Prisma.ClassUncheckedUpdateWithoutLessonsInput>
-}
-
-export type ClassUpdateWithoutLessonsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  capacity?: Prisma.IntFieldUpdateOperationsInput | number
-  school?: Prisma.SchoolUpdateOneRequiredWithoutClassesNestedInput
-  grade?: Prisma.GradeUpdateOneRequiredWithoutClassesNestedInput
-  students?: Prisma.StudentUpdateManyWithoutClassNestedInput
-  supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
-  assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
-  timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
-  announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
-  invoices?: Prisma.InvoiceUpdateManyWithoutClassNestedInput
-  studentClassHistory?: Prisma.StudentClassHistoryUpdateManyWithoutClassNestedInput
-  timetablePeriods?: Prisma.TimetablePeriodUpdateManyWithoutClassNestedInput
-}
-
-export type ClassUncheckedUpdateWithoutLessonsInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  capacity?: Prisma.IntFieldUpdateOperationsInput | number
-  schoolId?: Prisma.StringFieldUpdateOperationsInput | string
-  gradeId?: Prisma.StringFieldUpdateOperationsInput | string
-  students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
-  supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
@@ -1242,7 +1115,6 @@ export type ClassCreateWithoutAssignmentsInput = {
   grade: Prisma.GradeCreateNestedOneWithoutClassesInput
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -1259,7 +1131,6 @@ export type ClassUncheckedCreateWithoutAssignmentsInput = {
   gradeId: string
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -1292,7 +1163,6 @@ export type ClassUpdateWithoutAssignmentsInput = {
   grade?: Prisma.GradeUpdateOneRequiredWithoutClassesNestedInput
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -1309,7 +1179,6 @@ export type ClassUncheckedUpdateWithoutAssignmentsInput = {
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
@@ -1327,7 +1196,6 @@ export type ClassCreateWithoutAttendancesInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutClassInput
@@ -1344,7 +1212,6 @@ export type ClassUncheckedCreateWithoutAttendancesInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutClassInput
@@ -1377,7 +1244,6 @@ export type ClassUpdateWithoutAttendancesInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutClassNestedInput
@@ -1394,7 +1260,6 @@ export type ClassUncheckedUpdateWithoutAttendancesInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutClassNestedInput
@@ -1411,7 +1276,6 @@ export type ClassCreateWithoutInvoicesInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -1428,7 +1292,6 @@ export type ClassUncheckedCreateWithoutInvoicesInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -1461,7 +1324,6 @@ export type ClassUpdateWithoutInvoicesInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -1478,7 +1340,6 @@ export type ClassUncheckedUpdateWithoutInvoicesInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
@@ -1495,7 +1356,6 @@ export type ClassCreateWithoutAnnouncementsInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   invoices?: Prisma.InvoiceCreateNestedManyWithoutClassInput
@@ -1512,7 +1372,6 @@ export type ClassUncheckedCreateWithoutAnnouncementsInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   invoices?: Prisma.InvoiceUncheckedCreateNestedManyWithoutClassInput
@@ -1545,7 +1404,6 @@ export type ClassUpdateWithoutAnnouncementsInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   invoices?: Prisma.InvoiceUpdateManyWithoutClassNestedInput
@@ -1562,7 +1420,6 @@ export type ClassUncheckedUpdateWithoutAnnouncementsInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   invoices?: Prisma.InvoiceUncheckedUpdateManyWithoutClassNestedInput
@@ -1579,7 +1436,6 @@ export type ClassCreateWithoutStudentClassHistoryInput = {
   students?: Prisma.StudentCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutClassInput
@@ -1596,7 +1452,6 @@ export type ClassUncheckedCreateWithoutStudentClassHistoryInput = {
   students?: Prisma.StudentUncheckedCreateNestedManyWithoutClassInput
   supervisors?: Prisma.StaffUncheckedCreateNestedManyWithoutClassInput
   assignments?: Prisma.AssignmentUncheckedCreateNestedManyWithoutClassInput
-  lessons?: Prisma.LessonUncheckedCreateNestedManyWithoutClassInput
   attendances?: Prisma.StudentAttendanceUncheckedCreateNestedManyWithoutClassInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedCreateNestedManyWithoutClassInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutClassInput
@@ -1629,7 +1484,6 @@ export type ClassUpdateWithoutStudentClassHistoryInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -1646,7 +1500,6 @@ export type ClassUncheckedUpdateWithoutStudentClassHistoryInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
@@ -1669,7 +1522,6 @@ export type ClassUpdateWithoutSchoolInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -1686,7 +1538,6 @@ export type ClassUncheckedUpdateWithoutSchoolInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
@@ -1717,7 +1568,6 @@ export type ClassUpdateWithoutGradeInput = {
   students?: Prisma.StudentUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutClassNestedInput
@@ -1734,7 +1584,6 @@ export type ClassUncheckedUpdateWithoutGradeInput = {
   students?: Prisma.StudentUncheckedUpdateManyWithoutClassNestedInput
   supervisors?: Prisma.StaffUncheckedUpdateManyWithoutClassNestedInput
   assignments?: Prisma.AssignmentUncheckedUpdateManyWithoutClassNestedInput
-  lessons?: Prisma.LessonUncheckedUpdateManyWithoutClassNestedInput
   attendances?: Prisma.StudentAttendanceUncheckedUpdateManyWithoutClassNestedInput
   timetableAssignments?: Prisma.TimetableAssignmentUncheckedUpdateManyWithoutClassNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutClassNestedInput
@@ -1759,7 +1608,6 @@ export type ClassCountOutputType = {
   students: number
   supervisors: number
   assignments: number
-  lessons: number
   attendances: number
   timetableAssignments: number
   announcements: number
@@ -1772,7 +1620,6 @@ export type ClassCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   students?: boolean | ClassCountOutputTypeCountStudentsArgs
   supervisors?: boolean | ClassCountOutputTypeCountSupervisorsArgs
   assignments?: boolean | ClassCountOutputTypeCountAssignmentsArgs
-  lessons?: boolean | ClassCountOutputTypeCountLessonsArgs
   attendances?: boolean | ClassCountOutputTypeCountAttendancesArgs
   timetableAssignments?: boolean | ClassCountOutputTypeCountTimetableAssignmentsArgs
   announcements?: boolean | ClassCountOutputTypeCountAnnouncementsArgs
@@ -1810,13 +1657,6 @@ export type ClassCountOutputTypeCountSupervisorsArgs<ExtArgs extends runtime.Typ
  */
 export type ClassCountOutputTypeCountAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AssignmentWhereInput
-}
-
-/**
- * ClassCountOutputType without action
- */
-export type ClassCountOutputTypeCountLessonsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.LessonWhereInput
 }
 
 /**
@@ -1873,7 +1713,6 @@ export type ClassSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   students?: boolean | Prisma.Class$studentsArgs<ExtArgs>
   supervisors?: boolean | Prisma.Class$supervisorsArgs<ExtArgs>
   assignments?: boolean | Prisma.Class$assignmentsArgs<ExtArgs>
-  lessons?: boolean | Prisma.Class$lessonsArgs<ExtArgs>
   attendances?: boolean | Prisma.Class$attendancesArgs<ExtArgs>
   timetableAssignments?: boolean | Prisma.Class$timetableAssignmentsArgs<ExtArgs>
   announcements?: boolean | Prisma.Class$announcementsArgs<ExtArgs>
@@ -1918,7 +1757,6 @@ export type ClassInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   students?: boolean | Prisma.Class$studentsArgs<ExtArgs>
   supervisors?: boolean | Prisma.Class$supervisorsArgs<ExtArgs>
   assignments?: boolean | Prisma.Class$assignmentsArgs<ExtArgs>
-  lessons?: boolean | Prisma.Class$lessonsArgs<ExtArgs>
   attendances?: boolean | Prisma.Class$attendancesArgs<ExtArgs>
   timetableAssignments?: boolean | Prisma.Class$timetableAssignmentsArgs<ExtArgs>
   announcements?: boolean | Prisma.Class$announcementsArgs<ExtArgs>
@@ -1944,7 +1782,6 @@ export type $ClassPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     students: Prisma.$StudentPayload<ExtArgs>[]
     supervisors: Prisma.$StaffPayload<ExtArgs>[]
     assignments: Prisma.$AssignmentPayload<ExtArgs>[]
-    lessons: Prisma.$LessonPayload<ExtArgs>[]
     attendances: Prisma.$StudentAttendancePayload<ExtArgs>[]
     timetableAssignments: Prisma.$TimetableAssignmentPayload<ExtArgs>[]
     announcements: Prisma.$AnnouncementPayload<ExtArgs>[]
@@ -2357,7 +2194,6 @@ export interface Prisma__ClassClient<T, Null = never, ExtArgs extends runtime.Ty
   students<T extends Prisma.Class$studentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Class$studentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   supervisors<T extends Prisma.Class$supervisorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Class$supervisorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StaffPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   assignments<T extends Prisma.Class$assignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Class$assignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  lessons<T extends Prisma.Class$lessonsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Class$lessonsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LessonPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attendances<T extends Prisma.Class$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Class$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentAttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   timetableAssignments<T extends Prisma.Class$timetableAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Class$timetableAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TimetableAssignmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   announcements<T extends Prisma.Class$announcementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Class$announcementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2863,30 +2699,6 @@ export type Class$assignmentsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.AssignmentScalarFieldEnum | Prisma.AssignmentScalarFieldEnum[]
-}
-
-/**
- * Class.lessons
- */
-export type Class$lessonsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Lesson
-   */
-  select?: Prisma.LessonSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Lesson
-   */
-  omit?: Prisma.LessonOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.LessonInclude<ExtArgs> | null
-  where?: Prisma.LessonWhereInput
-  orderBy?: Prisma.LessonOrderByWithRelationInput | Prisma.LessonOrderByWithRelationInput[]
-  cursor?: Prisma.LessonWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.LessonScalarFieldEnum | Prisma.LessonScalarFieldEnum[]
 }
 
 /**

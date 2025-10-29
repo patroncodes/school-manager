@@ -35,7 +35,6 @@ export type AssignmentSumAggregateOutputType = {
 
 export type AssignmentMinAggregateOutputType = {
   id: string | null
-  title: string | null
   startDate: Date | null
   dueDate: Date | null
   maxScore: number | null
@@ -49,7 +48,6 @@ export type AssignmentMinAggregateOutputType = {
 
 export type AssignmentMaxAggregateOutputType = {
   id: string | null
-  title: string | null
   startDate: Date | null
   dueDate: Date | null
   maxScore: number | null
@@ -63,11 +61,9 @@ export type AssignmentMaxAggregateOutputType = {
 
 export type AssignmentCountAggregateOutputType = {
   id: number
-  title: number
   startDate: number
   dueDate: number
   maxScore: number
-  questions: number
   attachedFile: number
   schoolId: number
   subjectId: number
@@ -89,7 +85,6 @@ export type AssignmentSumAggregateInputType = {
 
 export type AssignmentMinAggregateInputType = {
   id?: true
-  title?: true
   startDate?: true
   dueDate?: true
   maxScore?: true
@@ -103,7 +98,6 @@ export type AssignmentMinAggregateInputType = {
 
 export type AssignmentMaxAggregateInputType = {
   id?: true
-  title?: true
   startDate?: true
   dueDate?: true
   maxScore?: true
@@ -117,11 +111,9 @@ export type AssignmentMaxAggregateInputType = {
 
 export type AssignmentCountAggregateInputType = {
   id?: true
-  title?: true
   startDate?: true
   dueDate?: true
   maxScore?: true
-  questions?: true
   attachedFile?: true
   schoolId?: true
   subjectId?: true
@@ -220,11 +212,9 @@ export type AssignmentGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 
 export type AssignmentGroupByOutputType = {
   id: string
-  title: string
   startDate: Date
   dueDate: Date
   maxScore: number
-  questions: string[]
   attachedFile: string[]
   schoolId: string
   subjectId: string
@@ -259,11 +249,9 @@ export type AssignmentWhereInput = {
   OR?: Prisma.AssignmentWhereInput[]
   NOT?: Prisma.AssignmentWhereInput | Prisma.AssignmentWhereInput[]
   id?: Prisma.StringFilter<"Assignment"> | string
-  title?: Prisma.StringFilter<"Assignment"> | string
   startDate?: Prisma.DateTimeFilter<"Assignment"> | Date | string
   dueDate?: Prisma.DateTimeFilter<"Assignment"> | Date | string
-  maxScore?: Prisma.FloatFilter<"Assignment"> | number
-  questions?: Prisma.StringNullableListFilter<"Assignment">
+  maxScore?: Prisma.IntFilter<"Assignment"> | number
   attachedFile?: Prisma.StringNullableListFilter<"Assignment">
   schoolId?: Prisma.StringFilter<"Assignment"> | string
   subjectId?: Prisma.StringFilter<"Assignment"> | string
@@ -280,11 +268,9 @@ export type AssignmentWhereInput = {
 
 export type AssignmentOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   maxScore?: Prisma.SortOrder
-  questions?: Prisma.SortOrder
   attachedFile?: Prisma.SortOrder
   schoolId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
@@ -301,14 +287,13 @@ export type AssignmentOrderByWithRelationInput = {
 
 export type AssignmentWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  schoolId_startDate_subjectId_classId?: Prisma.AssignmentSchoolIdStartDateSubjectIdClassIdCompoundUniqueInput
   AND?: Prisma.AssignmentWhereInput | Prisma.AssignmentWhereInput[]
   OR?: Prisma.AssignmentWhereInput[]
   NOT?: Prisma.AssignmentWhereInput | Prisma.AssignmentWhereInput[]
-  title?: Prisma.StringFilter<"Assignment"> | string
   startDate?: Prisma.DateTimeFilter<"Assignment"> | Date | string
   dueDate?: Prisma.DateTimeFilter<"Assignment"> | Date | string
-  maxScore?: Prisma.FloatFilter<"Assignment"> | number
-  questions?: Prisma.StringNullableListFilter<"Assignment">
+  maxScore?: Prisma.IntFilter<"Assignment"> | number
   attachedFile?: Prisma.StringNullableListFilter<"Assignment">
   schoolId?: Prisma.StringFilter<"Assignment"> | string
   subjectId?: Prisma.StringFilter<"Assignment"> | string
@@ -321,15 +306,13 @@ export type AssignmentWhereUniqueInput = Prisma.AtLeast<{
   class?: Prisma.XOR<Prisma.ClassScalarRelationFilter, Prisma.ClassWhereInput>
   term?: Prisma.XOR<Prisma.TermScalarRelationFilter, Prisma.TermWhereInput>
   results?: Prisma.ResultListRelationFilter
-}, "id">
+}, "id" | "schoolId_startDate_subjectId_classId">
 
 export type AssignmentOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   maxScore?: Prisma.SortOrder
-  questions?: Prisma.SortOrder
   attachedFile?: Prisma.SortOrder
   schoolId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
@@ -349,11 +332,9 @@ export type AssignmentScalarWhereWithAggregatesInput = {
   OR?: Prisma.AssignmentScalarWhereWithAggregatesInput[]
   NOT?: Prisma.AssignmentScalarWhereWithAggregatesInput | Prisma.AssignmentScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Assignment"> | string
-  title?: Prisma.StringWithAggregatesFilter<"Assignment"> | string
   startDate?: Prisma.DateTimeWithAggregatesFilter<"Assignment"> | Date | string
   dueDate?: Prisma.DateTimeWithAggregatesFilter<"Assignment"> | Date | string
-  maxScore?: Prisma.FloatWithAggregatesFilter<"Assignment"> | number
-  questions?: Prisma.StringNullableListFilter<"Assignment">
+  maxScore?: Prisma.IntWithAggregatesFilter<"Assignment"> | number
   attachedFile?: Prisma.StringNullableListFilter<"Assignment">
   schoolId?: Prisma.StringWithAggregatesFilter<"Assignment"> | string
   subjectId?: Prisma.StringWithAggregatesFilter<"Assignment"> | string
@@ -365,11 +346,9 @@ export type AssignmentScalarWhereWithAggregatesInput = {
 
 export type AssignmentCreateInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -382,11 +361,9 @@ export type AssignmentCreateInput = {
 
 export type AssignmentUncheckedCreateInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   subjectId: string
@@ -399,11 +376,9 @@ export type AssignmentUncheckedCreateInput = {
 
 export type AssignmentUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -416,11 +391,9 @@ export type AssignmentUpdateInput = {
 
 export type AssignmentUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -433,11 +406,9 @@ export type AssignmentUncheckedUpdateInput = {
 
 export type AssignmentCreateManyInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   subjectId: string
@@ -449,11 +420,9 @@ export type AssignmentCreateManyInput = {
 
 export type AssignmentUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -461,11 +430,9 @@ export type AssignmentUpdateManyMutationInput = {
 
 export type AssignmentUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -485,13 +452,18 @@ export type AssignmentOrderByRelationAggregateInput = {
   _count?: Prisma.SortOrder
 }
 
+export type AssignmentSchoolIdStartDateSubjectIdClassIdCompoundUniqueInput = {
+  schoolId: string
+  startDate: Date | string
+  subjectId: string
+  classId: string
+}
+
 export type AssignmentCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   maxScore?: Prisma.SortOrder
-  questions?: Prisma.SortOrder
   attachedFile?: Prisma.SortOrder
   schoolId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
@@ -507,7 +479,6 @@ export type AssignmentAvgOrderByAggregateInput = {
 
 export type AssignmentMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   maxScore?: Prisma.SortOrder
@@ -521,7 +492,6 @@ export type AssignmentMaxOrderByAggregateInput = {
 
 export type AssignmentMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
   startDate?: Prisma.SortOrder
   dueDate?: Prisma.SortOrder
   maxScore?: Prisma.SortOrder
@@ -710,17 +680,8 @@ export type AssignmentUncheckedUpdateManyWithoutSubjectNestedInput = {
   deleteMany?: Prisma.AssignmentScalarWhereInput | Prisma.AssignmentScalarWhereInput[]
 }
 
-export type AssignmentCreatequestionsInput = {
-  set: string[]
-}
-
 export type AssignmentCreateattachedFileInput = {
   set: string[]
-}
-
-export type AssignmentUpdatequestionsInput = {
-  set?: string[]
-  push?: string | string[]
 }
 
 export type AssignmentUpdateattachedFileInput = {
@@ -746,11 +707,9 @@ export type AssignmentUpdateOneWithoutResultsNestedInput = {
 
 export type AssignmentCreateWithoutSchoolInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -762,11 +721,9 @@ export type AssignmentCreateWithoutSchoolInput = {
 
 export type AssignmentUncheckedCreateWithoutSchoolInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   subjectId: string
   classId: string
@@ -807,11 +764,9 @@ export type AssignmentScalarWhereInput = {
   OR?: Prisma.AssignmentScalarWhereInput[]
   NOT?: Prisma.AssignmentScalarWhereInput | Prisma.AssignmentScalarWhereInput[]
   id?: Prisma.StringFilter<"Assignment"> | string
-  title?: Prisma.StringFilter<"Assignment"> | string
   startDate?: Prisma.DateTimeFilter<"Assignment"> | Date | string
   dueDate?: Prisma.DateTimeFilter<"Assignment"> | Date | string
-  maxScore?: Prisma.FloatFilter<"Assignment"> | number
-  questions?: Prisma.StringNullableListFilter<"Assignment">
+  maxScore?: Prisma.IntFilter<"Assignment"> | number
   attachedFile?: Prisma.StringNullableListFilter<"Assignment">
   schoolId?: Prisma.StringFilter<"Assignment"> | string
   subjectId?: Prisma.StringFilter<"Assignment"> | string
@@ -823,11 +778,9 @@ export type AssignmentScalarWhereInput = {
 
 export type AssignmentCreateWithoutTermInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -839,11 +792,9 @@ export type AssignmentCreateWithoutTermInput = {
 
 export type AssignmentUncheckedCreateWithoutTermInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   subjectId: string
@@ -881,11 +832,9 @@ export type AssignmentUpdateManyWithWhereWithoutTermInput = {
 
 export type AssignmentCreateWithoutClassInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -897,11 +846,9 @@ export type AssignmentCreateWithoutClassInput = {
 
 export type AssignmentUncheckedCreateWithoutClassInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   subjectId: string
@@ -939,11 +886,9 @@ export type AssignmentUpdateManyWithWhereWithoutClassInput = {
 
 export type AssignmentCreateWithoutSubjectInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -955,11 +900,9 @@ export type AssignmentCreateWithoutSubjectInput = {
 
 export type AssignmentUncheckedCreateWithoutSubjectInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   classId: string
@@ -997,11 +940,9 @@ export type AssignmentUpdateManyWithWhereWithoutSubjectInput = {
 
 export type AssignmentCreateWithoutResultsInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1013,11 +954,9 @@ export type AssignmentCreateWithoutResultsInput = {
 
 export type AssignmentUncheckedCreateWithoutResultsInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   subjectId: string
@@ -1045,11 +984,9 @@ export type AssignmentUpdateToOneWithWhereWithoutResultsInput = {
 
 export type AssignmentUpdateWithoutResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1061,11 +998,9 @@ export type AssignmentUpdateWithoutResultsInput = {
 
 export type AssignmentUncheckedUpdateWithoutResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1077,11 +1012,9 @@ export type AssignmentUncheckedUpdateWithoutResultsInput = {
 
 export type AssignmentCreateManySchoolInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   subjectId: string
   classId: string
@@ -1092,11 +1025,9 @@ export type AssignmentCreateManySchoolInput = {
 
 export type AssignmentUpdateWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1108,11 +1039,9 @@ export type AssignmentUpdateWithoutSchoolInput = {
 
 export type AssignmentUncheckedUpdateWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   classId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1124,11 +1053,9 @@ export type AssignmentUncheckedUpdateWithoutSchoolInput = {
 
 export type AssignmentUncheckedUpdateManyWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   classId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1139,11 +1066,9 @@ export type AssignmentUncheckedUpdateManyWithoutSchoolInput = {
 
 export type AssignmentCreateManyTermInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   subjectId: string
@@ -1154,11 +1079,9 @@ export type AssignmentCreateManyTermInput = {
 
 export type AssignmentUpdateWithoutTermInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1170,11 +1093,9 @@ export type AssignmentUpdateWithoutTermInput = {
 
 export type AssignmentUncheckedUpdateWithoutTermInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1186,11 +1107,9 @@ export type AssignmentUncheckedUpdateWithoutTermInput = {
 
 export type AssignmentUncheckedUpdateManyWithoutTermInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1201,11 +1120,9 @@ export type AssignmentUncheckedUpdateManyWithoutTermInput = {
 
 export type AssignmentCreateManyClassInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   subjectId: string
@@ -1216,11 +1133,9 @@ export type AssignmentCreateManyClassInput = {
 
 export type AssignmentUpdateWithoutClassInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1232,11 +1147,9 @@ export type AssignmentUpdateWithoutClassInput = {
 
 export type AssignmentUncheckedUpdateWithoutClassInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1248,11 +1161,9 @@ export type AssignmentUncheckedUpdateWithoutClassInput = {
 
 export type AssignmentUncheckedUpdateManyWithoutClassInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1263,11 +1174,9 @@ export type AssignmentUncheckedUpdateManyWithoutClassInput = {
 
 export type AssignmentCreateManySubjectInput = {
   id?: string
-  title: string
   startDate: Date | string
   dueDate: Date | string
   maxScore: number
-  questions?: Prisma.AssignmentCreatequestionsInput | string[]
   attachedFile?: Prisma.AssignmentCreateattachedFileInput | string[]
   schoolId: string
   classId: string
@@ -1278,11 +1187,9 @@ export type AssignmentCreateManySubjectInput = {
 
 export type AssignmentUpdateWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1294,11 +1201,9 @@ export type AssignmentUpdateWithoutSubjectInput = {
 
 export type AssignmentUncheckedUpdateWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   classId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1310,11 +1215,9 @@ export type AssignmentUncheckedUpdateWithoutSubjectInput = {
 
 export type AssignmentUncheckedUpdateManyWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   dueDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
-  questions?: Prisma.AssignmentUpdatequestionsInput | string[]
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   attachedFile?: Prisma.AssignmentUpdateattachedFileInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   classId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1356,11 +1259,9 @@ export type AssignmentCountOutputTypeCountResultsArgs<ExtArgs extends runtime.Ty
 
 export type AssignmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  title?: boolean
   startDate?: boolean
   dueDate?: boolean
   maxScore?: boolean
-  questions?: boolean
   attachedFile?: boolean
   schoolId?: boolean
   subjectId?: boolean
@@ -1378,11 +1279,9 @@ export type AssignmentSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
 
 export type AssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  title?: boolean
   startDate?: boolean
   dueDate?: boolean
   maxScore?: boolean
-  questions?: boolean
   attachedFile?: boolean
   schoolId?: boolean
   subjectId?: boolean
@@ -1398,11 +1297,9 @@ export type AssignmentSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
 
 export type AssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  title?: boolean
   startDate?: boolean
   dueDate?: boolean
   maxScore?: boolean
-  questions?: boolean
   attachedFile?: boolean
   schoolId?: boolean
   subjectId?: boolean
@@ -1418,11 +1315,9 @@ export type AssignmentSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 
 export type AssignmentSelectScalar = {
   id?: boolean
-  title?: boolean
   startDate?: boolean
   dueDate?: boolean
   maxScore?: boolean
-  questions?: boolean
   attachedFile?: boolean
   schoolId?: boolean
   subjectId?: boolean
@@ -1432,7 +1327,7 @@ export type AssignmentSelectScalar = {
   updatedAt?: boolean
 }
 
-export type AssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "startDate" | "dueDate" | "maxScore" | "questions" | "attachedFile" | "schoolId" | "subjectId" | "classId" | "termId" | "createdAt" | "updatedAt", ExtArgs["result"]["assignment"]>
+export type AssignmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "startDate" | "dueDate" | "maxScore" | "attachedFile" | "schoolId" | "subjectId" | "classId" | "termId" | "createdAt" | "updatedAt", ExtArgs["result"]["assignment"]>
 export type AssignmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   school?: boolean | Prisma.SchoolDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
@@ -1465,11 +1360,9 @@ export type $AssignmentPayload<ExtArgs extends runtime.Types.Extensions.Internal
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    title: string
     startDate: Date
     dueDate: Date
     maxScore: number
-    questions: string[]
     attachedFile: string[]
     schoolId: string
     subjectId: string
@@ -1906,11 +1799,9 @@ export interface Prisma__AssignmentClient<T, Null = never, ExtArgs extends runti
  */
 export interface AssignmentFieldRefs {
   readonly id: Prisma.FieldRef<"Assignment", 'String'>
-  readonly title: Prisma.FieldRef<"Assignment", 'String'>
   readonly startDate: Prisma.FieldRef<"Assignment", 'DateTime'>
   readonly dueDate: Prisma.FieldRef<"Assignment", 'DateTime'>
-  readonly maxScore: Prisma.FieldRef<"Assignment", 'Float'>
-  readonly questions: Prisma.FieldRef<"Assignment", 'String[]'>
+  readonly maxScore: Prisma.FieldRef<"Assignment", 'Int'>
   readonly attachedFile: Prisma.FieldRef<"Assignment", 'String[]'>
   readonly schoolId: Prisma.FieldRef<"Assignment", 'String'>
   readonly subjectId: Prisma.FieldRef<"Assignment", 'String'>

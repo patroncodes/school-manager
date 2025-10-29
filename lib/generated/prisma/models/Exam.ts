@@ -35,9 +35,9 @@ export type ExamSumAggregateOutputType = {
 
 export type ExamMinAggregateOutputType = {
   id: string | null
-  title: string | null
-  startTime: Date | null
-  endTime: Date | null
+  date: Date | null
+  startTime: string | null
+  endTime: string | null
   maxScore: number | null
   type: $Enums.ExamType | null
   schoolId: string | null
@@ -50,9 +50,9 @@ export type ExamMinAggregateOutputType = {
 
 export type ExamMaxAggregateOutputType = {
   id: string | null
-  title: string | null
-  startTime: Date | null
-  endTime: Date | null
+  date: Date | null
+  startTime: string | null
+  endTime: string | null
   maxScore: number | null
   type: $Enums.ExamType | null
   schoolId: string | null
@@ -65,13 +65,12 @@ export type ExamMaxAggregateOutputType = {
 
 export type ExamCountAggregateOutputType = {
   id: number
-  title: number
+  date: number
   startTime: number
   endTime: number
   maxScore: number
   type: number
-  questions: number
-  attachedFile: number
+  attachedFiles: number
   schoolId: number
   subjectId: number
   gradeId: number
@@ -92,7 +91,7 @@ export type ExamSumAggregateInputType = {
 
 export type ExamMinAggregateInputType = {
   id?: true
-  title?: true
+  date?: true
   startTime?: true
   endTime?: true
   maxScore?: true
@@ -107,7 +106,7 @@ export type ExamMinAggregateInputType = {
 
 export type ExamMaxAggregateInputType = {
   id?: true
-  title?: true
+  date?: true
   startTime?: true
   endTime?: true
   maxScore?: true
@@ -122,13 +121,12 @@ export type ExamMaxAggregateInputType = {
 
 export type ExamCountAggregateInputType = {
   id?: true
-  title?: true
+  date?: true
   startTime?: true
   endTime?: true
   maxScore?: true
   type?: true
-  questions?: true
-  attachedFile?: true
+  attachedFiles?: true
   schoolId?: true
   subjectId?: true
   gradeId?: true
@@ -226,13 +224,12 @@ export type ExamGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type ExamGroupByOutputType = {
   id: string
-  title: string
-  startTime: Date
-  endTime: Date
+  date: Date
+  startTime: string
+  endTime: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions: string[]
-  attachedFile: string[]
+  attachedFiles: string[]
   schoolId: string
   subjectId: string
   gradeId: string
@@ -266,13 +263,12 @@ export type ExamWhereInput = {
   OR?: Prisma.ExamWhereInput[]
   NOT?: Prisma.ExamWhereInput | Prisma.ExamWhereInput[]
   id?: Prisma.StringFilter<"Exam"> | string
-  title?: Prisma.StringFilter<"Exam"> | string
-  startTime?: Prisma.DateTimeFilter<"Exam"> | Date | string
-  endTime?: Prisma.DateTimeFilter<"Exam"> | Date | string
-  maxScore?: Prisma.FloatFilter<"Exam"> | number
+  date?: Prisma.DateTimeFilter<"Exam"> | Date | string
+  startTime?: Prisma.StringFilter<"Exam"> | string
+  endTime?: Prisma.StringNullableFilter<"Exam"> | string | null
+  maxScore?: Prisma.IntFilter<"Exam"> | number
   type?: Prisma.EnumExamTypeFilter<"Exam"> | $Enums.ExamType
-  questions?: Prisma.StringNullableListFilter<"Exam">
-  attachedFile?: Prisma.StringNullableListFilter<"Exam">
+  attachedFiles?: Prisma.StringNullableListFilter<"Exam">
   schoolId?: Prisma.StringFilter<"Exam"> | string
   subjectId?: Prisma.StringFilter<"Exam"> | string
   gradeId?: Prisma.StringFilter<"Exam"> | string
@@ -288,13 +284,12 @@ export type ExamWhereInput = {
 
 export type ExamOrderByWithRelationInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
-  endTime?: Prisma.SortOrder
+  endTime?: Prisma.SortOrderInput | Prisma.SortOrder
   maxScore?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  questions?: Prisma.SortOrder
-  attachedFile?: Prisma.SortOrder
+  attachedFiles?: Prisma.SortOrder
   schoolId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
   gradeId?: Prisma.SortOrder
@@ -310,16 +305,16 @@ export type ExamOrderByWithRelationInput = {
 
 export type ExamWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  schoolId_date_type_subjectId_gradeId?: Prisma.ExamSchoolIdDateTypeSubjectIdGradeIdCompoundUniqueInput
   AND?: Prisma.ExamWhereInput | Prisma.ExamWhereInput[]
   OR?: Prisma.ExamWhereInput[]
   NOT?: Prisma.ExamWhereInput | Prisma.ExamWhereInput[]
-  title?: Prisma.StringFilter<"Exam"> | string
-  startTime?: Prisma.DateTimeFilter<"Exam"> | Date | string
-  endTime?: Prisma.DateTimeFilter<"Exam"> | Date | string
-  maxScore?: Prisma.FloatFilter<"Exam"> | number
+  date?: Prisma.DateTimeFilter<"Exam"> | Date | string
+  startTime?: Prisma.StringFilter<"Exam"> | string
+  endTime?: Prisma.StringNullableFilter<"Exam"> | string | null
+  maxScore?: Prisma.IntFilter<"Exam"> | number
   type?: Prisma.EnumExamTypeFilter<"Exam"> | $Enums.ExamType
-  questions?: Prisma.StringNullableListFilter<"Exam">
-  attachedFile?: Prisma.StringNullableListFilter<"Exam">
+  attachedFiles?: Prisma.StringNullableListFilter<"Exam">
   schoolId?: Prisma.StringFilter<"Exam"> | string
   subjectId?: Prisma.StringFilter<"Exam"> | string
   gradeId?: Prisma.StringFilter<"Exam"> | string
@@ -331,17 +326,16 @@ export type ExamWhereUniqueInput = Prisma.AtLeast<{
   grade?: Prisma.XOR<Prisma.GradeScalarRelationFilter, Prisma.GradeWhereInput>
   term?: Prisma.XOR<Prisma.TermScalarRelationFilter, Prisma.TermWhereInput>
   results?: Prisma.ResultListRelationFilter
-}, "id">
+}, "id" | "schoolId_date_type_subjectId_gradeId">
 
 export type ExamOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
-  endTime?: Prisma.SortOrder
+  endTime?: Prisma.SortOrderInput | Prisma.SortOrder
   maxScore?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  questions?: Prisma.SortOrder
-  attachedFile?: Prisma.SortOrder
+  attachedFiles?: Prisma.SortOrder
   schoolId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
   gradeId?: Prisma.SortOrder
@@ -360,13 +354,12 @@ export type ExamScalarWhereWithAggregatesInput = {
   OR?: Prisma.ExamScalarWhereWithAggregatesInput[]
   NOT?: Prisma.ExamScalarWhereWithAggregatesInput | Prisma.ExamScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Exam"> | string
-  title?: Prisma.StringWithAggregatesFilter<"Exam"> | string
-  startTime?: Prisma.DateTimeWithAggregatesFilter<"Exam"> | Date | string
-  endTime?: Prisma.DateTimeWithAggregatesFilter<"Exam"> | Date | string
-  maxScore?: Prisma.FloatWithAggregatesFilter<"Exam"> | number
+  date?: Prisma.DateTimeWithAggregatesFilter<"Exam"> | Date | string
+  startTime?: Prisma.StringWithAggregatesFilter<"Exam"> | string
+  endTime?: Prisma.StringNullableWithAggregatesFilter<"Exam"> | string | null
+  maxScore?: Prisma.IntWithAggregatesFilter<"Exam"> | number
   type?: Prisma.EnumExamTypeWithAggregatesFilter<"Exam"> | $Enums.ExamType
-  questions?: Prisma.StringNullableListFilter<"Exam">
-  attachedFile?: Prisma.StringNullableListFilter<"Exam">
+  attachedFiles?: Prisma.StringNullableListFilter<"Exam">
   schoolId?: Prisma.StringWithAggregatesFilter<"Exam"> | string
   subjectId?: Prisma.StringWithAggregatesFilter<"Exam"> | string
   gradeId?: Prisma.StringWithAggregatesFilter<"Exam"> | string
@@ -377,13 +370,12 @@ export type ExamScalarWhereWithAggregatesInput = {
 
 export type ExamCreateInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   school: Prisma.SchoolCreateNestedOneWithoutExamsInput
@@ -395,13 +387,12 @@ export type ExamCreateInput = {
 
 export type ExamUncheckedCreateInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   subjectId: string
   gradeId: string
@@ -413,13 +404,12 @@ export type ExamUncheckedCreateInput = {
 
 export type ExamUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   school?: Prisma.SchoolUpdateOneRequiredWithoutExamsNestedInput
@@ -431,13 +421,12 @@ export type ExamUpdateInput = {
 
 export type ExamUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -449,13 +438,12 @@ export type ExamUncheckedUpdateInput = {
 
 export type ExamCreateManyInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   subjectId: string
   gradeId: string
@@ -466,26 +454,24 @@ export type ExamCreateManyInput = {
 
 export type ExamUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type ExamUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -512,15 +498,22 @@ export type StringNullableListFilter<$PrismaModel = never> = {
   isEmpty?: boolean
 }
 
+export type ExamSchoolIdDateTypeSubjectIdGradeIdCompoundUniqueInput = {
+  schoolId: string
+  date: Date | string
+  type: $Enums.ExamType
+  subjectId: string
+  gradeId: string
+}
+
 export type ExamCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   maxScore?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  questions?: Prisma.SortOrder
-  attachedFile?: Prisma.SortOrder
+  attachedFiles?: Prisma.SortOrder
   schoolId?: Prisma.SortOrder
   subjectId?: Prisma.SortOrder
   gradeId?: Prisma.SortOrder
@@ -535,7 +528,7 @@ export type ExamAvgOrderByAggregateInput = {
 
 export type ExamMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   maxScore?: Prisma.SortOrder
@@ -550,7 +543,7 @@ export type ExamMaxOrderByAggregateInput = {
 
 export type ExamMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  title?: Prisma.SortOrder
+  date?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   maxScore?: Prisma.SortOrder
@@ -740,32 +733,15 @@ export type ExamUncheckedUpdateManyWithoutSubjectNestedInput = {
   deleteMany?: Prisma.ExamScalarWhereInput | Prisma.ExamScalarWhereInput[]
 }
 
-export type ExamCreatequestionsInput = {
+export type ExamCreateattachedFilesInput = {
   set: string[]
-}
-
-export type ExamCreateattachedFileInput = {
-  set: string[]
-}
-
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type EnumExamTypeFieldUpdateOperationsInput = {
   set?: $Enums.ExamType
 }
 
-export type ExamUpdatequestionsInput = {
-  set?: string[]
-  push?: string | string[]
-}
-
-export type ExamUpdateattachedFileInput = {
+export type ExamUpdateattachedFilesInput = {
   set?: string[]
   push?: string | string[]
 }
@@ -788,13 +764,12 @@ export type ExamUpdateOneWithoutResultsNestedInput = {
 
 export type ExamCreateWithoutSchoolInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   subject: Prisma.SubjectCreateNestedOneWithoutExamsInput
@@ -805,13 +780,12 @@ export type ExamCreateWithoutSchoolInput = {
 
 export type ExamUncheckedCreateWithoutSchoolInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   subjectId: string
   gradeId: string
   termId: string
@@ -851,13 +825,12 @@ export type ExamScalarWhereInput = {
   OR?: Prisma.ExamScalarWhereInput[]
   NOT?: Prisma.ExamScalarWhereInput | Prisma.ExamScalarWhereInput[]
   id?: Prisma.StringFilter<"Exam"> | string
-  title?: Prisma.StringFilter<"Exam"> | string
-  startTime?: Prisma.DateTimeFilter<"Exam"> | Date | string
-  endTime?: Prisma.DateTimeFilter<"Exam"> | Date | string
-  maxScore?: Prisma.FloatFilter<"Exam"> | number
+  date?: Prisma.DateTimeFilter<"Exam"> | Date | string
+  startTime?: Prisma.StringFilter<"Exam"> | string
+  endTime?: Prisma.StringNullableFilter<"Exam"> | string | null
+  maxScore?: Prisma.IntFilter<"Exam"> | number
   type?: Prisma.EnumExamTypeFilter<"Exam"> | $Enums.ExamType
-  questions?: Prisma.StringNullableListFilter<"Exam">
-  attachedFile?: Prisma.StringNullableListFilter<"Exam">
+  attachedFiles?: Prisma.StringNullableListFilter<"Exam">
   schoolId?: Prisma.StringFilter<"Exam"> | string
   subjectId?: Prisma.StringFilter<"Exam"> | string
   gradeId?: Prisma.StringFilter<"Exam"> | string
@@ -868,13 +841,12 @@ export type ExamScalarWhereInput = {
 
 export type ExamCreateWithoutTermInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   school: Prisma.SchoolCreateNestedOneWithoutExamsInput
@@ -885,13 +857,12 @@ export type ExamCreateWithoutTermInput = {
 
 export type ExamUncheckedCreateWithoutTermInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   subjectId: string
   gradeId: string
@@ -928,13 +899,12 @@ export type ExamUpdateManyWithWhereWithoutTermInput = {
 
 export type ExamCreateWithoutGradeInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   school: Prisma.SchoolCreateNestedOneWithoutExamsInput
@@ -945,13 +915,12 @@ export type ExamCreateWithoutGradeInput = {
 
 export type ExamUncheckedCreateWithoutGradeInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   subjectId: string
   termId: string
@@ -988,13 +957,12 @@ export type ExamUpdateManyWithWhereWithoutGradeInput = {
 
 export type ExamCreateWithoutSubjectInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   school: Prisma.SchoolCreateNestedOneWithoutExamsInput
@@ -1005,13 +973,12 @@ export type ExamCreateWithoutSubjectInput = {
 
 export type ExamUncheckedCreateWithoutSubjectInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   gradeId: string
   termId: string
@@ -1048,13 +1015,12 @@ export type ExamUpdateManyWithWhereWithoutSubjectInput = {
 
 export type ExamCreateWithoutResultsInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   createdAt?: Date | string
   updatedAt?: Date | string
   school: Prisma.SchoolCreateNestedOneWithoutExamsInput
@@ -1065,13 +1031,12 @@ export type ExamCreateWithoutResultsInput = {
 
 export type ExamUncheckedCreateWithoutResultsInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   subjectId: string
   gradeId: string
@@ -1098,13 +1063,12 @@ export type ExamUpdateToOneWithWhereWithoutResultsInput = {
 
 export type ExamUpdateWithoutResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   school?: Prisma.SchoolUpdateOneRequiredWithoutExamsNestedInput
@@ -1115,13 +1079,12 @@ export type ExamUpdateWithoutResultsInput = {
 
 export type ExamUncheckedUpdateWithoutResultsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1132,13 +1095,12 @@ export type ExamUncheckedUpdateWithoutResultsInput = {
 
 export type ExamCreateManySchoolInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   subjectId: string
   gradeId: string
   termId: string
@@ -1148,13 +1110,12 @@ export type ExamCreateManySchoolInput = {
 
 export type ExamUpdateWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   subject?: Prisma.SubjectUpdateOneRequiredWithoutExamsNestedInput
@@ -1165,13 +1126,12 @@ export type ExamUpdateWithoutSchoolInput = {
 
 export type ExamUncheckedUpdateWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
   termId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1182,13 +1142,12 @@ export type ExamUncheckedUpdateWithoutSchoolInput = {
 
 export type ExamUncheckedUpdateManyWithoutSchoolInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
   termId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1198,13 +1157,12 @@ export type ExamUncheckedUpdateManyWithoutSchoolInput = {
 
 export type ExamCreateManyTermInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   subjectId: string
   gradeId: string
@@ -1214,13 +1172,12 @@ export type ExamCreateManyTermInput = {
 
 export type ExamUpdateWithoutTermInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   school?: Prisma.SchoolUpdateOneRequiredWithoutExamsNestedInput
@@ -1231,13 +1188,12 @@ export type ExamUpdateWithoutTermInput = {
 
 export type ExamUncheckedUpdateWithoutTermInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1248,13 +1204,12 @@ export type ExamUncheckedUpdateWithoutTermInput = {
 
 export type ExamUncheckedUpdateManyWithoutTermInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1264,13 +1219,12 @@ export type ExamUncheckedUpdateManyWithoutTermInput = {
 
 export type ExamCreateManyGradeInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   subjectId: string
   termId: string
@@ -1280,13 +1234,12 @@ export type ExamCreateManyGradeInput = {
 
 export type ExamUpdateWithoutGradeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   school?: Prisma.SchoolUpdateOneRequiredWithoutExamsNestedInput
@@ -1297,13 +1250,12 @@ export type ExamUpdateWithoutGradeInput = {
 
 export type ExamUncheckedUpdateWithoutGradeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   termId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1314,13 +1266,12 @@ export type ExamUncheckedUpdateWithoutGradeInput = {
 
 export type ExamUncheckedUpdateManyWithoutGradeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   subjectId?: Prisma.StringFieldUpdateOperationsInput | string
   termId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1330,13 +1281,12 @@ export type ExamUncheckedUpdateManyWithoutGradeInput = {
 
 export type ExamCreateManySubjectInput = {
   id?: string
-  title: string
-  startTime: Date | string
-  endTime: Date | string
+  date: Date | string
+  startTime: string
+  endTime?: string | null
   maxScore: number
   type: $Enums.ExamType
-  questions?: Prisma.ExamCreatequestionsInput | string[]
-  attachedFile?: Prisma.ExamCreateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamCreateattachedFilesInput | string[]
   schoolId: string
   gradeId: string
   termId: string
@@ -1346,13 +1296,12 @@ export type ExamCreateManySubjectInput = {
 
 export type ExamUpdateWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   school?: Prisma.SchoolUpdateOneRequiredWithoutExamsNestedInput
@@ -1363,13 +1312,12 @@ export type ExamUpdateWithoutSubjectInput = {
 
 export type ExamUncheckedUpdateWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
   termId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1380,13 +1328,12 @@ export type ExamUncheckedUpdateWithoutSubjectInput = {
 
 export type ExamUncheckedUpdateManyWithoutSubjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
-  title?: Prisma.StringFieldUpdateOperationsInput | string
-  startTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  endTime?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  maxScore?: Prisma.FloatFieldUpdateOperationsInput | number
+  date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  maxScore?: Prisma.IntFieldUpdateOperationsInput | number
   type?: Prisma.EnumExamTypeFieldUpdateOperationsInput | $Enums.ExamType
-  questions?: Prisma.ExamUpdatequestionsInput | string[]
-  attachedFile?: Prisma.ExamUpdateattachedFileInput | string[]
+  attachedFiles?: Prisma.ExamUpdateattachedFilesInput | string[]
   schoolId?: Prisma.StringFieldUpdateOperationsInput | string
   gradeId?: Prisma.StringFieldUpdateOperationsInput | string
   termId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1427,13 +1374,12 @@ export type ExamCountOutputTypeCountResultsArgs<ExtArgs extends runtime.Types.Ex
 
 export type ExamSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  title?: boolean
+  date?: boolean
   startTime?: boolean
   endTime?: boolean
   maxScore?: boolean
   type?: boolean
-  questions?: boolean
-  attachedFile?: boolean
+  attachedFiles?: boolean
   schoolId?: boolean
   subjectId?: boolean
   gradeId?: boolean
@@ -1450,13 +1396,12 @@ export type ExamSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 
 export type ExamSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  title?: boolean
+  date?: boolean
   startTime?: boolean
   endTime?: boolean
   maxScore?: boolean
   type?: boolean
-  questions?: boolean
-  attachedFile?: boolean
+  attachedFiles?: boolean
   schoolId?: boolean
   subjectId?: boolean
   gradeId?: boolean
@@ -1471,13 +1416,12 @@ export type ExamSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 
 export type ExamSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
-  title?: boolean
+  date?: boolean
   startTime?: boolean
   endTime?: boolean
   maxScore?: boolean
   type?: boolean
-  questions?: boolean
-  attachedFile?: boolean
+  attachedFiles?: boolean
   schoolId?: boolean
   subjectId?: boolean
   gradeId?: boolean
@@ -1492,13 +1436,12 @@ export type ExamSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 
 export type ExamSelectScalar = {
   id?: boolean
-  title?: boolean
+  date?: boolean
   startTime?: boolean
   endTime?: boolean
   maxScore?: boolean
   type?: boolean
-  questions?: boolean
-  attachedFile?: boolean
+  attachedFiles?: boolean
   schoolId?: boolean
   subjectId?: boolean
   gradeId?: boolean
@@ -1507,7 +1450,7 @@ export type ExamSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ExamOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "startTime" | "endTime" | "maxScore" | "type" | "questions" | "attachedFile" | "schoolId" | "subjectId" | "gradeId" | "termId" | "createdAt" | "updatedAt", ExtArgs["result"]["exam"]>
+export type ExamOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "date" | "startTime" | "endTime" | "maxScore" | "type" | "attachedFiles" | "schoolId" | "subjectId" | "gradeId" | "termId" | "createdAt" | "updatedAt", ExtArgs["result"]["exam"]>
 export type ExamInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   school?: boolean | Prisma.SchoolDefaultArgs<ExtArgs>
   subject?: boolean | Prisma.SubjectDefaultArgs<ExtArgs>
@@ -1540,13 +1483,12 @@ export type $ExamPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
-    title: string
-    startTime: Date
-    endTime: Date
+    date: Date
+    startTime: string
+    endTime: string | null
     maxScore: number
     type: $Enums.ExamType
-    questions: string[]
-    attachedFile: string[]
+    attachedFiles: string[]
     schoolId: string
     subjectId: string
     gradeId: string
@@ -1982,13 +1924,12 @@ export interface Prisma__ExamClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface ExamFieldRefs {
   readonly id: Prisma.FieldRef<"Exam", 'String'>
-  readonly title: Prisma.FieldRef<"Exam", 'String'>
-  readonly startTime: Prisma.FieldRef<"Exam", 'DateTime'>
-  readonly endTime: Prisma.FieldRef<"Exam", 'DateTime'>
-  readonly maxScore: Prisma.FieldRef<"Exam", 'Float'>
+  readonly date: Prisma.FieldRef<"Exam", 'DateTime'>
+  readonly startTime: Prisma.FieldRef<"Exam", 'String'>
+  readonly endTime: Prisma.FieldRef<"Exam", 'String'>
+  readonly maxScore: Prisma.FieldRef<"Exam", 'Int'>
   readonly type: Prisma.FieldRef<"Exam", 'ExamType'>
-  readonly questions: Prisma.FieldRef<"Exam", 'String[]'>
-  readonly attachedFile: Prisma.FieldRef<"Exam", 'String[]'>
+  readonly attachedFiles: Prisma.FieldRef<"Exam", 'String[]'>
   readonly schoolId: Prisma.FieldRef<"Exam", 'String'>
   readonly subjectId: Prisma.FieldRef<"Exam", 'String'>
   readonly gradeId: Prisma.FieldRef<"Exam", 'String'>

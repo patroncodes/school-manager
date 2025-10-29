@@ -1,56 +1,70 @@
-import { UserRole } from "@/types";
-import { Class, Exam, Subject, Staff } from "@prisma/client";
-import FormContainer from "../FormContainer";
+"use client";
 
-type ExamsList = Exam & {
-  lesson: {
-    subject: Subject;
-    class: Class;
-    teacher: Staff;
-  };
-};
+import { Exam } from "@/lib/generated/graphql/client";
+import { ColumnDef } from "@tanstack/react-table";
+import { schoolTerms } from "@/constants";
+import FormModal from "@/components/FormModal";
+import DeleteModal from "@/components/DeleteModal";
+import DropdownOptions from "@/components/DropdownOptions";
+import { DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 
-export const examsColumn = (role: UserRole) => [
+export const examsColumn: ColumnDef<Exam>[] = [
   {
-    accessor: "subject",
+    accessorKey: "type",
+    header: "Type",
+    cell: ({ row: { original } }) => <span>{original.type}</span>,
+  },
+  {
+    accessorFn: (row) => row.subject.name,
     header: "Subject",
-    cell: (item: ExamsList) => <span>{item.lesson.subject.name}</span>,
+    cell: ({ row: { original } }) => <span>{original.subject.name}</span>,
   },
   {
-    accessor: "class",
+    accessorFn: (row) => row.grade.name,
     header: "Class",
-    cell: (item: ExamsList) => <span>{item.lesson.class.arm}</span>,
+    cell: ({ row: { original } }) => <span>{original.grade.name}</span>,
   },
   {
-    accessor: "teacher",
-    header: "Teacher",
-    cell: (item: ExamsList) => (
+    accessorFn: (row) => row.term.term,
+    header: "Term",
+    cell: ({ row: { original } }) => (
+      <span>{schoolTerms.find((t) => t.id === original.term.term)?.name}</span>
+    ),
+  },
+  {
+    accessorKey: "maxScore",
+    header: "Max Score",
+    cell: ({ row: { original } }) => <span>{original.maxScore}</span>,
+  },
+  {
+    accessorKey: "date",
+    header: "Date",
+    cell: ({ row: { original } }) => (
       <span>
-        {item.lesson.teacher.name + " " + item.lesson.teacher.surname}
+        {new Intl.DateTimeFormat("en-NG").format(new Date(original.date))}
       </span>
     ),
   },
   {
-    accessor: "date",
-    header: "Date",
-    cell: (item: ExamsList) => (
-      <span>{new Intl.DateTimeFormat("en-NG").format(item.startTime)}</span>
-    ),
+    accessorKey: "startTime",
+    header: "Start Time",
+    cell: ({ row: { original } }) => <span>{original.startTime}</span>,
   },
-  ...(role === "admin" || role === "teacher"
-    ? [
-        {
-          header: "Actions",
-          accessor: "action",
-          cell: (item: ExamsList) => (
-            <div>
-              <div className="flex items-center gap-2">
-                <FormContainer table="exam" type="update" data={item} />
-                <FormContainer table="exam" type="delete" id={item.id} />
-              </div>
-            </div>
-          ),
-        },
-      ]
-    : []),
+  {
+    id: "Actions",
+    cell: ({ row: { original } }) => (
+      <DropdownOptions>
+        <>
+          <FormModal table="exam" type="update" data={original} />
+
+          <DropdownMenuSeparator />
+
+          <DeleteModal table="exam" id={original.id} triggerTitle="Delete" />
+        </>
+      </DropdownOptions>
+    ),
+    enableHiding: false,
+    enableSorting: false,
+    enableGlobalFilter: false,
+  },
 ];

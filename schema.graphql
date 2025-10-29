@@ -45,6 +45,32 @@ interface AppError implements Error {
   message: String
 }
 
+type Assignment {
+  class: Class!
+  dueDate: DateTime!
+  id: ID!
+  maxScore: Int
+  startDate: DateTime!
+  subject: Subject!
+  term: Term!
+}
+
+input AssignmentFilter {
+  classId: ID
+  teacherId: ID
+}
+
+input AssignmentInput {
+  classId: String!
+  dueDate: DateTime!
+  files: [String!]
+  id: ID
+  maxScore: Int!
+  startDate: DateTime!
+  subjectId: String!
+  termId: String!
+}
+
 type BaseAppError implements AppError & Error {
   code: String
   message: String
@@ -77,6 +103,28 @@ input ClassWhereInput {
   name: String
   programId: ID
   supervisorId: String
+}
+
+type Club {
+  createdAt: DateTime!
+  description: String
+  foundedAt: DateTime
+  id: ID!
+  members: [Student!]!
+  name: String!
+  supervisors: [Staff!]!
+}
+
+input ClubFilter {
+  staffId: ID
+  studentId: ID
+}
+
+input ClubInput {
+  description: String!
+  foundedAt: DateTime
+  id: ID
+  name: String!
 }
 
 enum ContractType {
@@ -117,6 +165,44 @@ input EventInput {
   id: ID
   startTime: DateTime!
   title: String!
+}
+
+type Exam {
+  date: DateTime!
+  endTime: String
+  grade: Grade!
+  id: ID!
+  maxScore: Int
+  startTime: String!
+  subject: Subject!
+  term: Term!
+  type: ExamType!
+}
+
+input ExamFilter {
+  classId: ID
+  teacherId: ID
+}
+
+input ExamInput {
+  date: DateTime!
+  endTime: String
+  files: [String!]
+  gradeId: String!
+  id: ID
+  maxScore: Int!
+  startTime: String!
+  subjectId: String!
+  termId: String!
+  type: ExamType!
+}
+
+enum ExamType {
+  FINAL
+  MIDTERM
+  PRACTICAL
+  QUIZ
+  TEST
 }
 
 type ForeignKeyError implements AppError & Error {
@@ -160,8 +246,11 @@ input ManagerInput {
 }
 
 type Mutation {
+  createAssignment(input: AssignmentInput!): MutationCreateAssignmentResult
   createClass(input: ClassInput!): MutationCreateClassResult
+  createClub(input: ClubInput!): MutationCreateClubResult
   createEvent(input: EventInput!): MutationCreateEventResult
+  createExam(input: ExamInput!): MutationCreateExamResult
   createGrade(input: GradeInput!): MutationCreateGradeResult
   createProgram(input: ProgramInput!): MutationCreateProgramResult
   createSchool(input: SchoolInput!): MutationCreateSchoolResult
@@ -171,12 +260,21 @@ type Mutation {
   mutateAcademicYear(input: AcademicYearInput!): MutationMutateAcademicYearResult
   mutateTerm(input: TermInput!): MutationMutateTermResult
   saveAnnouncementAsDraft(input: AnnouncementInput!): Announcement
+  updateAssignment(input: AssignmentInput!): MutationUpdateAssignmentResult
   updateClass(input: ClassInput!): MutationUpdateClassResult
+  updateClub(input: ClubInput!): MutationUpdateClubResult
   updateEvent(input: EventInput!): MutationUpdateEventResult
+  updateExam(input: ExamInput!): MutationUpdateExamResult
   updateGrade(input: GradeInput!): MutationUpdateGradeResult
   updatePeriodSlot(input: TimetablePeriodInput!): MutationUpdatePeriodSlotResult
   updateSubject(input: SubjectInput!): MutationUpdateSubjectResult
   updateTimetableAssignment(input: TimetableAssignmentInput!): MutationUpdateTimetableAssignmentResult
+}
+
+union MutationCreateAssignmentResult = BaseAppError | BaseError | MutationCreateAssignmentSuccess | UniqueConstraintError
+
+type MutationCreateAssignmentSuccess {
+  data: Assignment!
 }
 
 union MutationCreateClassResult = BaseAppError | BaseError | MutationCreateClassSuccess | UniqueConstraintError
@@ -185,10 +283,22 @@ type MutationCreateClassSuccess {
   data: Class!
 }
 
+union MutationCreateClubResult = BaseAppError | BaseError | MutationCreateClubSuccess | UniqueConstraintError
+
+type MutationCreateClubSuccess {
+  data: Club!
+}
+
 union MutationCreateEventResult = BaseAppError | BaseError | MutationCreateEventSuccess | UniqueConstraintError
 
 type MutationCreateEventSuccess {
   data: Event!
+}
+
+union MutationCreateExamResult = BaseAppError | BaseError | MutationCreateExamSuccess | UniqueConstraintError
+
+type MutationCreateExamSuccess {
+  data: Exam!
 }
 
 union MutationCreateGradeResult = BaseAppError | BaseError | MutationCreateGradeSuccess | UniqueConstraintError
@@ -239,16 +349,34 @@ type MutationMutateTermSuccess {
   data: Term!
 }
 
+union MutationUpdateAssignmentResult = BaseAppError | BaseError | MutationUpdateAssignmentSuccess | NotFoundError | UniqueConstraintError
+
+type MutationUpdateAssignmentSuccess {
+  data: Assignment!
+}
+
 union MutationUpdateClassResult = BaseAppError | BaseError | ForeignKeyError | MutationUpdateClassSuccess | UniqueConstraintError
 
 type MutationUpdateClassSuccess {
   data: Class!
 }
 
+union MutationUpdateClubResult = BaseAppError | BaseError | MutationUpdateClubSuccess | UniqueConstraintError
+
+type MutationUpdateClubSuccess {
+  data: Club!
+}
+
 union MutationUpdateEventResult = BaseAppError | BaseError | MutationUpdateEventSuccess | NotFoundError | UniqueConstraintError
 
 type MutationUpdateEventSuccess {
   data: Event!
+}
+
+union MutationUpdateExamResult = BaseAppError | BaseError | MutationUpdateExamSuccess | NotFoundError | UniqueConstraintError
+
+type MutationUpdateExamSuccess {
+  data: Exam!
 }
 
 union MutationUpdateGradeResult = BaseAppError | BaseError | MutationUpdateGradeSuccess | UniqueConstraintError
@@ -326,9 +454,12 @@ enum ProgramName {
 type Query {
   academicYears: [AcademicYear!]
   announcements(id: ID!): [Announcement!]
+  assignments(filter: AssignmentFilter): [Assignment!]
   class(id: ID!): Class
   classes(where: ClassWhereInput): [Class!]
+  clubs(filter: ClubFilter): [Club!]
   events(classId: ID): [Event!]
+  exams(filter: ExamFilter): [Exam!]
   grade(id: ID!): Grade
   grades(where: GradeWhereInput): [Grade!]
   parent(id: ID!): Parent
@@ -340,7 +471,7 @@ type Query {
   staffs(filter: StaffFilterInput): [Staff!]
   students(searchTerm: String): [Student!]
   subjects(teacherId: ID): [Subject!]
-  terms: [Term!]
+  terms(take: Int): [Term!]
   timetable(classId: ID!): [TimetablePeriod!]
 }
 
@@ -374,12 +505,6 @@ input SchoolInput {
 }
 
 enum Sex {
-  FEMALE
-  MALE
-  OTHER
-}
-
-enum SexEnum {
   FEMALE
   MALE
   OTHER
@@ -459,7 +584,7 @@ input StudentInput {
   registrationNumber: String!
   secondaryGuardian: String
   secondaryGuardianRelationship: String
-  sex: SexEnum!
+  sex: Sex!
   surname: String!
 }
 

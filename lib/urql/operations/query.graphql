@@ -66,3 +66,14 @@ query GetAcademicYears {
         }
     }
 }
+
+query GetTerms ($take: Int) {
+    terms(take: $take) {
+        id
+        term
+        isCurrent
+        academicYear {
+            year
+        }
+    }
+}

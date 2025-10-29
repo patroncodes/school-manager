@@ -1,5 +1,5 @@
 /* eslint-disable */
-import type { Prisma, AuditLog, School, Program, AcademicYear, Term, Grade, Class, Subject, TimetablePeriod, PeriodSlot, TimetableAssignment, Manager, Student, Staff, Parent, ParentStudent, Lesson, Exam, Assignment, StudentAttendance, StaffAttendance, Result, TermlyResult, Invoice, InvoiceLine, InvoicePayment, SalaryPayment, StaffBankAccount, Event, Announcement, StudentClassHistory, TeacherSubjectAssignment } from "./prisma/client.js";
+import type { Prisma, AuditLog, School, Program, AcademicYear, Term, Grade, Class, Subject, TimetablePeriod, PeriodSlot, TimetableAssignment, Manager, Student, Staff, Parent, ParentStudent, Club, Exam, Assignment, StudentAttendance, StaffAttendance, Result, TermlyResult, Invoice, InvoiceLine, InvoicePayment, SalaryPayment, StaffBankAccount, Event, Announcement, StudentClassHistory, TeacherSubjectAssignment } from "./prisma/client.js";
 export default interface PrismaTypes {
     AuditLog: {
         Name: "AuditLog";
@@ -36,8 +36,8 @@ export default interface PrismaTypes {
         Where: Prisma.SchoolWhereInput;
         Create: {};
         Update: {};
-        RelationName: "auditLogs" | "programs" | "academicYears" | "terms" | "students" | "managers" | "staffs" | "parents" | "grades" | "classes" | "subjects" | "timetablePeriods" | "periodSlots" | "timetableAssignments" | "lessons" | "exams" | "assignments" | "results" | "termlyResults" | "events" | "studentAttendances" | "staffAttendances" | "announcements" | "invoices" | "salaryPayments" | "payments" | "teacherSubjectAssignments" | "studentClassHistory" | "staffsBankAccounts";
-        ListRelations: "auditLogs" | "programs" | "academicYears" | "terms" | "students" | "managers" | "staffs" | "parents" | "grades" | "classes" | "subjects" | "timetablePeriods" | "periodSlots" | "timetableAssignments" | "lessons" | "exams" | "assignments" | "results" | "termlyResults" | "events" | "studentAttendances" | "staffAttendances" | "announcements" | "invoices" | "salaryPayments" | "payments" | "teacherSubjectAssignments" | "studentClassHistory" | "staffsBankAccounts";
+        RelationName: "auditLogs" | "programs" | "academicYears" | "terms" | "students" | "managers" | "staffs" | "parents" | "grades" | "classes" | "subjects" | "timetablePeriods" | "periodSlots" | "timetableAssignments" | "exams" | "clubs" | "assignments" | "results" | "termlyResults" | "events" | "studentAttendances" | "staffAttendances" | "announcements" | "invoices" | "salaryPayments" | "payments" | "teacherSubjectAssignments" | "studentClassHistory" | "staffsBankAccounts";
+        ListRelations: "auditLogs" | "programs" | "academicYears" | "terms" | "students" | "managers" | "staffs" | "parents" | "grades" | "classes" | "subjects" | "timetablePeriods" | "periodSlots" | "timetableAssignments" | "exams" | "clubs" | "assignments" | "results" | "termlyResults" | "events" | "studentAttendances" | "staffAttendances" | "announcements" | "invoices" | "salaryPayments" | "payments" | "teacherSubjectAssignments" | "studentClassHistory" | "staffsBankAccounts";
         Relations: {
             auditLogs: {
                 Shape: AuditLog[];
@@ -109,14 +109,14 @@ export default interface PrismaTypes {
                 Name: "TimetableAssignment";
                 Nullable: false;
             };
-            lessons: {
-                Shape: Lesson[];
-                Name: "Lesson";
-                Nullable: false;
-            };
             exams: {
                 Shape: Exam[];
                 Name: "Exam";
+                Nullable: false;
+            };
+            clubs: {
+                Shape: Club[];
+                Name: "Club";
                 Nullable: false;
             };
             assignments: {
@@ -366,8 +366,8 @@ export default interface PrismaTypes {
         Where: Prisma.ClassWhereInput;
         Create: {};
         Update: {};
-        RelationName: "school" | "grade" | "students" | "supervisors" | "assignments" | "lessons" | "attendances" | "timetableAssignments" | "announcements" | "invoices" | "studentClassHistory" | "timetablePeriods";
-        ListRelations: "students" | "supervisors" | "assignments" | "lessons" | "attendances" | "timetableAssignments" | "announcements" | "invoices" | "studentClassHistory" | "timetablePeriods";
+        RelationName: "school" | "grade" | "students" | "supervisors" | "assignments" | "attendances" | "timetableAssignments" | "announcements" | "invoices" | "studentClassHistory" | "timetablePeriods";
+        ListRelations: "students" | "supervisors" | "assignments" | "attendances" | "timetableAssignments" | "announcements" | "invoices" | "studentClassHistory" | "timetablePeriods";
         Relations: {
             school: {
                 Shape: School;
@@ -392,11 +392,6 @@ export default interface PrismaTypes {
             assignments: {
                 Shape: Assignment[];
                 Name: "Assignment";
-                Nullable: false;
-            };
-            lessons: {
-                Shape: Lesson[];
-                Name: "Lesson";
                 Nullable: false;
             };
             attendances: {
@@ -441,17 +436,12 @@ export default interface PrismaTypes {
         Where: Prisma.SubjectWhereInput;
         Create: {};
         Update: {};
-        RelationName: "school" | "lessons" | "exams" | "assignments" | "timetableAssignments" | "teacherSubjectAssignments";
-        ListRelations: "lessons" | "exams" | "assignments" | "timetableAssignments" | "teacherSubjectAssignments";
+        RelationName: "school" | "exams" | "assignments" | "timetableAssignments" | "teacherSubjectAssignments";
+        ListRelations: "exams" | "assignments" | "timetableAssignments" | "teacherSubjectAssignments";
         Relations: {
             school: {
                 Shape: School;
                 Name: "School";
-                Nullable: false;
-            };
-            lessons: {
-                Shape: Lesson[];
-                Name: "Lesson";
                 Nullable: false;
             };
             exams: {
@@ -606,7 +596,7 @@ export default interface PrismaTypes {
         Where: Prisma.StudentWhereInput;
         Create: {};
         Update: {};
-        RelationName: "school" | "class" | "parentStudents" | "results" | "attendances" | "invoices" | "studentClassHistory" | "termlyResults";
+        RelationName: "school" | "class" | "club" | "parentStudents" | "results" | "attendances" | "invoices" | "studentClassHistory" | "termlyResults";
         ListRelations: "parentStudents" | "results" | "attendances" | "invoices" | "studentClassHistory" | "termlyResults";
         Relations: {
             school: {
@@ -618,6 +608,11 @@ export default interface PrismaTypes {
                 Shape: Class;
                 Name: "Class";
                 Nullable: false;
+            };
+            club: {
+                Shape: Club | null;
+                Name: "Club";
+                Nullable: true;
             };
             parentStudents: {
                 Shape: ParentStudent[];
@@ -661,8 +656,8 @@ export default interface PrismaTypes {
         Where: Prisma.StaffWhereInput;
         Create: {};
         Update: {};
-        RelationName: "school" | "auditLogs" | "class" | "timetableAssignments" | "lessons" | "attendances" | "salaries" | "bankAccounts" | "teacherSubjectAssignments";
-        ListRelations: "auditLogs" | "timetableAssignments" | "lessons" | "attendances" | "salaries" | "bankAccounts" | "teacherSubjectAssignments";
+        RelationName: "school" | "auditLogs" | "class" | "club" | "timetableAssignments" | "attendances" | "salaries" | "bankAccounts" | "teacherSubjectAssignments";
+        ListRelations: "auditLogs" | "timetableAssignments" | "attendances" | "salaries" | "bankAccounts" | "teacherSubjectAssignments";
         Relations: {
             school: {
                 Shape: School;
@@ -679,14 +674,14 @@ export default interface PrismaTypes {
                 Name: "Class";
                 Nullable: true;
             };
+            club: {
+                Shape: Club | null;
+                Name: "Club";
+                Nullable: true;
+            };
             timetableAssignments: {
                 Shape: TimetableAssignment[];
                 Name: "TimetableAssignment";
-                Nullable: false;
-            };
-            lessons: {
-                Shape: Lesson[];
-                Name: "Lesson";
                 Nullable: false;
             };
             attendances: {
@@ -761,42 +756,32 @@ export default interface PrismaTypes {
             };
         };
     };
-    Lesson: {
-        Name: "Lesson";
-        Shape: Lesson;
-        Include: Prisma.LessonInclude;
-        Select: Prisma.LessonSelect;
-        OrderBy: Prisma.LessonOrderByWithRelationInput;
-        WhereUnique: Prisma.LessonWhereUniqueInput;
-        Where: Prisma.LessonWhereInput;
+    Club: {
+        Name: "Club";
+        Shape: Club;
+        Include: Prisma.ClubInclude;
+        Select: Prisma.ClubSelect;
+        OrderBy: Prisma.ClubOrderByWithRelationInput;
+        WhereUnique: Prisma.ClubWhereUniqueInput;
+        Where: Prisma.ClubWhereInput;
         Create: {};
         Update: {};
-        RelationName: "school" | "subject" | "class" | "teacher" | "attendances";
-        ListRelations: "attendances";
+        RelationName: "school" | "supervisors" | "members";
+        ListRelations: "supervisors" | "members";
         Relations: {
             school: {
                 Shape: School;
                 Name: "School";
                 Nullable: false;
             };
-            subject: {
-                Shape: Subject | null;
-                Name: "Subject";
-                Nullable: true;
-            };
-            class: {
-                Shape: Class;
-                Name: "Class";
+            supervisors: {
+                Shape: Staff[];
+                Name: "Staff";
                 Nullable: false;
             };
-            teacher: {
-                Shape: Staff | null;
-                Name: "Staff";
-                Nullable: true;
-            };
-            attendances: {
-                Shape: StudentAttendance[];
-                Name: "StudentAttendance";
+            members: {
+                Shape: Student[];
+                Name: "Student";
                 Nullable: false;
             };
         };
@@ -891,7 +876,7 @@ export default interface PrismaTypes {
         Where: Prisma.StudentAttendanceWhereInput;
         Create: {};
         Update: {};
-        RelationName: "school" | "term" | "student" | "class" | "lesson";
+        RelationName: "school" | "term" | "student" | "class";
         ListRelations: never;
         Relations: {
             school: {
@@ -910,14 +895,9 @@ export default interface PrismaTypes {
                 Nullable: false;
             };
             class: {
-                Shape: Class | null;
+                Shape: Class;
                 Name: "Class";
-                Nullable: true;
-            };
-            lesson: {
-                Shape: Lesson | null;
-                Name: "Lesson";
-                Nullable: true;
+                Nullable: false;
             };
         };
     };

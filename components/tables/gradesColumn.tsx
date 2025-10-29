@@ -57,14 +57,11 @@ export const gradesColumn: ColumnDef<GradesList>[] = [
             <DropdownMenuSeparator />
 
             <DropdownMenuItem asChild>
-              <DeleteModal id={original.id} table="grade">
-                <span className="px-2 py-1 text-sm font-medium text-destructive">
-                  Delete Grade
-                </span>
-              </DeleteModal>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              {/*<FormContainer table="subject" type="update" data={original} />*/}
+              <DeleteModal
+                id={original.id}
+                table="grade"
+                triggerTitle="Delete Grade"
+              />
             </DropdownMenuItem>
           </>
         </DropdownOptions>

@@ -35,7 +35,7 @@ export const ModelName = {
   Staff: 'Staff',
   Parent: 'Parent',
   ParentStudent: 'ParentStudent',
-  Lesson: 'Lesson',
+  Club: 'Club',
   Exam: 'Exam',
   Assignment: 'Assignment',
   StudentAttendance: 'StudentAttendance',
@@ -231,6 +231,7 @@ export const StudentScalarFieldEnum = {
   activeStateReason: 'activeStateReason',
   schoolId: 'schoolId',
   classId: 'classId',
+  clubId: 'clubId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -260,6 +261,7 @@ export const StaffScalarFieldEnum = {
   exitReason: 'exitReason',
   schoolId: 'schoolId',
   classId: 'classId',
+  clubId: 'clubId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -294,33 +296,26 @@ export const ParentStudentScalarFieldEnum = {
 export type ParentStudentScalarFieldEnum = (typeof ParentStudentScalarFieldEnum)[keyof typeof ParentStudentScalarFieldEnum]
 
 
-export const LessonScalarFieldEnum = {
+export const ClubScalarFieldEnum = {
   id: 'id',
   name: 'name',
   description: 'description',
-  type: 'type',
-  startTime: 'startTime',
-  endTime: 'endTime',
+  foundedAt: 'foundedAt',
   schoolId: 'schoolId',
-  subjectId: 'subjectId',
-  classId: 'classId',
-  teacherId: 'teacherId',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  createdAt: 'createdAt'
 } as const
 
-export type LessonScalarFieldEnum = (typeof LessonScalarFieldEnum)[keyof typeof LessonScalarFieldEnum]
+export type ClubScalarFieldEnum = (typeof ClubScalarFieldEnum)[keyof typeof ClubScalarFieldEnum]
 
 
 export const ExamScalarFieldEnum = {
   id: 'id',
-  title: 'title',
+  date: 'date',
   startTime: 'startTime',
   endTime: 'endTime',
   maxScore: 'maxScore',
   type: 'type',
-  questions: 'questions',
-  attachedFile: 'attachedFile',
+  attachedFiles: 'attachedFiles',
   schoolId: 'schoolId',
   subjectId: 'subjectId',
   gradeId: 'gradeId',
@@ -334,11 +329,9 @@ export type ExamScalarFieldEnum = (typeof ExamScalarFieldEnum)[keyof typeof Exam
 
 export const AssignmentScalarFieldEnum = {
   id: 'id',
-  title: 'title',
   startDate: 'startDate',
   dueDate: 'dueDate',
   maxScore: 'maxScore',
-  questions: 'questions',
   attachedFile: 'attachedFile',
   schoolId: 'schoolId',
   subjectId: 'subjectId',
@@ -354,12 +347,11 @@ export type AssignmentScalarFieldEnum = (typeof AssignmentScalarFieldEnum)[keyof
 export const StudentAttendanceScalarFieldEnum = {
   id: 'id',
   date: 'date',
-  status: 'status',
+  present: 'present',
   schoolId: 'schoolId',
   termId: 'termId',
   studentId: 'studentId',
   classId: 'classId',
-  lessonId: 'lessonId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
